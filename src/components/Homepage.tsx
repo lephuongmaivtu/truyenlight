@@ -224,7 +224,7 @@ const getTopStoriesByViews = async () => {
                     {topStories.slice(0, 5).map((story, index) => (
                       <div
                         key={story.id}
-                        className="flex items-start gap-3 w-full overflow-hidden"
+                        className="flex items-center gap-3 w-full overflow-hidden"
                       >
                         {/* số thứ tự */}
                         <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
@@ -249,7 +249,7 @@ const getTopStoriesByViews = async () => {
                       .map((story, index) => (
                         <div
                           key={story.id}
-                          className="flex items-start gap-3 w-full overflow-hidden"
+                          className="flex items-center gap-3 w-full overflow-hidden"
                         >
                           <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
                             {index + 1}
@@ -268,7 +268,7 @@ const getTopStoriesByViews = async () => {
                     {latestUpdates.slice(0, 5).map((story, index) => (
                       <div
                         key={story.id}
-                        className="flex items-start gap-3 w-full overflow-hidden"
+                        className="flex items-center gap-3 w-full overflow-hidden"
                       >
                         <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
                           {index + 1}
