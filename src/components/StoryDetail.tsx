@@ -1,5 +1,5 @@
 import { supabase } from "../supabaseClient";
-import { StarRating } from "../ui/StarRating";
+import { StarRating } from "./ui/StarRating";
 import { fetchRatingStats } from "../lib/api"; // thêm export như trên
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
