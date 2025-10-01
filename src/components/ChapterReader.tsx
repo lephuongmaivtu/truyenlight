@@ -194,6 +194,8 @@ export function ChapterReader() {
         </div>
       </div>
 
+      <CommentSection chapterId={chapter.id} />
+
       {/* Footer nav (Prev/Next) */}
       <div className="container mx-auto px-4 py-8 flex items-center justify-between">
         {previousChapter ? (
