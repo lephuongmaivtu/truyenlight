@@ -64,6 +64,41 @@ function slugify(text: string): string {
 }
 
 // ================== Stories ==================
+
+export async function fetchComments(chapterId: string) {
+  const { data, error } = await supabase
+    .from("comments")
+    .select(`
+      id,
+      content,
+      created_at,
+      user_id,
+      profiles (username, avatar_url)
+    `)
+    .eq("chapter_id", chapterId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching comments:", error);
+    return [];
+  }
+  return data;
+}
+
+export async function addComment(chapterId: string, userId: string, content: string) {
+  const { data, error } = await supabase
+    .from("comments")
+    .insert([{ chapter_id: chapterId, user_id: userId, content }])
+    .select();
+
+  if (error) {
+    console.error("Error adding comment:", error);
+    return null;
+  }
+  return data[0];
+}
+
+
 export async function fetchStoryWithChapters(
   slug: string
 ): Promise<StoryWithChapters | null> {
