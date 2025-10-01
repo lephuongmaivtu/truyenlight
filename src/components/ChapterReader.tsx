@@ -1,4 +1,6 @@
 // components/ChapterReader.tsx
+
+import { CommentSection } from "./CommentSection";
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
