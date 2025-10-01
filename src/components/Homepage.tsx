@@ -172,8 +172,9 @@ const getTopStoriesByViews = async () => {
       )}
 
       {/* Main Layout */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+         <div className="container mx-auto px-2 sm:px-4 py-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
           
           {/* Main Content (3/4) */}
           <div className="lg:col-span-3 space-y-8">
@@ -272,8 +273,9 @@ const getTopStoriesByViews = async () => {
             </section>
           </div>
 
-          {/* Sidebar (1/4) */}
-          <div className="space-y-6">
+          {/* Sidebar */}
+        <div className="space-y-6 md:col-span-1 lg:col-span-1">
+
             
             {/* Completed Stories */}
             <Card>
