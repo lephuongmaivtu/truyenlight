@@ -1,63 +1,95 @@
 import React, { useEffect, useState } from "react";
-import { fetchComments, addComment } from "../lib/api";
+import { supabase } from "../supabaseClient";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { useUser } from "@supabase/auth-helpers-react";
+
+type CommentRow = {
+  id: string;
+  chapter_id: string;
+  user_id: string | null;
+  content: string;
+  created_at: string;
+  // nếu có bảng profiles thì thêm field join ở đây
+};
 
 export function CommentSection({ chapterId }: { chapterId: string }) {
-  const [comments, setComments] = useState<any[]>([]);
+  const [comments, setComments] = useState<CommentRow[]>([]);
   const [newComment, setNewComment] = useState("");
-  const user = useUser();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
+  // lấy user hiện tại
   useEffect(() => {
-    async function loadComments() {
-      const data = await fetchComments(chapterId);
-      setComments(data);
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      setUserId(data.user?.id ?? null);
+    })();
+  }, []);
+
+  // load comments
+  useEffect(() => {
+    async function load() {
+      const { data, error } = await supabase
+        .from("comments")
+        .select("*")
+        .eq("chapter_id", chapterId)
+        .order("created_at", { ascending: true });
+      if (!error && data) setComments(data as CommentRow[]);
     }
-    loadComments();
+    if (chapterId) load();
   }, [chapterId]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!newComment.trim() || !user) return;
+    if (!userId || !newComment.trim()) return;
 
-    const added = await addComment(chapterId, user.id, newComment);
-    if (added) {
-      setComments([...comments, added]);
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("comments")
+      .insert([{ chapter_id: chapterId, user_id: userId, content: newComment.trim() }])
+      .select()
+      .single();
+
+    setLoading(false);
+    if (!error && data) {
+      setComments((prev) => [...prev, data as CommentRow]);
       setNewComment("");
     }
-  };
+  }
 
   return (
-    <div className="mt-6 border-t pt-4">
+    <div className="max-w-3xl mx-auto px-6 py-6 border-t mt-8">
       <h3 className="text-lg font-bold mb-4">Bình luận</h3>
-      
-      {/* Form */}
-      {user ? (
+
+      {userId ? (
         <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
           <Input
-            type="text"
             placeholder="Viết bình luận..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
           />
-          <Button type="submit">Gửi</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? "Đang gửi..." : "Gửi"}
+          </Button>
         </form>
       ) : (
-        <p className="text-muted-foreground">Đăng nhập để bình luận</p>
+        <p className="text-sm text-muted-foreground mb-4">
+          Đăng nhập để bình luận.
+        </p>
       )}
 
-      {/* List */}
       <div className="space-y-3">
         {comments.map((c) => (
-          <div key={c.id} className="p-3 border rounded">
-            <p className="font-semibold">{c.profiles?.username || "User"}</p>
-            <p className="text-sm">{c.content}</p>
-            <p className="text-xs text-muted-foreground">
+          <div key={c.id} className="p-3 rounded border">
+            <div className="text-sm text-muted-foreground">
               {new Date(c.created_at).toLocaleString("vi-VN")}
-            </p>
+            </div>
+            <div className="text-[15px]">{c.content}</div>
           </div>
         ))}
+        {comments.length === 0 && (
+          <p className="text-sm text-muted-foreground">Chưa có bình luận.</p>
+        )}
       </div>
     </div>
   );
