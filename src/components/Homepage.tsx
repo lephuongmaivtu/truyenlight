@@ -223,11 +223,17 @@ const getTopStoriesByViews = async () => {
                 <TabsContent value="views" className="mt-6">
                   <div className="grid grid-cols-1 gap-4">
                     {topStories.slice(0, 5).map((story, index) => (
-                      <div key={story.id} className="flex items-center space-x-4">
+                      <div
+                        key={story.id}
+                        className="flex items-start gap-3 w-full overflow-hidden"
+                      >
+                        {/* số thứ tự */}
                         <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
                           {index + 1}
                         </div>
-                        <div className="flex-1">
+                      
+                        {/* story card */}
+                        <div className="flex-1 min-w-0 overflow-hidden">
                           <StoryCard story={story} variant="compact" />
                         </div>
                       </div>
