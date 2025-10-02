@@ -24,49 +24,61 @@ useEffect(() => {
     // fetch stories
     const { data: storiesData, error: storiesError } = await supabase
       .from("stories")
-      .select("*")
+      const { data, error } = await supabase
+          .from("stories")
+          .select(`
+            *,
+            story_rating_stats(avg_rating, rating_count)
+          `)
+          .order("created_at", { ascending: false });
+
       .order("created_at", { ascending: false });
 
-    if (!storiesError && storiesData) {
-      const mapped = storiesData.map((story) => ({
-        ...story,
-        coverImage: story.coverImage,
-        lastUpdated: story.created_at,
-      }));
-      setStories(mapped);
-    }
+  
+if (!error && data) {
+  const mapped = data.map((story: any) => ({
+    ...story,
+    coverImage: story.coverImage,
+    lastUpdated: story.created_at,
+    rating: story.story_rating_stats?.avg_rating ?? 0,
+    ratingCount: story.story_rating_stats?.rating_count ?? 0,
+  }));
+  setStories(mapped);
+}
 
     // fetch latest
     const { data: latestData, error: latestError } = await supabase
       .from("stories")
-      .select("*")
+      .select(`*, story_rating_stats(avg_rating, rating_count)`)
       .order("created_at", { ascending: false })
       .limit(10);
 
     if (!latestError && latestData) {
-      const mapped = latestData.map((story) => ({
-        ...story,
-        coverImage: story.coverImage,
-        lastUpdated: story.lastupdated ?? story.created_at,
-      }));
-      setLatestUpdates(mapped);
-    }
+     const mapped = data.map((story: any) => ({
+  ...story,
+  coverImage: story.coverImage,
+  lastUpdated: story.lastupdated ?? story.created_at,
+  rating: story.story_rating_stats?.avg_rating ?? 0,
+  ratingCount: story.story_rating_stats?.rating_count ?? 0,
+}));
+
 
     // fetch featured
     const { data: featuredData, error: featuredError } = await supabase
       .from("stories")
-      .select("*")
+      .select(`*, story_rating_stats(avg_rating, rating_count)`)
       .eq("is_featured", true)
       .limit(8);
 
     if (!featuredError && featuredData) {
-      const mapped = featuredData.map((story) => ({
-        ...story,
-        coverImage: story.coverImage,
-        lastUpdated: story.updated_at ?? story.created_at,
-      }));
-      setFeaturedStories(mapped);
-    }
+        const mapped = (data || []).map((story: any) => ({
+      ...story,
+      coverImage: story.coverImage,
+      lastUpdated: story.updated_at ?? story.created_at,
+      rating: story.story_rating_stats?.avg_rating ?? 0,
+      ratingCount: story.story_rating_stats?.rating_count ?? 0,
+    }));
+
 
     // fetch top by views
     const topStories = await getTopStoriesByViews();
@@ -100,9 +112,10 @@ const getTopStoriesByRating = async () => {
     .from("stories")
     .select(`
       id, slug, title, author, description, coverimage, views, status, genres, lastupdated,
-      story_rating_stats(avg_rating, rating_count)
+      story_rating_stats!inner(avg_rating, rating_count)
     `)
-    .order("story_rating_stats.avg_rating", { ascending: false }) // 👈 quan trọng
+    // Sắp xếp theo cột của bảng con:
+    .order("avg_rating", { referencedTable: "story_rating_stats", ascending: false })
     .limit(10);
 
   if (error) {
@@ -110,12 +123,13 @@ const getTopStoriesByRating = async () => {
     return [];
   }
 
-  return (data || []).map((story) => ({
-    ...story,
-    rating: story.story_rating_stats?.avg_rating ?? 0,
-    ratingCount: story.story_rating_stats?.rating_count ?? 0,
+  return (data || []).map((s: any) => ({
+    ...s,
+    rating: s.story_rating_stats?.avg_rating ?? 0,
+    ratingCount: s.story_rating_stats?.rating_count ?? 0,
   }));
 };
+
 
 
   // Handle search
