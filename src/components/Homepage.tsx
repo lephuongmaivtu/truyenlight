@@ -122,7 +122,7 @@ const getTopStoriesByViews = async () => {
           <img
               src="https://i.ibb.co/zhKSq1L0/Truyenlighttl-2.png" // đổi thành link ảnh banner của m
               alt="Banner"
-              className="w-full h-40 md:h-56 lg:h-64 object-cover rounded-lg shadow"
+              className="w-full h-40 md:h-56 lg:h-64 object-cover shadow"
             />      
                   
           
