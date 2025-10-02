@@ -118,6 +118,14 @@ const getTopStoriesByViews = async () => {
       {/* Hero Section with Search */}
       <section className="bg-gradient-to-r from-primary/5 to-primary/5 py-6">
         <div className="container mx-auto px-4">
+         {/* Banner */}
+          <img
+              src="/https://i.ibb.co/jvYdQ7K1/t-i-xu-ng-44.jpg" // đổi thành link ảnh banner của m
+              alt="Banner"
+              className="w-full h-40 md:h-56 lg:h-64 object-cover rounded-lg shadow"
+            />      
+                  
+          
           <form onSubmit={handleSearch} className="w-full flex justify-center">
             <div className="relative w-full max-w-md md:max-w-sm lg:max-w-md">
               <Input
