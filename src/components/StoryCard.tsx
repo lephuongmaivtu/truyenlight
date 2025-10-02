@@ -98,7 +98,9 @@ export function StoryCard({ story, variant = 'default' }: StoryCardProps) {
               <div className="flex items-center space-x-2">
                 <div className="flex items-center space-x-1">
                   <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                  <span className="text-sm">{story.rating ?? '0'}</span>
+                  <span className="text-sm">{story.rating?.toFixed(1) ?? '0.0'}</span>
+                    <span className="text-xs text-muted-foreground">({story.ratingCount ?? 0})</span>
+
                 </div>
                 <div className="flex items-center space-x-1">
                   <Eye className="h-4 w-4 text-muted-foreground" />
@@ -148,7 +150,9 @@ export function StoryCard({ story, variant = 'default' }: StoryCardProps) {
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-1">
                   <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                  <span className="text-sm">{story.rating ?? '0'}</span>
+                   <span className="text-sm">{story.rating?.toFixed(1) ?? '0.0'}</span>
+                    <span className="text-xs text-muted-foreground">({story.ratingCount ?? 0})</span>
+
                 </div>
                 <div className="flex items-center space-x-1">
                   <Eye className="h-4 w-4 text-muted-foreground" />
