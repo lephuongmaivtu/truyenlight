@@ -184,12 +184,22 @@ const getTopStoriesByViews = async () => {
                 <Star className="h-6 w-6 text-primary" />
                 <h2 className="text-2xl font-bold text-foreground">Featured Stories</h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+              {/* Mobile: list dọc gọn gàng */}
+              <div className="space-y-4 md:hidden">
+                {featuredStories.map((story) => (
+                  <StoryCard key={story.id} story={story} variant="compact" />
+                ))}
+              </div>
+            
+              {/* Desktop: giữ dạng grid */}
+              <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {featuredStories.map((story) => (
                   <StoryCard key={story.id} story={story} variant="featured" />
                 ))}
               </div>
             </section>
+
 
             {/* Latest Updates */}
             <section>
