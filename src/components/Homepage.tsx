@@ -198,6 +198,7 @@ const getTopStoriesByViews = async () => {
                 <StoryCard key={story.id} story={story} variant="compact" />
               ))}
             </div>
+
           </section>
 
 
