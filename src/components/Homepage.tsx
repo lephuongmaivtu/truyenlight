@@ -110,16 +110,8 @@ const getTopStoriesByViews = async () => {
      return (
     <div className="min-h-screen bg-background">
       {/* Hero Section with Search */}
-      <section className="bg-gradient-to-r from-primary/10 to-primary/5 py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
-            Truyện Light - Light Novel
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Đăng nhập để lưu trữ những bộ truyện đang còn đọc dang dở.
-          </p>
-          
-          {/* Search Bar */}
+      <section className="bg-gradient-to-r from-primary/5 to-primary/5 py-6">
+        <div className="container mx-auto px-4">
           <form onSubmit={handleSearch} className="max-w-2xl mx-auto relative">
             <div className="relative">
               <Input
@@ -127,7 +119,7 @@ const getTopStoriesByViews = async () => {
                 placeholder="VD: Phong bì trả nợ..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-12 pl-12 pr-32 text-lg"
+                className="w-full h-12 pl-12 pr-32 text-lg rounded-lg shadow"
               />
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Button 
@@ -140,6 +132,7 @@ const getTopStoriesByViews = async () => {
           </form>
         </div>
       </section>
+
 
       {/* Search Results */}
       {showSearchResults && (
