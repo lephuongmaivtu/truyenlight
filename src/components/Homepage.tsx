@@ -120,7 +120,7 @@ const getTopStoriesByViews = async () => {
         <div className="container mx-auto px-4">
          {/* Banner */}
           <img
-              src="https://i.ibb.co/wrL9B7wZ/Truyenlighttl-1.png" // đổi thành link ảnh banner của m
+              src="https://i.ibb.co/zhKSq1L0/Truyenlighttl-2.png" // đổi thành link ảnh banner của m
               alt="Banner"
               className="w-full h-40 md:h-56 lg:h-64 object-cover rounded-lg shadow"
             />      
