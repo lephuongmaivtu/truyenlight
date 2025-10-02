@@ -60,8 +60,20 @@ export function Homepage() {
       setLatestUpdates(mapped);
     }
   };
-
   fetchLatest();
+
+    const stories = await getTopStoriesByViews();
+        setTopStories(stories);
+      };
+    
+      const fetchTopRated = async () => {
+        const stories = await getTopStoriesByRating();
+        setTopRatedStories(stories);
+      };
+    
+      fetchTop();
+      fetchTopRated();
+   
   const fetchFeatured = async () => {
   const { data, error } = await supabase
     .from("stories")
@@ -101,14 +113,14 @@ const getTopStoriesByViews = async () => {
   }
   return data || [];
 };
-  const getTopStoriesByRating = async () => {
+const getTopStoriesByRating = async () => {
   const { data, error } = await supabase
     .from("stories")
     .select(`
       id, slug, title, author, description, coverimage, views, status, genres, lastupdated,
       story_rating_stats(avg_rating, rating_count)
     `)
-    .order("avg_rating", { ascending: false })
+    .order("story_rating_stats.avg_rating", { ascending: false }) // 👈 quan trọng
     .limit(10);
 
   if (error) {
@@ -122,6 +134,7 @@ const getTopStoriesByViews = async () => {
     ratingCount: story.story_rating_stats?.rating_count ?? 0,
   }));
 };
+
 
   // Handle search
   const handleSearch = (e: React.FormEvent) => {
