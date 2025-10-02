@@ -122,9 +122,13 @@ export async function fetchTopStories(
 ): Promise<StoryRow[]> {
   let query = supabase
     .from("stories")
-    .select("*")
+    .select(`
+      id, slug, title, author, description, coverimage, views, status, genres, lastupdated,
+      story_rating_stats(avg_rating, rating_count)
+    `)
     .order("views", { ascending: false })
     .limit(limit);
+
   if (excludeId) query = query.neq("id", excludeId);
 
   const { data, error } = await query;
@@ -132,8 +136,36 @@ export async function fetchTopStories(
     console.error("❌ fetchTopStories.error:", error);
     return [];
   }
-  return (data as any[]) ?? [];
+
+  return (data as any[]).map((story) => ({
+    ...story,
+    rating: story.story_rating_stats?.avg_rating ?? 0,
+    ratingCount: story.story_rating_stats?.rating_count ?? 0,
+  }));
 }
+
+export async function fetchTopRatedStories(limit = 5): Promise<StoryRow[]> {
+  const { data, error } = await supabase
+    .from("stories")
+    .select(`
+      id, slug, title, author, description, coverimage, views, status, genres, lastupdated,
+      story_rating_stats(avg_rating, rating_count)
+    `)
+    .order("story_rating_stats.avg_rating", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("❌ fetchTopRatedStories.error:", error);
+    return [];
+  }
+
+  return (data as any[]).map((story) => ({
+    ...story,
+    rating: story.story_rating_stats?.avg_rating ?? 0,
+    ratingCount: story.story_rating_stats?.rating_count ?? 0,
+  }));
+}
+
 
 export async function fetchStoryIdBySlug(
   slug: string
