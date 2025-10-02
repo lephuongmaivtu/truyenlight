@@ -5,7 +5,7 @@ import { supabase } from "../../supabaseClient";
 type Props = {
   storyId: string;
   initialMy?: number;     // user đã vote mấy sao
-  onRated?: (value: number) => void; // báo lên cha
+ onRated?: (storyId: string, value: number) => void; // 👈 truyền cả storyId
 };
 
 export function StarRating({ storyId, initialMy = 0, onRated }: Props) {
@@ -20,7 +20,7 @@ export function StarRating({ storyId, initialMy = 0, onRated }: Props) {
     if (!u?.user) return alert("Vui lòng đăng nhập để đánh giá!");
 
     setMy(value); // optimistic
-    onRated?.(value);
+    onRated?.(storyId, value);
 
     setSaving(true);
     const { error } = await supabase
