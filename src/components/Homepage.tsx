@@ -128,6 +128,33 @@ const getTopStoriesByRating = async () => {
   }));
 };
 
+const refreshStoryRating = async (storyId: string) => {
+  const { data, error } = await supabase
+    .from("story_rating_stats")
+    .select("avg_rating, rating_count")
+    .eq("story_id", storyId)
+    .single();
+
+  if (!error && data) {
+    // update vào stories
+    setStories((prev) =>
+      prev.map((s) =>
+        s.id === storyId
+          ? { ...s, rating: data.avg_rating, ratingCount: data.rating_count }
+          : s
+      )
+    );
+
+    // update vào topRatedStories
+    setTopRatedStories((prev) =>
+      prev.map((s) =>
+        s.id === storyId
+          ? { ...s, rating: data.avg_rating, ratingCount: data.rating_count }
+          : s
+      )
+    );
+  }
+};
 
 
   // Handle search
@@ -196,7 +223,8 @@ const getTopStoriesByRating = async () => {
             {searchResults.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
                 {searchResults.map((story) => (
-                  <StoryCard key={story.id} story={story} />
+                  <StoryCard key={story.id} story={story} onRated={refreshStoryRating} />
+
                 ))}
               </div>
             ) : (
@@ -241,7 +269,8 @@ const getTopStoriesByRating = async () => {
               </div>
               <div className="grid grid-cols-1 gap-4">
                 {latestUpdates.slice(0, 5).map((story) => (
-                  <StoryCard key={story.id} story={story} />
+                 <StoryCard key={story.id} story={story} onRated={refreshStoryRating} />
+
                 ))}
               </div>
               
