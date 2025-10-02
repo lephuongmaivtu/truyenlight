@@ -179,26 +179,27 @@ const getTopStoriesByViews = async () => {
           <div className="lg:col-span-3 space-y-8">
             
             {/* Featured Stories */}
-            <section>
-              <div className="flex items-center space-x-2 mb-6">
-                <Star className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold text-foreground">Featured Stories</h2>
-              </div>
-            
-              {/* Mobile: list dọc gọn gàng */}
-              <div className="space-y-4 md:hidden">
-                {featuredStories.map((story) => (
-                  <StoryCard key={story.id} story={story} variant="compact" />
-                ))}
-              </div>
-            
-              {/* Desktop: giữ dạng grid */}
-              <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {featuredStories.map((story) => (
-                  <StoryCard key={story.id} story={story} variant="featured" />
-                ))}
-              </div>
-            </section>
+           <section>
+            <div className="flex items-center space-x-2 mb-6">
+              <Star className="h-6 w-6 text-primary" />
+              <h2 className="text-2xl font-bold text-foreground">Featured Stories</h2>
+            </div>
+          
+            {/* Mobile: list dọc gọn gàng */}
+            <div className="block md:hidden space-y-4">
+              {featuredStories.map((story) => (
+                <StoryCard key={story.id} story={story} variant="compact" />
+              ))}
+            </div>
+          
+            {/* Desktop: giữ dạng grid */}
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredStories.map((story) => (
+                <StoryCard key={story.id} story={story} variant="featured" />
+              ))}
+            </div>
+          </section>
+
 
 
             {/* Latest Updates */}
