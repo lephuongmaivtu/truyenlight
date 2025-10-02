@@ -46,10 +46,14 @@ export function StoryCard({ story, variant = 'default' }: StoryCardProps) {
                 {story.author ?? 'Unknown'}
               </p>
               <div className="flex items-center space-x-2 mt-1">
-                <div className="flex items-center space-x-1">
+               <div className="flex items-center space-x-1">
                   <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                  <span className="text-xs text-muted-foreground">{story.rating ?? '0'}</span>
+                  <span className="text-xs">{story.rating?.toFixed(1) ?? '0.0'}</span>
+                  <span className="text-xs text-muted-foreground">
+                    ({story.ratingCount ?? 0})
+                  </span>
                 </div>
+
                 <div className="flex items-center space-x-1">
                   <Eye className="h-3 w-3 text-muted-foreground" />
                   <span className="text-xs text-muted-foreground">{formatViews(story.views)}</span>
