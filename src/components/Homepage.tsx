@@ -195,7 +195,7 @@ const getTopStoriesByViews = async () => {
             {/* Desktop: giữ dạng grid */}
             <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredStories.map((story) => (
-                <StoryCard key={story.id} story={story} variant="featured" />
+                <StoryCard key={story.id} story={story} variant="compact" />
               ))}
             </div>
           </section>
