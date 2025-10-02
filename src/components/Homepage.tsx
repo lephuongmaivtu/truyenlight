@@ -119,18 +119,18 @@ const getTopStoriesByViews = async () => {
       <section className="bg-gradient-to-r from-primary/5 to-primary/5 py-6">
         <div className="container mx-auto px-4">
           <form onSubmit={handleSearch} className="w-full flex justify-center">
-            <div className="relative w-full max-w-lg">
+            <div className="relative w-full max-w-md md:max-w-sm lg:max-w-md">
               <Input
                 type="text"
                 placeholder="VD: Phong bì trả nợ..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-12 pl-12 pr-24 text-lg rounded-lg shadow"
+                className="w-full h-10 md:h-9 lg:h-10 pl-10 pr-24 text-base md:text-sm lg:text-base rounded-lg shadow"
               />
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Button
                 type="submit"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-9 px-4 text-sm"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 px-3 text-xs md:text-sm"
               >
                 Tìm
               </Button>
