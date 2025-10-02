@@ -107,13 +107,13 @@ const getTopStoriesByViews = async () => {
 };
 const getTopStoriesByRating = async () => {
   const { data, error } = await supabase
-    .from("stories")
+    .from("story_rating_stats") // query bảng con trước
     .select(`
-      id, slug, title, author, description, coverimage, views, status, genres, lastupdated,
-      story_rating_stats!inner(avg_rating, rating_count)
+      avg_rating,
+      rating_count,
+      stories ( id, slug, title, author, description, coverimage, views, status, genres, lastupdated )
     `)
-    // Sắp xếp theo cột của bảng con:
-    .order("avg_rating", { referencedTable: "story_rating_stats", ascending: false })
+    .order("avg_rating", { ascending: false })
     .limit(10);
 
   if (error) {
@@ -122,9 +122,9 @@ const getTopStoriesByRating = async () => {
   }
 
   return (data || []).map((s: any) => ({
-    ...s,
-    rating: s.story_rating_stats?.avg_rating ?? 0,
-    ratingCount: s.story_rating_stats?.rating_count ?? 0,
+    ...s.stories,
+    rating: s.avg_rating ?? 0,
+    ratingCount: s.rating_count ?? 0,
   }));
 };
 
