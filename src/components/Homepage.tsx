@@ -62,18 +62,24 @@ export function Homepage() {
 
   fetchLatest();
   const fetchFeatured = async () => {
-    const { data, error } = await supabase
-      .from("stories")
-      .select("*")
-      .eq("is_featured", true)
-      .limit(8);
+  const { data, error } = await supabase
+    .from("stories")
+    .select("*")
+    .eq("is_featured", true)
+    .limit(8);
 
-    if (error) {
-      console.error("Supabase fetch featured error:", error);
-    } else {
-      setFeaturedStories(data || []);
-    }
-  };
+  if (error) {
+    console.error("Supabase fetch featured error:", error);
+  } else {
+    const mapped = (data || []).map((story) => ({
+      ...story,
+      coverImage: story.coverImage, // giữ đúng tên field trong Supabase
+      lastUpdated: story.updated_at ?? story.created_at,
+    }));
+    setFeaturedStories(mapped);
+  }
+};
+
 
   // gọi cả 2 hàm
   fetchStories();
