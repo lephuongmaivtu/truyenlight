@@ -290,20 +290,21 @@ const getTopStoriesByRating = async () => {
                 </TabsContent>
             
                 {/* By Rating */}
-                <TabsContent value="rating" className="mt-6">
+               <TabsContent value="rating" className="mt-6">
                   <div className="grid grid-cols-1 gap-4">
-                   {topRatedStories.slice(0, 5).map((story, index) => (
-                    <div key={story.id} className="flex items-center gap-3 w-full overflow-hidden">
-                      <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
-                        {index + 1}
+                    {topRatedStories.slice(0, 5).map((story, index) => (
+                      <div key={story.id} className="flex items-center gap-3 w-full overflow-hidden">
+                        <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1 min-w-0 overflow-hidden">
+                          <StoryCard story={story} variant="compact" />
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0 overflow-hidden">
-                        <StoryCard story={story} variant="compact" />
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                   </div>
                 </TabsContent>
+
             
                 {/* By Recent */}
                 <TabsContent value="recent" className="mt-6">
