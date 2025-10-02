@@ -19,85 +19,67 @@ export function Homepage() {
 
   
   // Fetch tất cả stories
- useEffect(() => {
-  const fetchStories = async () => {
-    const { data, error } = await supabase
+useEffect(() => {
+  async function fetchData() {
+    // fetch stories
+    const { data: storiesData, error: storiesError } = await supabase
       .from("stories")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (error) {
-      console.error("Supabase fetch error:", error);
-    } else {
-      console.log("Fetched stories:", data);
-      // Map lại field cho khớp UI (StoryCard.tsx dùng camelCase)
-      const mapped = (data || []).map((story) => ({
+    if (!storiesError && storiesData) {
+      const mapped = storiesData.map((story) => ({
         ...story,
-        coverImage: story.coverImage,   // DB trả về "coverimage"
-        lastUpdated: story.created_at,  // dùng cho Clock
+        coverImage: story.coverImage,
+        lastUpdated: story.created_at,
       }));
       setStories(mapped);
     }
-  };
- const fetchTop = async () => {
-    const stories = await getTopStoriesByViews();
-    setTopStories(stories);
-  };
-  fetchTop();
-   const fetchLatest = async () => {
-    const { data, error } = await supabase
+
+    // fetch latest
+    const { data: latestData, error: latestError } = await supabase
       .from("stories")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(10);
 
-    if (!error && data) {
-      const mapped = data.map((story) => ({
+    if (!latestError && latestData) {
+      const mapped = latestData.map((story) => ({
         ...story,
         coverImage: story.coverImage,
         lastUpdated: story.lastupdated ?? story.created_at,
       }));
       setLatestUpdates(mapped);
     }
-  };
-  fetchLatest();
 
-    const stories = await getTopStoriesByViews();
-        setTopStories(stories);
-      };
-    
-      const fetchTopRated = async () => {
-        const stories = await getTopStoriesByRating();
-        setTopRatedStories(stories);
-      };
-    
-      fetchTop();
-      fetchTopRated();
-   
-  const fetchFeatured = async () => {
-  const { data, error } = await supabase
-    .from("stories")
-    .select("*")
-    .eq("is_featured", true)
-    .limit(8);
+    // fetch featured
+    const { data: featuredData, error: featuredError } = await supabase
+      .from("stories")
+      .select("*")
+      .eq("is_featured", true)
+      .limit(8);
 
-  if (error) {
-    console.error("Supabase fetch featured error:", error);
-  } else {
-    const mapped = (data || []).map((story) => ({
-      ...story,
-      coverImage: story.coverImage, // giữ đúng tên field trong Supabase
-      lastUpdated: story.updated_at ?? story.created_at,
-    }));
-    setFeaturedStories(mapped);
+    if (!featuredError && featuredData) {
+      const mapped = featuredData.map((story) => ({
+        ...story,
+        coverImage: story.coverImage,
+        lastUpdated: story.updated_at ?? story.created_at,
+      }));
+      setFeaturedStories(mapped);
+    }
+
+    // fetch top by views
+    const topStories = await getTopStoriesByViews();
+    setTopStories(topStories);
+
+    // fetch top by rating
+    const ratedStories = await getTopStoriesByRating();
+    setTopRatedStories(ratedStories);
   }
-};
 
-
-  // gọi cả 2 hàm
-  fetchStories();
-  fetchFeatured();
+  fetchData();
 }, []);
+
 
 // trong Homepage.tsx
 const getTopStoriesByViews = async () => {
