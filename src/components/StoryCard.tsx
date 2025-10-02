@@ -8,9 +8,10 @@ import { Story } from './mockData';
 interface StoryCardProps {
   story: Partial<Story>; // để tránh lỗi khi dữ liệu thiếu field
   variant?: 'default' | 'compact' | 'featured';
+  onRated?: (storyId: string) => void; // 👈 thêm dòng này
 }
 
-export function StoryCard({ story, variant = 'default' }: StoryCardProps) {
+export function StoryCard({ story, variant = 'default', onRated }: StoryCardProps) {
   const formatViews = (views?: number) => {
     if (!views) return '0';
     if (views >= 1000000) {
