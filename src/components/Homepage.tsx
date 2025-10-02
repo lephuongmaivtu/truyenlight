@@ -190,7 +190,7 @@ const getTopStoriesByViews = async () => {
            <section>
               <div className="flex items-center space-x-2 mb-6">
                 <Star className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold text-foreground">Featured Stories</h2>
+                <h2 className="text-2xl font-bold text-foreground">Top đề xuất</h2>
               </div>
             
               {/* Grid responsive: mobile 1 cột, tablet 2 cột, desktop 3 cột */}
@@ -208,7 +208,7 @@ const getTopStoriesByViews = async () => {
             <section>
               <div className="flex items-center space-x-2 mb-6">
                 <Clock className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold">Latest Updates</h2>
+                <h2 className="text-2xl font-bold">Truyện mới nhất nè</h2>
               </div>
               <div className="grid grid-cols-1 gap-4">
                 {latestUpdates.slice(0, 5).map((story) => (
@@ -221,7 +221,7 @@ const getTopStoriesByViews = async () => {
             <section>
               <div className="flex items-center space-x-2 mb-6">
                 <TrendingUp className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold text-foreground">Top Stories</h2>
+                <h2 className="text-2xl font-bold text-foreground">Top truyện trong tháng</h2>
               </div>
             
               <Tabs defaultValue="views" className="w-full">
@@ -305,7 +305,7 @@ const getTopStoriesByViews = async () => {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <CheckCircle className="h-5 w-5 text-primary" />
-                  <span>Completed Stories</span>
+                  <span>Truyện đã hoàn</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -340,7 +340,7 @@ const getTopStoriesByViews = async () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Stories</span>
+                  <span className="text-muted-foreground">Tất cả các truyện</span>
                   <span className="font-semibold">{stories.length}</span>
                 </div>
                 <div className="flex justify-between">
