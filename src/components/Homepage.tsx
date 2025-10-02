@@ -22,29 +22,24 @@ export function Homepage() {
 useEffect(() => {
   async function fetchData() {
     // fetch stories
-    const { data: storiesData, error: storiesError } = await supabase
+    const { data, error } = await supabase
       .from("stories")
-      const { data, error } = await supabase
-          .from("stories")
-          .select(`
-            *,
-            story_rating_stats(avg_rating, rating_count)
-          `)
-          .order("created_at", { ascending: false });
+      .select(`
+        *,
+        story_rating_stats(avg_rating, rating_count)
+      `)
+      .order("created_at", { ascending: false });
 
-  
-
-  
-if (!error && data) {
-  const mapped = data.map((story: any) => ({
-    ...story,
-    coverImage: story.coverImage,
-    lastUpdated: story.created_at,
-    rating: story.story_rating_stats?.avg_rating ?? 0,
-    ratingCount: story.story_rating_stats?.rating_count ?? 0,
-  }));
-  setStories(mapped);
-}
+    if (!error && data) {
+      const mapped = data.map((story: any) => ({
+        ...story,
+        coverImage: story.coverImage,
+        lastUpdated: story.created_at,
+        rating: story.story_rating_stats?.avg_rating ?? 0,
+        ratingCount: story.story_rating_stats?.rating_count ?? 0,
+      }));
+      setStories(mapped);
+    }
 
     // fetch latest
     const { data: latestData, error: latestError } = await supabase
@@ -54,14 +49,15 @@ if (!error && data) {
       .limit(10);
 
     if (!latestError && latestData) {
-     const mapped = data.map((story: any) => ({
-  ...story,
-  coverImage: story.coverImage,
-  lastUpdated: story.lastupdated ?? story.created_at,
-  rating: story.story_rating_stats?.avg_rating ?? 0,
-  ratingCount: story.story_rating_stats?.rating_count ?? 0,
-}));
-
+      const mapped = latestData.map((story: any) => ({
+        ...story,
+        coverImage: story.coverImage,
+        lastUpdated: story.lastupdated ?? story.created_at,
+        rating: story.story_rating_stats?.avg_rating ?? 0,
+        ratingCount: story.story_rating_stats?.rating_count ?? 0,
+      }));
+      setLatestUpdates(mapped);
+    }
 
     // fetch featured
     const { data: featuredData, error: featuredError } = await supabase
@@ -71,14 +67,15 @@ if (!error && data) {
       .limit(8);
 
     if (!featuredError && featuredData) {
-        const mapped = (data || []).map((story: any) => ({
-      ...story,
-      coverImage: story.coverImage,
-      lastUpdated: story.updated_at ?? story.created_at,
-      rating: story.story_rating_stats?.avg_rating ?? 0,
-      ratingCount: story.story_rating_stats?.rating_count ?? 0,
-    }));
-
+      const mapped = featuredData.map((story: any) => ({
+        ...story,
+        coverImage: story.coverImage,
+        lastUpdated: story.updated_at ?? story.created_at,
+        rating: story.story_rating_stats?.avg_rating ?? 0,
+        ratingCount: story.story_rating_stats?.rating_count ?? 0,
+      }));
+      setFeaturedStories(mapped);
+    }
 
     // fetch top by views
     const topStories = await getTopStoriesByViews();
@@ -91,6 +88,7 @@ if (!error && data) {
 
   fetchData();
 }, []);
+
 
 
 // trong Homepage.tsx
