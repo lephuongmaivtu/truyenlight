@@ -32,7 +32,7 @@ export function Homepage() {
       // Map lại field cho khớp UI (StoryCard.tsx dùng camelCase)
       const mapped = (data || []).map((story) => ({
         ...story,
-        coverImage: story.coverimage,   // DB trả về "coverimage"
+        coverImage: story.coverImage,   // DB trả về "coverimage"
         lastUpdated: story.created_at,  // dùng cho Clock
       }));
       setStories(mapped);
@@ -53,7 +53,7 @@ export function Homepage() {
     if (!error && data) {
       const mapped = data.map((story) => ({
         ...story,
-        coverImage: story.coverimage,
+        coverImage: story.coverImage,
         lastUpdated: story.lastupdated ?? story.created_at,
       }));
       setLatestUpdates(mapped);
