@@ -15,6 +15,7 @@ export function Homepage() {
   const [featuredStories, setFeaturedStories] = useState<any[]>([]);
   const [topStories, setTopStories] = useState<any[]>([]);
   const [latestUpdates, setLatestUpdates] = useState<any[]>([]);
+  const [topRatedStories, setTopRatedStories] = useState<any[]>([]);
 
   
   // Fetch tất cả stories
@@ -100,7 +101,28 @@ const getTopStoriesByViews = async () => {
   }
   return data || [];
 };
-  
+  const getTopStoriesByRating = async () => {
+  const { data, error } = await supabase
+    .from("stories")
+    .select(`
+      id, slug, title, author, description, coverimage, views, status, genres, lastupdated,
+      story_rating_stats(avg_rating, rating_count)
+    `)
+    .order("avg_rating", { ascending: false })
+    .limit(10);
+
+  if (error) {
+    console.error("Supabase fetch top stories by rating error:", error);
+    return [];
+  }
+
+  return (data || []).map((story) => ({
+    ...story,
+    rating: story.story_rating_stats?.avg_rating ?? 0,
+    ratingCount: story.story_rating_stats?.rating_count ?? 0,
+  }));
+};
+
   // Handle search
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,6 +237,7 @@ const getTopStoriesByViews = async () => {
                   <StoryCard key={story.id} story={story} />
                 ))}
               </div>
+              
             </section>
 
            {/* Rankings / Top Stories */}
@@ -256,22 +279,16 @@ const getTopStoriesByViews = async () => {
                 {/* By Rating */}
                 <TabsContent value="rating" className="mt-6">
                   <div className="grid grid-cols-1 gap-4">
-                    {[...topStories]
-                      .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-                      .slice(0, 5)
-                      .map((story, index) => (
-                        <div
-                          key={story.id}
-                          className="flex items-center gap-3 w-full overflow-hidden"
-                        >
-                          <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
-                            {index + 1}
-                          </div>
-                          <div className="flex-1 min-w-0 overflow-hidden">
-                            <StoryCard story={story} variant="compact" />
-                          </div>
-                        </div>
-                      ))}
+                   {topRatedStories.slice(0, 5).map((story, index) => (
+                    <div key={story.id} className="flex items-center gap-3 w-full overflow-hidden">
+                      <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <StoryCard story={story} variant="compact" />
+                      </div>
+                    </div>
+                  ))}
                   </div>
                 </TabsContent>
             
