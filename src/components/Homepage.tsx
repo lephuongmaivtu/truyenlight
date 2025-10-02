@@ -153,10 +153,26 @@ const refreshStoryRating = async (storyId: string) => {
           : s
       )
     );
-  }
+ 
+ // ✅ thêm update latestUpdates
+    setLatestUpdates((prev) =>
+      prev.map((s) =>
+        s.id === storyId
+          ? { ...s, rating: data.avg_rating, ratingCount: data.rating_count }
+          : s
+      )
+    );
+
+    // ✅ thêm update featuredStories
+    setFeaturedStories((prev) =>
+      prev.map((s) =>
+        s.id === storyId
+          ? { ...s, rating: data.avg_rating, ratingCount: data.rating_count }
+          : s
+      )
+    );
+ }
 };
-
-
   // Handle search
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
