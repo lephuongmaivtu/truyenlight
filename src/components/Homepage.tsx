@@ -16,10 +16,25 @@ export function Homepage() {
   const [topStories, setTopStories] = useState<any[]>([]);
   const [latestUpdates, setLatestUpdates] = useState<any[]>([]);
   const [topRatedStories, setTopRatedStories] = useState<any[]>([]);
+  const [visibleStories, setVisibleStories] = useState<any[]>([]);
+  const [page, setPage] = useState(1);
 
+  const loadMoreStories = () => {
+    const nextPage = page + 1;
+    const start = (nextPage - 1) * 6;
+    const end = start + 6;
+  
+    const newStories = stories.slice(start, end);
+    if (newStories.length > 0) {
+      setVisibleStories((prev) => [...prev, ...newStories]);
+      setPage(nextPage);
+    }
+  };
+  
   // Fetch tất cả stories
   useEffect(() => {
     async function fetchData() {
+      
       // fetch stories
       const { data, error } = await supabase
         .from("stories")
@@ -38,6 +53,7 @@ export function Homepage() {
           ratingCount: story.story_rating_stats?.rating_count ?? 0,
         }));
         setStories(mapped);
+        setVisibleStories(mapped.slice(0, 6));
       }
 
       // fetch latest
@@ -87,7 +103,19 @@ export function Homepage() {
 
     fetchData();
   }, []);
+  
+useEffect(() => {
+  const handleScroll = () => {
+    if (
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 100
+    ) {
+      loadMoreStories();
+    }
+  };
 
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [page, stories]);
   const getTopStoriesByViews = async () => {
     const { data, error } = await supabase
       .from("stories")
@@ -287,6 +315,18 @@ export function Homepage() {
                   <TabsTrigger value="rating">By Rating</TabsTrigger>
                   <TabsTrigger value="recent">Recent</TabsTrigger>
                 </TabsList>
+
+
+                <section>
+                  <div className="flex items-center space-x-2 mb-6">
+                    <h2 className="text-2xl font-bold text-foreground">Tất cả truyện</h2>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {visibleStories.map((story) => (
+                      <StoryCard key={story.id} story={story} />
+                    ))}
+                  </div>
+                </section>
 
                 <TabsContent value="views" className="mt-6">
                   <div className="grid grid-cols-1 gap-4">
