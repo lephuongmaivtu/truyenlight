@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Search, TrendingUp, Clock, Star, CheckCircle } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
