@@ -295,7 +295,7 @@ const refreshStoryRating = async (storyId: string) => {
                   <StoryCard key={story.id} story={story} onRated={refreshStoryRating} />
                 ))}
               </div>
-            
+             <section>
              
 
            {/* Rankings / Top Stories */}
