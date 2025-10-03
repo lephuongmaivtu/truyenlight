@@ -315,19 +315,6 @@ useEffect(() => {
                   <TabsTrigger value="rating">By Rating</TabsTrigger>
                   <TabsTrigger value="recent">Recent</TabsTrigger>
                 </TabsList>
-
-
-                <section>
-                  <div className="flex items-center space-x-2 mb-6">
-                    <h2 className="text-2xl font-bold text-foreground">Tất cả truyện</h2>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {visibleStories.map((story) => (
-                      <StoryCard key={story.id} story={story} />
-                    ))}
-                  </div>
-                </section>
-
                 <TabsContent value="views" className="mt-6">
                   <div className="grid grid-cols-1 gap-4">
                     {topStories.slice(0, 5).map((story, index) => (
@@ -383,6 +370,18 @@ useEffect(() => {
                 </TabsContent>
               </Tabs>
             </section>
+
+                <section>
+                  <div className="flex items-center space-x-2 mb-6">
+                    <h2 className="text-2xl font-bold text-foreground">Tất cả truyện</h2>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {visibleStories.map((story) => (
+                      <StoryCard key={story.id} story={story} />
+                    ))}
+                  </div>
+                </section>
+            
           </div>
 
           <div className="space-y-6">
