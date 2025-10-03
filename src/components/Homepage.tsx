@@ -16,29 +16,7 @@ export function Homepage() {
   const [topStories, setTopStories] = useState<any[]>([]);
   const [latestUpdates, setLatestUpdates] = useState<any[]>([]);
   const [topRatedStories, setTopRatedStories] = useState<any[]>([]);
-  const [page, setPage] = useState(0);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  
-  const limit = 6; // số truyện load mỗi lần
 
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
-
-useEffect(() => {
-  fetchLatestStories(0);
-  if (!loadMoreRef.current || !hasMore) return;
-
-  const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && !loadingMore) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchLatestStories(nextPage);
-    }
-  });
-
-  observer.observe(loadMoreRef.current);
-  return () => observer.disconnect();
-}, [page, loadingMore, hasMore]);
 
   // Fetch tất cả stories
 useEffect(() => {
@@ -63,23 +41,7 @@ useEffect(() => {
       setStories(mapped);
     }
 
-    // fetch latest
-    const { data: latestData, error: latestError } = await supabase
-      .from("stories")
-      .select(`*, story_rating_stats(avg_rating, rating_count)`)
-      .order("created_at", { ascending: false })
-      .limit(10);
-
-    if (!latestError && latestData) {
-      const mapped = latestData.map((story: any) => ({
-        ...story,
-        coverImage: story.coverImage,
-        lastUpdated: story.lastupdated ?? story.created_at,
-        rating: story.story_rating_stats?.avg_rating ?? 0,
-        ratingCount: story.story_rating_stats?.rating_count ?? 0,
-      }));
-      setLatestUpdates(mapped);
-    }
+   
 
     // fetch featured
     const { data: featuredData, error: featuredError } = await supabase
@@ -334,12 +296,7 @@ const refreshStoryRating = async (storyId: string) => {
                 ))}
               </div>
             
-              {/* Chỗ trigger load thêm */}
-              <div ref={loadMoreRef} className="h-12 flex justify-center items-center">
-                {loadingMore && <p>Đang tải thêm...</p>}
-                {!hasMore && <p className="text-gray-500">Hết truyện rồi 😅</p>}
-              </div>
-            </section>
+             
 
            {/* Rankings / Top Stories */}
             <section>
