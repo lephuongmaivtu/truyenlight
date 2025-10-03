@@ -25,6 +25,7 @@ export function Homepage() {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
 useEffect(() => {
+  fetchLatestStories(0);
   if (!loadMoreRef.current || !hasMore) return;
 
   const observer = new IntersectionObserver((entries) => {
@@ -132,7 +133,6 @@ const fetchLatestStories = async (pageNum: number) => {
   }
   setLoadingMore(false);
 };
-fetchLatestStories(0);
 
   
 // trong Homepage.tsx
