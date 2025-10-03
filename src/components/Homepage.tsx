@@ -16,8 +16,29 @@ export function Homepage() {
   const [topStories, setTopStories] = useState<any[]>([]);
   const [latestUpdates, setLatestUpdates] = useState<any[]>([]);
   const [topRatedStories, setTopRatedStories] = useState<any[]>([]);
-
+  const [page, setPage] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   
+  const limit = 6; // số truyện load mỗi lần
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+useEffect(() => {
+  if (!loadMoreRef.current || !hasMore) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !loadingMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchLatestStories(nextPage);
+    }
+  });
+
+  observer.observe(loadMoreRef.current);
+  return () => observer.disconnect();
+}, [page, loadingMore, hasMore]);
+
   // Fetch tất cả stories
 useEffect(() => {
   async function fetchData() {
@@ -90,7 +111,30 @@ useEffect(() => {
 }, []);
 
 
+const fetchLatestStories = async (pageNum: number) => {
+  setLoadingMore(true);
+  const { data, error } = await supabase
+    .from("stories")
+    .select(`*, story_rating_stats(avg_rating, rating_count)`)
+    .order("created_at", { ascending: false })
+    .range(pageNum * limit, pageNum * limit + limit - 1);
 
+  if (!error && data) {
+    if (data.length < limit) setHasMore(false); // hết truyện rồi
+    const mapped = data.map((story: any) => ({
+      ...story,
+      coverImage: story.coverImage,
+      lastUpdated: story.updated_at ?? story.created_at,
+      rating: story.story_rating_stats?.avg_rating ?? 0,
+      ratingCount: story.story_rating_stats?.rating_count ?? 0,
+    }));
+    setLatestUpdates((prev) => [...prev, ...mapped]);
+  }
+  setLoadingMore(false);
+};
+fetchLatestStories(0);
+
+  
 // trong Homepage.tsx
 const getTopStoriesByViews = async () => {
   const { data, error } = await supabase
@@ -278,18 +322,23 @@ const refreshStoryRating = async (storyId: string) => {
 
 
             {/* Latest Updates */}
+           
             <section>
               <div className="flex items-center space-x-2 mb-6">
                 <Clock className="h-6 w-6 text-primary" />
                 <h2 className="text-2xl font-bold">Truyện mới nhất nè</h2>
               </div>
               <div className="grid grid-cols-1 gap-4">
-                {latestUpdates.slice(0, 5).map((story) => (
-                 <StoryCard key={story.id} story={story} onRated={refreshStoryRating} />
-
+                {latestUpdates.map((story) => (
+                  <StoryCard key={story.id} story={story} onRated={refreshStoryRating} />
                 ))}
               </div>
-              
+            
+              {/* Chỗ trigger load thêm */}
+              <div ref={loadMoreRef} className="h-12 flex justify-center items-center">
+                {loadingMore && <p>Đang tải thêm...</p>}
+                {!hasMore && <p className="text-gray-500">Hết truyện rồi 😅</p>}
+              </div>
             </section>
 
            {/* Rankings / Top Stories */}
