@@ -55,6 +55,13 @@ export function Homepage() {
         setStories(mapped);
         setVisibleStories(mapped.slice(0, 6));
       }
+      
+        useEffect(() => {
+          // Đảm bảo Facebook SDK parse lại sau khi component render
+          if (window.FB) {
+            window.FB.XFBML.parse();
+          }
+        }, []);
 
       // fetch latest
       const { data: latestData, error: latestError } = await supabase
