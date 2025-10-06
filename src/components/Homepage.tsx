@@ -1,3 +1,10 @@
+declare global {
+  interface Window {
+    FB: any;
+  }
+}
+
+
 import React, { useEffect, useState } from "react";
 import { Search, TrendingUp, Clock, Star, CheckCircle } from "lucide-react";
 import { Input } from "./ui/input";
