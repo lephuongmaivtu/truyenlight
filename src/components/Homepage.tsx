@@ -63,12 +63,7 @@ export function Homepage() {
         setVisibleStories(mapped.slice(0, 6));
       }
       
-        useEffect(() => {
-          // Đảm bảo Facebook SDK parse lại sau khi component render
-          if (window.FB) {
-            window.FB.XFBML.parse();
-          }
-        }, []);
+       
 
       // fetch latest
       const { data: latestData, error: latestError } = await supabase
@@ -219,7 +214,13 @@ useEffect(() => {
       setShowSearchResults(true);
     }
   };
-
+ useEffect(() => {
+          // Đảm bảo Facebook SDK parse lại sau khi component render
+          if (window.FB) {
+            window.FB.XFBML.parse();
+          }
+        }, []);
+  
   return (
     <div className="min-h-screen bg-background">
       <section className="bg-gradient-to-r from-primary/5 to-primary/5 py-6">
