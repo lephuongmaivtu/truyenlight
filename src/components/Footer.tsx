@@ -12,11 +12,10 @@ export function Footer() {
           <div className="space-y-4">
             <Link to="/" className="flex items-center space-x-2">
               <BookOpen className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold text-foreground">NovelHub</span>
+              <span className="text-lg font-bold text-foreground">TruyenLight</span>
             </Link>
             <p className="text-muted-foreground text-sm">
-              Your premier destination for light novels, web novels, and fantasy stories. 
-              Discover thousands of engaging stories from talented authors worldwide.
+              Điểm đến hàng đầu của bạn cho light novel, tiểu thuyết web và truyện viễn tưởng. Khám phá hàng ngàn câu chuyện hấp dẫn từ các tác giả tài năng trên toàn thế giới.
             </p>
           </div>
 
@@ -34,14 +33,14 @@ export function Footer() {
                 Latest Updates
               </a>
               <a href="#ranking" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
-                Top Stories
+                Top Truyện
               </a>
             </div>
           </div>
 
           {/* Support */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">Support</h3>
+            <h3 className="font-semibold text-foreground">Hỗ trợ</h3>
             <div className="space-y-2">
               <a href="#contact" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
                 Contact Us
@@ -60,7 +59,7 @@ export function Footer() {
 
           {/* Social Media */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">Follow Us</h3>
+            <h3 className="font-semibold text-foreground">Follow đi nè</h3>
             <div className="flex space-x-2">
               <Button variant="outline" size="sm" className="p-2">
                 <Facebook className="h-4 w-4" />
@@ -76,7 +75,7 @@ export function Footer() {
               </Button>
             </div>
             <p className="text-muted-foreground text-sm">
-              Stay updated with the latest stories and announcements!
+              Cập nhật những truyện Zhihu và thông báo mới nhất!
             </p>
           </div>
         </div>
@@ -84,7 +83,7 @@ export function Footer() {
         {/* Bottom Section */}
         <div className="border-t border-border mt-8 pt-8 text-center">
           <p className="text-muted-foreground text-sm">
-            © 2024 NovelHub. All rights reserved. Made with ❤️ for novel readers everywhere.
+            © 2024 TruyenLight. 
           </p>
         </div>
       </div>
