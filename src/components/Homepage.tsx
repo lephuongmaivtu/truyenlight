@@ -385,26 +385,35 @@ useEffect(() => {
           </div>
 
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <CheckCircle className="h-5 w-5 text-primary" />
-                  <span>Truyện đã hoàn</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {stories
-                  .filter((s) => s.status === "completed")
-                  .slice(0, 4)
-                  .map((story) => (
-                    <StoryCard
-                      key={story.id}
-                      story={story}
-                      variant="compact"
-                    />
-                  ))}
-              </CardContent>
-            </Card>
+           <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <CheckCircle className="h-5 w-5 text-primary" />
+                <span>Theo dõi fanpage</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div
+                className="fb-page"
+                data-href="https://www.facebook.com/truyenlight"   // ⚠️ đổi link fanpage thật của m
+                data-tabs="timeline"
+                data-width="340"
+                data-height="500"
+                data-small-header="false"
+                data-adapt-container-width="true"
+                data-hide-cover="false"
+                data-show-facepile="true"
+              >
+                <blockquote
+                  cite="https://www.facebook.com/truyenlight"
+                  className="fb-xfbml-parse-ignore"
+                >
+                  <a href="https://www.facebook.com/truyenlight">TruyenLight</a>
+                </blockquote>
+              </div>
+            </CardContent>
+          </Card>
+
 
             <Card>
               <CardHeader>
