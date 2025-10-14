@@ -307,16 +307,15 @@ useEffect(() => {
         </section>
       )}
 
-  {/* 🌟 BẢNG TIN MỚI NHẤT */}
+{/* 🌟 BẢNG TIN MỚI NHẤT */}
 <section className="mb-10">
   <div className="flex items-center space-x-2 mb-4">
     <h2 className="text-2xl font-bold text-foreground">Bảng tin mới nhất</h2>
   </div>
 
-  {/* ✅ card cố định chiều cao, có thanh cuộn riêng */}
-  <div className="border rounded-xl shadow-sm bg-white overflow-hidden">
-    {/* Phần nội dung có scroll riêng */}
-    <div className="max-h-[380px] overflow-y-auto p-4 space-y-6">
+  {/* ✅ Toàn bộ feed nằm trong 1 khung có scroll riêng */}
+  <div className="border rounded-xl shadow-sm bg-white overflow-hidden max-h-[420px] flex flex-col">
+    <div className="overflow-y-auto flex-1 p-4 space-y-6">
       {statuses.length === 0 ? (
         <p className="text-center text-muted-foreground py-8">
           Chưa có bài đăng nào.
