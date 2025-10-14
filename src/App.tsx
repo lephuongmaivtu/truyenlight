@@ -11,6 +11,22 @@ import { ReadingProvider } from './components/ReadingProvider';
 import { ProfilePage } from './pages/ProfilePage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { usePageTracking } from "./hooks/usePageTracking";
+
+function App() {
+  usePageTracking(); // 👉 thêm dòng này
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/story/:slug" element={<StoryPage />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
 
 export default function App() {
   return (
