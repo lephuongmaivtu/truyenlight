@@ -309,10 +309,8 @@ useEffect(() => {
 
 {/* 🌟 BẢNG TIN MỚI NHẤT + TOP TRUYỆN TRONG THÁNG */}
 <section className="container mx-auto px-4 py-8">
-  {/* Grid chia đôi màn hình */}
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    
-    {/* 🔹 Cột trái - BẢNG TIN MỚI NHẤT */}
+    {/* 🔹 Cột trái: Bảng tin mới nhất */}
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">Bảng tin mới nhất</CardTitle>
@@ -385,7 +383,7 @@ useEffect(() => {
       </CardContent>
     </Card>
 
-    {/* 🔹 Cột phải - TOP TRUYỆN TRONG THÁNG */}
+    {/* 🔹 Cột phải: Top truyện trong tháng */}
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2 text-xl font-bold">
@@ -401,7 +399,6 @@ useEffect(() => {
             <TabsTrigger value="recent">Recent</TabsTrigger>
           </TabsList>
 
-          {/* Tab Views */}
           <TabsContent value="views" className="mt-4">
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {topStories.slice(0, 5).map((story, index) => (
@@ -417,7 +414,6 @@ useEffect(() => {
             </div>
           </TabsContent>
 
-          {/* Tab Rating */}
           <TabsContent value="rating" className="mt-4">
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {topRatedStories.slice(0, 5).map((story, index) => (
@@ -433,7 +429,6 @@ useEffect(() => {
             </div>
           </TabsContent>
 
-          {/* Tab Recent */}
           <TabsContent value="recent" className="mt-4">
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {latestUpdates.slice(0, 5).map((story, index) => (
@@ -451,10 +446,8 @@ useEffect(() => {
         </Tabs>
       </CardContent>
     </Card>
-
   </div>
 </section>
-
 
 
           {/* 🕒 top đề xuất */}
