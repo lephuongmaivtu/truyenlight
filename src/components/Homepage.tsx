@@ -307,15 +307,16 @@ useEffect(() => {
         </section>
       )}
 
-    {/* 🌟 BẢNG TIN MỚI NHẤT */}
+  {/* 🌟 BẢNG TIN MỚI NHẤT */}
 <section className="mb-10">
   <div className="flex items-center space-x-2 mb-4">
     <h2 className="text-2xl font-bold text-foreground">Bảng tin mới nhất</h2>
   </div>
 
-  {/* ✅ card kiểu chapter list – cố định chiều cao, scroll riêng */}
-  <div className="border rounded-xl shadow-sm bg-white">
-    <div className="max-h-[500px] overflow-y-auto p-4 space-y-6">
+  {/* ✅ card cố định chiều cao, có thanh cuộn riêng */}
+  <div className="border rounded-xl shadow-sm bg-white overflow-hidden">
+    {/* Phần nội dung có scroll riêng */}
+    <div className="max-h-[380px] overflow-y-auto p-4 space-y-6">
       {statuses.length === 0 ? (
         <p className="text-center text-muted-foreground py-8">
           Chưa có bài đăng nào.
@@ -326,17 +327,8 @@ useEffect(() => {
             key={s.id}
             className="border-b last:border-b-0 border-gray-100 pb-4"
           >
-            {/* Ảnh minh họa */}
-            {s.image_url && (
-              <img
-                src={s.image_url}
-                alt={s.title}
-                className="w-full h-40 object-cover rounded-lg mb-3"
-              />
-            )}
-
             {/* Tiêu đề */}
-            <h3 className="font-semibold text-base mb-1">
+            <h3 className="font-semibold text-base mb-1 leading-snug">
               {s.title || "Không có tiêu đề"}
             </h3>
 
@@ -348,7 +340,7 @@ useEffect(() => {
                   (s.content.length > 150 ? "..." : "")}
             </p>
 
-            {/* Nút hành động */}
+            {/* Hành động */}
             <div className="flex items-center gap-4 mt-3 text-sm">
               {s.content.length > 150 && (
                 <button
@@ -392,6 +384,7 @@ useEffect(() => {
     </div>
   </div>
 </section>
+
 
 
 
