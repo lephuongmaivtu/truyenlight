@@ -1,0 +1,75 @@
+.status-feed {
+  margin-top: 40px;
+  margin-bottom: 60px;
+}
+
+.feed-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.status-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: 0.2s ease;
+}
+
+.status-card:hover {
+  transform: translateY(-2px);
+}
+
+.status-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.status-body {
+  padding: 16px;
+}
+
+.status-content {
+  color: #333;
+  line-height: 1.6;
+  margin: 10px 0;
+}
+
+.btn-viewmore, .btn-story {
+  border: none;
+  background: #f0f0f0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 8px;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+
+.btn-story {
+  background: #111;
+  color: white;
+  text-decoration: none;
+}
+
+.btn-viewmore:hover {
+  background: #e0e0e0;
+}
+
+.status-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 6px;
+}
+
+.status-time {
+  font-size: 0.8rem;
+  color: #777;
+  margin-top: 8px;
+}
