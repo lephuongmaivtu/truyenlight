@@ -25,8 +25,7 @@ export function Homepage() {
   const [topRatedStories, setTopRatedStories] = useState<any[]>([]);
   const [visibleStories, setVisibleStories] = useState<any[]>([]);
   const [page, setPage] = useState(1);
-  const [statuses, setStatuses] = useState<any[]>([]);
-  const [expanded, setExpanded] = useState<string | null>(null);
+ 
 
   const loadMoreStories = () => {
     const nextPage = page + 1;
@@ -36,6 +35,15 @@ export function Homepage() {
     const [expanded, setExpanded] = useState<string | null>(null);
 
   
+  
+    const newStories = stories.slice(start, end);
+    if (newStories.length > 0) {
+      setVisibleStories((prev) => [...prev, ...newStories]);
+      setPage(nextPage);
+    }
+  };
+  
+  // Fetch tất cả stories
     useEffect(() => {
       async function fetchStatuses() {
         const { data, error } = await supabase
@@ -52,14 +60,6 @@ export function Homepage() {
       fetchStatuses();
     }, []);
 
-    const newStories = stories.slice(start, end);
-    if (newStories.length > 0) {
-      setVisibleStories((prev) => [...prev, ...newStories]);
-      setPage(nextPage);
-    }
-  };
-  
-  // Fetch tất cả stories
   useEffect(() => {
     async function fetchData() {
       
