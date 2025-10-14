@@ -1,16 +1,28 @@
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
+import { Homepage } from "./components/Homepage";
+import { StoryDetail } from "./components/StoryDetail";
+import { ChapterReader } from "./components/ChapterReader";
+import { ReadingProvider } from "./components/ReadingProvider";
+import { ProfilePage } from "./pages/ProfilePage";
+import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage";
+import { usePageTracking } from "./hooks/usePageTracking";
+
 function App() {
   return (
     <ReadingProvider>
       <Router>
-        {/** ✅ Gọi hook ở đây, bên trong Router */}
-        <PageTrackerAndRoutes />
+        <AppContent />
       </Router>
     </ReadingProvider>
   );
 }
 
-function PageTrackerAndRoutes() {
-  usePageTracking();
+function AppContent() {
+  usePageTracking(); // ✅ bây giờ nằm trong Router context — an toàn
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -29,3 +41,5 @@ function PageTrackerAndRoutes() {
     </div>
   );
 }
+
+export default App;
