@@ -166,7 +166,7 @@ useEffect(() => {
       .select(`
         avg_rating,
         rating_count,
-        stories ( id, slug, title, author, description, coverimage, views, status, genres, lastupdated )
+        stories ( id, slug, title, author, description, coverImage, views, status, genres, lastupdated )
       `)
       .order("avg_rating", { ascending: false })
       .limit(10);
