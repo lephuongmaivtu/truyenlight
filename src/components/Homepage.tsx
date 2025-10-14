@@ -307,10 +307,12 @@ useEffect(() => {
         </section>
       )}
 
-{/* 🌟 BẢNG TIN MỚI NHẤT + TOP TRUYỆN TRONG THÁNG */}
-<section className="container mx-auto px-4 py-8">
+
+{/* 🌟 BẢNG TIN + TOP TRUYỆN CHIA 2 CỘT */}
+<section className="container mx-auto px-4 py-8 max-w-6xl">
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    {/* 🔹 Cột trái: Bảng tin mới nhất */}
+    
+    {/* 🔹 CỘT TRÁI: BẢNG TIN MỚI NHẤT */}
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">Bảng tin mới nhất</CardTitle>
@@ -383,7 +385,7 @@ useEffect(() => {
       </CardContent>
     </Card>
 
-    {/* 🔹 Cột phải: Top truyện trong tháng */}
+    {/* 🔹 CỘT PHẢI: TOP TRUYỆN TRONG THÁNG */}
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2 text-xl font-bold">
@@ -448,7 +450,6 @@ useEffect(() => {
     </Card>
   </div>
 </section>
-
 
           {/* 🕒 top đề xuất */}
       <div className="container mx-auto px-4 py-8">
