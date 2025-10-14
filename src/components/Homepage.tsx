@@ -307,85 +307,153 @@ useEffect(() => {
         </section>
       )}
 
-{/* 🌟 BẢNG TIN MỚI NHẤT */}
-<Card className="mt-8">
-  <CardHeader>
-    <CardTitle className="text-xl font-semibold">
-      Bảng tin mới nhất
-    </CardTitle>
-  </CardHeader>
+{/* 🌟 BẢNG TIN MỚI NHẤT + TOP TRUYỆN TRONG THÁNG */}
+<section className="container mx-auto px-4 py-8">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    {/* 🔹 Cột trái: Bảng tin mới nhất */}
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold">
+          Bảng tin mới nhất
+        </CardTitle>
+      </CardHeader>
 
-  <CardContent>
-    {/* ✅ Toàn bộ feed nằm trong khung scroll riêng */}
-    <div className="space-y-3 max-h-96 overflow-y-auto">
-      {statuses.length === 0 ? (
-        <p className="text-center text-muted-foreground py-8">
-          Chưa có bài đăng nào.
-        </p>
-      ) : (
-        statuses.map((s) => (
-          <div
-            key={s.id}
-            className="p-3 rounded-lg hover:bg-muted transition-colors border-b last:border-b-0"
-          >
-            {/* Tiêu đề */}
-            <h3 className="font-semibold text-base mb-1 leading-snug text-primary">
-              {s.title || "Không có tiêu đề"}
-            </h3>
-
-            {/* Văn án / nội dung */}
-            <p className="text-gray-700 text-sm leading-relaxed">
-              {expanded === s.id
-                ? s.content
-                : s.content.slice(0, 120) +
-                  (s.content.length > 120 ? "..." : "")}
+      <CardContent>
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {statuses.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">
+              Chưa có bài đăng nào.
             </p>
-
-            {/* Hành động */}
-            <div className="flex items-center gap-4 mt-3 text-sm">
-              {s.content.length > 120 && (
-                <button
-                  onClick={() => setExpanded(expanded === s.id ? null : s.id)}
-                  className="text-blue-600 hover:underline"
-                >
-                  {expanded === s.id ? "Thu gọn" : "Xem thêm"}
-                </button>
-              )}
-
-              <button
-                onClick={() => {
-                  const link =
-                    window.location.origin +
-                    `/story/${s.stories?.[0]?.slug ?? ""}`;
-                  navigator.clipboard.writeText(link);
-                  alert("Đã sao chép link bài viết!");
-                }}
-                className="text-gray-500 hover:text-gray-700"
+          ) : (
+            statuses.map((s) => (
+              <div
+                key={s.id}
+                className="p-3 rounded-lg hover:bg-muted transition-colors border-b last:border-b-0"
               >
-                Chia sẻ
-              </button>
+                <h3 className="font-semibold text-base mb-1 leading-snug text-primary">
+                  {s.title || "Không có tiêu đề"}
+                </h3>
 
-              {s.stories?.[0]?.slug && (
-                <Link
-                  to={`/story/${s.stories[0].slug}`}
-                  className="text-black hover:underline font-medium"
-                >
-                  Đọc truyện
-                </Link>
-              )}
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {expanded === s.id
+                    ? s.content
+                    : s.content.slice(0, 120) +
+                      (s.content.length > 120 ? "..." : "")}
+                </p>
+
+                <div className="flex items-center gap-4 mt-3 text-sm">
+                  {s.content.length > 120 && (
+                    <button
+                      onClick={() =>
+                        setExpanded(expanded === s.id ? null : s.id)
+                      }
+                      className="text-blue-600 hover:underline"
+                    >
+                      {expanded === s.id ? "Thu gọn" : "Xem thêm"}
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      const link =
+                        window.location.origin +
+                        `/story/${s.stories?.[0]?.slug ?? ""}`;
+                      navigator.clipboard.writeText(link);
+                      alert("Đã sao chép link bài viết!");
+                    }}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    Chia sẻ
+                  </button>
+
+                  {s.stories?.[0]?.slug && (
+                    <a
+                      href={`/story/${s.stories[0].slug}`}
+                      className="text-black hover:underline font-medium"
+                    >
+                      Đọc truyện
+                    </a>
+                  )}
+                </div>
+
+                <p className="text-xs text-gray-400 mt-2">
+                  {new Date(s.created_at).toLocaleString("vi-VN")}
+                </p>
+              </div>
+            ))
+          )}
+        </div>
+      </CardContent>
+    </Card>
+
+    {/* 🔹 Cột phải: Top truyện trong tháng */}
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="text-xl font-bold flex items-center space-x-2">
+          <TrendingUp className="h-5 w-5 text-primary" />
+          <span>Top truyện trong tháng</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="views" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="views">By Views</TabsTrigger>
+            <TabsTrigger value="rating">By Rating</TabsTrigger>
+            <TabsTrigger value="recent">Recent</TabsTrigger>
+          </TabsList>
+
+          {/* By Views */}
+          <TabsContent value="views" className="mt-4">
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {topStories.slice(0, 5).map((story, index) => (
+                <div key={story.id} className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
+                    {index + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <StoryCard story={story} variant="compact" />
+                  </div>
+                </div>
+              ))}
             </div>
+          </TabsContent>
 
-            {/* Ngày đăng */}
-            <p className="text-xs text-gray-400 mt-2">
-              {new Date(s.created_at).toLocaleString("vi-VN")}
-            </p>
-          </div>
-        ))
-      )}
-    </div>
-  </CardContent>
-</Card>
+          {/* By Rating */}
+          <TabsContent value="rating" className="mt-4">
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {topRatedStories.slice(0, 5).map((story, index) => (
+                <div key={story.id} className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
+                    {index + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <StoryCard story={story} variant="compact" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
 
+          {/* Recent */}
+          <TabsContent value="recent" className="mt-4">
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {latestUpdates.slice(0, 5).map((story, index) => (
+                <div key={story.id} className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
+                    {index + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <StoryCard story={story} variant="compact" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+  </div>
+</section>
 
 
 
@@ -422,75 +490,7 @@ useEffect(() => {
                 ))}
               </div>
             </section>
-
-            <section>
-              <div className="flex items-center space-x-2 mb-6">
-                <TrendingUp className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold text-foreground">
-                  Top truyện trong tháng
-                </h2>
-              </div>
-              <Tabs defaultValue="views" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="views">By Views</TabsTrigger>
-                  <TabsTrigger value="rating">By Rating</TabsTrigger>
-                  <TabsTrigger value="recent">Recent</TabsTrigger>
-                </TabsList>
-                <TabsContent value="views" className="mt-6">
-                  <div className="grid grid-cols-1 gap-4">
-                    {topStories.slice(0, 5).map((story, index) => (
-                      <div
-                        key={story.id}
-                        className="flex items-center gap-3 w-full overflow-hidden"
-                      >
-                        <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
-                          {index + 1}
-                        </div>
-                        <div className="flex-1 min-w-0 overflow-hidden">
-                          <StoryCard story={story} variant="compact" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="rating" className="mt-6">
-                  <div className="grid grid-cols-1 gap-4">
-                    {topRatedStories.slice(0, 5).map((story, index) => (
-                      <div
-                        key={story.id}
-                        className="flex items-center gap-3 w-full overflow-hidden"
-                      >
-                        <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
-                          {index + 1}
-                        </div>
-                        <div className="flex-1 min-w-0 overflow-hidden">
-                          <StoryCard story={story} variant="compact" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="recent" className="mt-6">
-                  <div className="grid grid-cols-1 gap-4">
-                    {latestUpdates.slice(0, 5).map((story, index) => (
-                      <div
-                        key={story.id}
-                        className="flex items-center gap-3 w-full overflow-hidden"
-                      >
-                        <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
-                          {index + 1}
-                        </div>
-                        <div className="flex-1 min-w-0 overflow-hidden">
-                          <StoryCard story={story} variant="compact" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </section>
+            
 
                 <section>
                   <div className="flex items-center space-x-2 mb-6">
