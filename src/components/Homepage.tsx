@@ -308,14 +308,16 @@ useEffect(() => {
       )}
 
 {/* 🌟 BẢNG TIN MỚI NHẤT */}
-<section className="mb-10">
-  <div className="flex items-center space-x-2 mb-4">
-    <h2 className="text-2xl font-bold text-foreground">Bảng tin mới nhất</h2>
-  </div>
+<Card className="mt-8">
+  <CardHeader>
+    <CardTitle className="text-xl font-semibold">
+      Bảng tin mới nhất
+    </CardTitle>
+  </CardHeader>
 
-  {/* ✅ Toàn bộ feed nằm trong 1 khung có scroll riêng */}
-  <div className="border rounded-xl shadow-sm bg-white overflow-hidden max-h-[420px] flex flex-col">
-    <div className="overflow-y-auto flex-1 p-4 space-y-6">
+  <CardContent>
+    {/* ✅ Toàn bộ feed nằm trong khung scroll riêng */}
+    <div className="space-y-3 max-h-96 overflow-y-auto">
       {statuses.length === 0 ? (
         <p className="text-center text-muted-foreground py-8">
           Chưa có bài đăng nào.
@@ -324,24 +326,24 @@ useEffect(() => {
         statuses.map((s) => (
           <div
             key={s.id}
-            className="border-b last:border-b-0 border-gray-100 pb-4"
+            className="p-3 rounded-lg hover:bg-muted transition-colors border-b last:border-b-0"
           >
             {/* Tiêu đề */}
-            <h3 className="font-semibold text-base mb-1 leading-snug">
+            <h3 className="font-semibold text-base mb-1 leading-snug text-primary">
               {s.title || "Không có tiêu đề"}
             </h3>
 
-            {/* Văn án */}
+            {/* Văn án / nội dung */}
             <p className="text-gray-700 text-sm leading-relaxed">
               {expanded === s.id
                 ? s.content
-                : s.content.slice(0, 150) +
-                  (s.content.length > 150 ? "..." : "")}
+                : s.content.slice(0, 120) +
+                  (s.content.length > 120 ? "..." : "")}
             </p>
 
             {/* Hành động */}
             <div className="flex items-center gap-4 mt-3 text-sm">
-              {s.content.length > 150 && (
+              {s.content.length > 120 && (
                 <button
                   onClick={() => setExpanded(expanded === s.id ? null : s.id)}
                   className="text-blue-600 hover:underline"
@@ -364,12 +366,12 @@ useEffect(() => {
               </button>
 
               {s.stories?.[0]?.slug && (
-                <a
-                  href={`/story/${s.stories[0].slug}`}
+                <Link
+                  to={`/story/${s.stories[0].slug}`}
                   className="text-black hover:underline font-medium"
                 >
                   Đọc truyện
-                </a>
+                </Link>
               )}
             </div>
 
@@ -381,8 +383,8 @@ useEffect(() => {
         ))
       )}
     </div>
-  </div>
-</section>
+  </CardContent>
+</Card>
 
 
 
