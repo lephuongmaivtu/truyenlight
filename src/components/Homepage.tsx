@@ -307,88 +307,92 @@ useEffect(() => {
         </section>
       )}
 
-     {/* 🌟 BẢNG TIN MỚI NHẤT */}
+    {/* 🌟 BẢNG TIN MỚI NHẤT */}
 <section className="mb-10">
   <div className="flex items-center space-x-2 mb-4">
     <h2 className="text-2xl font-bold text-foreground">Bảng tin mới nhất</h2>
   </div>
 
-  {/* ✅ khung có scroll riêng, bo góc và đổ bóng */}
-  <div className="max-h-[480px] overflow-y-auto rounded-xl border border-gray-200 shadow-sm bg-white p-4 space-y-6">
-    {statuses.length === 0 ? (
-      <p className="text-sm text-muted-foreground text-center py-6">
-        Chưa có bài đăng nào.
-      </p>
-    ) : (
-      statuses.map((s) => (
-        <div
-          key={s.id}
-          className="border-b border-gray-100 pb-4 last:border-b-0"
-        >
-          {/* 🖼 ảnh minh họa (nếu có) */}
-          {s.image_url && (
-            <img
-              src={s.image_url}
-              alt={s.title}
-              className="w-full h-40 object-cover rounded-md mb-3"
-            />
-          )}
+  {/* ✅ card kiểu chapter list – cố định chiều cao, scroll riêng */}
+  <div className="border rounded-xl shadow-sm bg-white">
+    <div className="max-h-[500px] overflow-y-auto p-4 space-y-6">
+      {statuses.length === 0 ? (
+        <p className="text-center text-muted-foreground py-8">
+          Chưa có bài đăng nào.
+        </p>
+      ) : (
+        statuses.map((s) => (
+          <div
+            key={s.id}
+            className="border-b last:border-b-0 border-gray-100 pb-4"
+          >
+            {/* Ảnh minh họa */}
+            {s.image_url && (
+              <img
+                src={s.image_url}
+                alt={s.title}
+                className="w-full h-40 object-cover rounded-lg mb-3"
+              />
+            )}
 
-          {/* 📝 tiêu đề + văn án */}
-          <h3 className="text-lg font-semibold mb-2 leading-snug">
-            {s.title}
-          </h3>
-          <p className="text-gray-700 text-sm leading-relaxed">
-            {expanded === s.id
-              ? s.content
-              : s.content.slice(0, 150) +
-                (s.content.length > 150 ? "..." : "")}
-          </p>
+            {/* Tiêu đề */}
+            <h3 className="font-semibold text-base mb-1">
+              {s.title || "Không có tiêu đề"}
+            </h3>
 
-          {/* 🔘 nút xem thêm + chia sẻ + link đọc truyện */}
-          <div className="flex items-center gap-3 mt-3">
-            {s.content.length > 150 && (
+            {/* Văn án */}
+            <p className="text-gray-700 text-sm leading-relaxed">
+              {expanded === s.id
+                ? s.content
+                : s.content.slice(0, 150) +
+                  (s.content.length > 150 ? "..." : "")}
+            </p>
+
+            {/* Nút hành động */}
+            <div className="flex items-center gap-4 mt-3 text-sm">
+              {s.content.length > 150 && (
+                <button
+                  onClick={() => setExpanded(expanded === s.id ? null : s.id)}
+                  className="text-blue-600 hover:underline"
+                >
+                  {expanded === s.id ? "Thu gọn" : "Xem thêm"}
+                </button>
+              )}
+
               <button
-                onClick={() => setExpanded(expanded === s.id ? null : s.id)}
-                className="text-sm text-blue-600 hover:underline"
+                onClick={() => {
+                  const link =
+                    window.location.origin +
+                    `/story/${s.stories?.[0]?.slug ?? ""}`;
+                  navigator.clipboard.writeText(link);
+                  alert("Đã sao chép link bài viết!");
+                }}
+                className="text-gray-500 hover:text-gray-700"
               >
-                {expanded === s.id ? "Thu gọn" : "Xem thêm"}
+                Chia sẻ
               </button>
-            )}
 
-            {/* 📤 share link */}
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  window.location.origin + `/story/${s.stories?.[0]?.slug ?? ""}`
-                );
-                alert("Đã sao chép link bài viết!");
-              }}
-              className="text-sm text-gray-500 hover:text-gray-700"
-            >
-              Chia sẻ
-            </button>
+              {s.stories?.[0]?.slug && (
+                <a
+                  href={`/story/${s.stories[0].slug}`}
+                  className="text-black hover:underline font-medium"
+                >
+                  Đọc truyện
+                </a>
+              )}
+            </div>
 
-            {/* 📚 link tới truyện */}
-            {s.stories?.[0]?.slug && (
-              <a
-                href={`/story/${s.stories[0].slug}`}
-                className="text-sm text-black font-medium hover:underline"
-              >
-                Đọc truyện
-              </a>
-            )}
+            {/* Ngày đăng */}
+            <p className="text-xs text-gray-400 mt-2">
+              {new Date(s.created_at).toLocaleString("vi-VN")}
+            </p>
           </div>
-
-          {/* 🕒 thời gian đăng */}
-          <p className="text-xs text-gray-400 mt-2">
-            {new Date(s.created_at).toLocaleString("vi-VN")}
-          </p>
-        </div>
-      ))
-    )}
+        ))
+      )}
+    </div>
   </div>
 </section>
+
 
 
           {/* 🕒 top đề xuất */}
