@@ -307,13 +307,11 @@ useEffect(() => {
         </section>
       )}
 
-{/* 🌟 BẢNG TIN MỚI NHẤT + TOP TRUYỆN TRONG THÁNG */}
-<section className="container mx-auto px-4 py-8 max-w-6xl">
-  {/* 🔸 Grid chia 2 cột 50/50 trên desktop */}
+{/* 🌟 BẢNG TIN MỚI NHẤT + TOP TRUYỆN TRONG THÁNG (2 CỘT NGANG 50/50) */}
+<div className="container mx-auto px-4 py-8">
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-    {/* 🔹 CỘT TRÁI - BẢNG TIN MỚI NHẤT */}
-    <Card className="w-full">
+    {/* 🔹 CỘT TRÁI: BẢNG TIN MỚI NHẤT */}
+    <Card className="w-full h-full">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">Bảng tin mới nhất</CardTitle>
       </CardHeader>
@@ -385,8 +383,8 @@ useEffect(() => {
       </CardContent>
     </Card>
 
-    {/* 🔹 CỘT PHẢI - TOP TRUYỆN TRONG THÁNG */}
-    <Card className="w-full">
+    {/* 🔹 CỘT PHẢI: TOP TRUYỆN TRONG THÁNG */}
+    <Card className="w-full h-full">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2 text-xl font-bold">
           <TrendingUp className="h-5 w-5 text-primary" />
@@ -448,9 +446,9 @@ useEffect(() => {
         </Tabs>
       </CardContent>
     </Card>
-
   </div>
-</section>
+</div>
+
 
 
           {/* 🕒 top đề xuất */}
