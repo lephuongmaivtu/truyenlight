@@ -146,6 +146,7 @@ useEffect(() => {
   window.addEventListener("scroll", handleScroll);
   return () => window.removeEventListener("scroll", handleScroll);
 }, [page, stories]);
+  
   const getTopStoriesByViews = async () => {
     const { data, error } = await supabase
       .from("stories")
@@ -161,27 +162,28 @@ useEffect(() => {
   };
 
   const getTopStoriesByRating = async () => {
-    const { data, error } = await supabase
-      .from("story_rating_stats")
-      .select(`
-        avg_rating,
-        rating_count,
-        stories ( id, slug, title, author, description, coverImage, views, status, genres, lastupdated )
-      `)
-      .order("avg_rating", { ascending: false })
-      .limit(10);
+  const { data, error } = await supabase
+    .from("story_rating_stats")
+    .select(`
+      avg_rating,
+      rating_count,
+      stories:stories(*)
+    `) // lấy tất cả cột của stories để khỏi sai tên
+    .order("avg_rating", { ascending: false })
+    .limit(10);
 
-    if (error) {
-      console.error("Supabase fetch top stories by rating error:", error);
-      return [];
-    }
+  if (error) {
+    console.error("Supabase fetch top stories by rating error:", error?.message, error);
+    return [];
+  }
 
-    return (data || []).map((s: any) => ({
-      ...s.stories,
-      rating: s.avg_rating ?? 0,
-      ratingCount: s.rating_count ?? 0,
-    }));
-  };
+  return (data || []).map((row: any) => ({
+    ...row.stories,                     // toàn bộ fields có thật trong bảng stories
+    rating: row.avg_rating ?? 0,
+    ratingCount: row.rating_count ?? 0,
+  }));
+};
+
 
   const refreshStoryRating = async (storyId: string) => {
     const { data, error } = await supabase
