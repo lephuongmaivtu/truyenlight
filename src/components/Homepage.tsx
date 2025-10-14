@@ -30,7 +30,25 @@ export function Homepage() {
     const nextPage = page + 1;
     const start = (nextPage - 1) * 6;
     const end = start + 6;
-  
+    const [statuses, setStatuses] = useState<any[]>([]);
+    const [expanded, setExpanded] = useState<string | null>(null);
+    
+    useEffect(() => {
+      async function fetchStatuses() {
+        const { data, error } = await supabase
+          .from("statuses")
+          .select(`
+            id, title, content, image_url, created_at,
+            stories ( id, title, slug )
+          `)
+          .order("created_at", { ascending: false })
+          .limit(10);
+    
+        if (!error && data) setStatuses(data);
+      }
+      fetchStatuses();
+    }, []);
+
     const newStories = stories.slice(start, end);
     if (newStories.length > 0) {
       setVisibleStories((prev) => [...prev, ...newStories]);
@@ -284,6 +302,69 @@ useEffect(() => {
         </section>
       )}
 
+       {/* 🌟 BẢNG TIN MỚI NHẤT */}
+        <section className="mb-10">
+          <div className="flex items-center space-x-2 mb-6">
+            <h2 className="text-2xl font-bold text-foreground">
+              Bảng tin mới nhất
+            </h2>
+          </div>
+        
+          <div className="space-y-6">
+            {statuses.map((s) => (
+              <div
+                key={s.id}
+                className="bg-white rounded-xl shadow-sm overflow-hidden hover:-translate-y-0.5 transition"
+              >
+                {s.image_url && (
+                  <img
+                    src={s.image_url}
+                    alt={s.title}
+                    className="w-full h-52 object-cover border-b border-gray-100"
+                  />
+                )}
+        
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold mb-2">{s.title}</h3>
+        
+                  <p className="text-gray-800 leading-relaxed">
+                    {expanded === s.id
+                      ? s.content
+                      : s.content.slice(0, 200) +
+                        (s.content.length > 200 ? "..." : "")}
+                  </p>
+        
+                  <div className="flex gap-3 mt-3">
+                    {s.content.length > 200 && (
+                      <button
+                        className="bg-gray-100 hover:bg-gray-200 text-sm rounded px-3 py-1"
+                        onClick={() => setExpanded(expanded === s.id ? null : s.id)}
+                      >
+                        {expanded === s.id ? "Thu gọn" : "Xem thêm"}
+                      </button>
+                    )}
+        
+                    {s.stories && s.stories[0] && (
+                      <a
+                        href={`/story/${s.stories[0].slug}`}
+                        className="bg-black text-white text-sm rounded px-3 py-1"
+                      >
+                        Đọc truyện
+                      </a>
+                    )}
+                  </div>
+        
+                  <p className="text-xs text-gray-500 mt-2">
+                    {new Date(s.created_at).toLocaleString("vi-VN")}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+
+      
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3 space-y-8">
