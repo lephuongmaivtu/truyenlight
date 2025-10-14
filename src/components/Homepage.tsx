@@ -307,69 +307,91 @@ useEffect(() => {
         </section>
       )}
 
-       {/* 🌟 BẢNG TIN MỚI NHẤT */}
-        <section className="mb-10">
-          <div className="flex items-center space-x-2 mb-6">
-            <h2 className="text-2xl font-bold text-foreground">
-              Bảng tin mới nhất
-            </h2>
-          </div>
-        
-          <div className="space-y-6">
-            {statuses.map((s) => (
-              <div
-                key={s.id}
-                className="bg-white rounded-xl shadow-sm overflow-hidden hover:-translate-y-0.5 transition"
+     {/* 🌟 BẢNG TIN MỚI NHẤT */}
+<section className="mb-10">
+  <div className="flex items-center space-x-2 mb-4">
+    <h2 className="text-2xl font-bold text-foreground">Bảng tin mới nhất</h2>
+  </div>
+
+  {/* ✅ khung có scroll riêng, bo góc và đổ bóng */}
+  <div className="max-h-[480px] overflow-y-auto rounded-xl border border-gray-200 shadow-sm bg-white p-4 space-y-6">
+    {statuses.length === 0 ? (
+      <p className="text-sm text-muted-foreground text-center py-6">
+        Chưa có bài đăng nào.
+      </p>
+    ) : (
+      statuses.map((s) => (
+        <div
+          key={s.id}
+          className="border-b border-gray-100 pb-4 last:border-b-0"
+        >
+          {/* 🖼 ảnh minh họa (nếu có) */}
+          {s.image_url && (
+            <img
+              src={s.image_url}
+              alt={s.title}
+              className="w-full h-40 object-cover rounded-md mb-3"
+            />
+          )}
+
+          {/* 📝 tiêu đề + văn án */}
+          <h3 className="text-lg font-semibold mb-2 leading-snug">
+            {s.title}
+          </h3>
+          <p className="text-gray-700 text-sm leading-relaxed">
+            {expanded === s.id
+              ? s.content
+              : s.content.slice(0, 150) +
+                (s.content.length > 150 ? "..." : "")}
+          </p>
+
+          {/* 🔘 nút xem thêm + chia sẻ + link đọc truyện */}
+          <div className="flex items-center gap-3 mt-3">
+            {s.content.length > 150 && (
+              <button
+                onClick={() => setExpanded(expanded === s.id ? null : s.id)}
+                className="text-sm text-blue-600 hover:underline"
               >
-                {s.image_url && (
-                  <img
-                    src={s.image_url}
-                    alt={s.title}
-                    className="w-full h-52 object-cover border-b border-gray-100"
-                  />
-                )}
-        
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-2">{s.title}</h3>
-        
-                  <p className="text-gray-800 leading-relaxed">
-                    {expanded === s.id
-                      ? s.content
-                      : s.content.slice(0, 200) +
-                        (s.content.length > 200 ? "..." : "")}
-                  </p>
-        
-                  <div className="flex gap-3 mt-3">
-                    {s.content.length > 200 && (
-                      <button
-                        className="bg-gray-100 hover:bg-gray-200 text-sm rounded px-3 py-1"
-                        onClick={() => setExpanded(expanded === s.id ? null : s.id)}
-                      >
-                        {expanded === s.id ? "Thu gọn" : "Xem thêm"}
-                      </button>
-                    )}
-        
-                    {s.stories && s.stories[0] && (
-                      <a
-                        href={`/story/${s.stories[0].slug}`}
-                        className="bg-black text-white text-sm rounded px-3 py-1"
-                      >
-                        Đọc truyện
-                      </a>
-                    )}
-                  </div>
-        
-                  <p className="text-xs text-gray-500 mt-2">
-                    {new Date(s.created_at).toLocaleString("vi-VN")}
-                  </p>
-                </div>
-              </div>
-            ))}
+                {expanded === s.id ? "Thu gọn" : "Xem thêm"}
+              </button>
+            )}
+
+            {/* 📤 share link */}
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  window.location.origin + `/story/${s.stories?.[0]?.slug ?? ""}`
+                );
+                alert("Đã sao chép link bài viết!");
+              }}
+              className="text-sm text-gray-500 hover:text-gray-700"
+            >
+              Chia sẻ
+            </button>
+
+            {/* 📚 link tới truyện */}
+            {s.stories?.[0]?.slug && (
+              <a
+                href={`/story/${s.stories[0].slug}`}
+                className="text-sm text-black font-medium hover:underline"
+              >
+                Đọc truyện
+              </a>
+            )}
           </div>
-        </section>
+
+          {/* 🕒 thời gian đăng */}
+          <p className="text-xs text-gray-400 mt-2">
+            {new Date(s.created_at).toLocaleString("vi-VN")}
+          </p>
+        </div>
+      ))
+    )}
+  </div>
+</section>
 
 
-      
+          {/* 🕒 top đề xuất */}
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3 space-y-8">
