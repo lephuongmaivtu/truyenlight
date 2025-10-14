@@ -309,7 +309,7 @@ useEffect(() => {
 
 {/* 🌟 BẢNG TIN MỚI NHẤT + TOP TRUYỆN TRONG THÁNG (2 CỘT NGANG 50/50) */}
 <div className="container mx-auto px-4 py-8">
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
     {/* 🔹 CỘT TRÁI: BẢNG TIN MỚI NHẤT */}
     <Card className="w-full h-full">
       <CardHeader>
