@@ -25,6 +25,8 @@ export function Homepage() {
   const [topRatedStories, setTopRatedStories] = useState<any[]>([]);
   const [visibleStories, setVisibleStories] = useState<any[]>([]);
   const [page, setPage] = useState(1);
+  const [statuses, setStatuses] = useState<any[]>([]);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   const loadMoreStories = () => {
     const nextPage = page + 1;
@@ -32,7 +34,8 @@ export function Homepage() {
     const end = start + 6;
     const [statuses, setStatuses] = useState<any[]>([]);
     const [expanded, setExpanded] = useState<string | null>(null);
-    
+
+  
     useEffect(() => {
       async function fetchStatuses() {
         const { data, error } = await supabase
