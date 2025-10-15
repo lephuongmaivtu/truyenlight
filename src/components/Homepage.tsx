@@ -4,7 +4,10 @@ declare global {
   }
 }
 
-
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 import React, { useEffect, useState } from "react";
 import { Search, Star, Clock, TrendingUp, CheckCircle, Eye } from "lucide-react";
 import { Input } from "./ui/input";
@@ -302,10 +305,6 @@ return (
       </section>
     )}
 
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
 
 // ...
 
