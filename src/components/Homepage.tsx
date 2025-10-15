@@ -302,29 +302,36 @@ return (
       </section>
     )}
 
-    {/* 🌟 TOP ĐỀ XUẤT */}
-    <section className="py-8">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center space-x-2 mb-6">
-          <Star className="h-6 w-6 text-primary" />
-          <h2 className="text-2xl font-bold text-foreground">Top đề xuất</h2>
+  {/* 🌟 TOP ĐỀ XUẤT */}
+      <section className="py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center space-x-2 mb-6">
+            <Star className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold text-foreground">Top đề xuất</h2>
+          </div>
+      
+          {/* 👉 Chia 2 cột mobile, 6 cột desktop */}
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+            {featuredStories.map((story) => (
+              <div
+                key={story.id}
+                className="flex flex-col items-center text-center bg-card rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+              >
+                <img
+                  src={story.cover_image}
+                  alt={story.title}
+                  className="w-full aspect-[3/4] object-cover rounded-t-lg"
+                />
+                <div className="p-2 w-full">
+                  <p className="mt-1 text-sm font-medium line-clamp-2">{story.title}</p>
+                  <p className="text-xs text-gray-500">{story.views} lượt xem</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+      </section>
 
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-          {featuredStories.map((story) => (
-            <div key={story.id} className="flex flex-col items-center text-center">
-              <img
-                src={story.cover_image}
-                alt={story.title}
-                className="w-full aspect-[3/4] object-cover rounded-lg shadow-sm hover:opacity-90"
-              />
-              <p className="mt-2 text-sm font-medium line-clamp-2">{story.title}</p>
-              <p className="text-xs text-gray-500">{story.views} lượt xem</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
 
     {/* 🕒 CỘT CHÍNH + CỘT PHẢI */}
     <div className="container mx-auto px-4 py-8">
@@ -495,17 +502,18 @@ return (
                 <span>Theo dõi fanpage</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="overflow-hidden max-w-full">
               <div
                 className="fb-page"
                 data-href="https://www.facebook.com/truyenlight"
                 data-tabs="timeline"
-                data-width="340"
+                data-width="100%"
                 data-height="500"
                 data-small-header="false"
                 data-adapt-container-width="true"
                 data-hide-cover="false"
                 data-show-facepile="true"
+                style={{ width: "100%", overflow: "hidden" }}
               >
                 <blockquote
                   cite="https://www.facebook.com/truyenlight"
@@ -516,6 +524,7 @@ return (
               </div>
             </CardContent>
           </Card>
+
 
           <Card>
             <CardHeader>
