@@ -314,64 +314,65 @@ return (
     </div>
 
     <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-md p-5">
-      <Swiper
-        modules={[Autoplay, Pagination]}
-        spaceBetween={16}
-        slidesPerView={2}
-        breakpoints={{
-          640: { slidesPerView: 3 },
-          1024: { slidesPerView: 6 },
-        }}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
-        loop
-        pagination={{ clickable: true }}
-        className="pb-6 !pl-3 !pr-3"
-      >
- {featuredStories.map((story) => {
-  const imageSrc =
-    story.cover_image ||
-    story.coverImage ||
-    story.image_url ||
-    story.thumbnail ||
-    "https://placehold.co/300x400?text=No+Image";
-  const storySlug = story.slug || story.id;
+   <Swiper
+  modules={[Autoplay, Pagination]}
+  spaceBetween={16}
+  slidesPerView={2}
+  breakpoints={{
+    640: { slidesPerView: 3 },
+    1024: { slidesPerView: 6 },
+  }}
+  autoplay={{
+    delay: 3000,
+    disableOnInteraction: false,
+  }}
+  loop
+  pagination={{ clickable: true }}
+  className="pb-6 !pl-3 !pr-3"
+>
+  {featuredStories.map((story) => {
+    const imageSrc =
+      story.cover_image ||
+      story.coverImage ||
+      story.image_url ||
+      story.thumbnail ||
+      "https://placehold.co/300x400?text=No+Image";
+    const storySlug = story.slug || story.id;
 
-  return (
-    <SwiperSlide key={story.id}>
-      <Link
-        to={`/story/${storySlug}`}
-        className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
-      >
-        <div
-          className="relative block w-full overflow-hidden"
-          style={{ aspectRatio: "3 / 4", minHeight: "240px" }}
+    return (
+      <SwiperSlide key={story.id}>
+        <Link
+          to={`/story/${storySlug}`}
+          className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
         >
-          <img
-            src={imageSrc}
-            alt={story.title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
+          <div
+            className="relative block w-full overflow-hidden"
+            style={{ aspectRatio: "3 / 4", minHeight: "240px" }}
+          >
+            <img
+              src={imageSrc}
+              alt={story.title}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
 
-          {/* 🔥 chỉ nền đen mờ phía dưới + chữ trắng */}
-          <div className="absolute bottom-0 left-0 right-0 z-20 bg-black/70 px-2 py-2">
-            <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight">
-              {story.title}
-            </h3>
-            <div className="flex items-center gap-1 text-[11px] text-gray-200 mt-[2px]">
-              <Eye className="w-3 h-3 text-primary" />
-              <span>{story.views?.toLocaleString() || 0}</span>
-              <span>lượt xem</span>
+            {/* 🔥 Lớp đen chiếm 1/3 chân ảnh */}
+            <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-black/85 flex flex-col justify-end px-3 py-2">
+              <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight">
+                {story.title}
+              </h3>
+              <div className="flex items-center gap-1 text-[11px] text-gray-300 mt-[2px]">
+                <Eye className="w-3 h-3 text-primary" />
+                <span>{story.views?.toLocaleString() || 0}</span>
+                <span>lượt xem</span>
+              </div>
             </div>
           </div>
-        </div>
-      </Link>
-    </SwiperSlide>
-  );
-})}
-      </Swiper>
+        </Link>
+      </SwiperSlide>
+    );
+  })}
+</Swiper>
+
     </div>
   </div>
 </section>
