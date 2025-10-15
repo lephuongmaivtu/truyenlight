@@ -340,22 +340,21 @@ return (
           const storySlug = story.slug || story.id;
 
           return (
-            <SwiperSlide key={story.id}>
-              <Link
-                to={`/story/${storySlug}`}
-                className="relative group block w-full aspect-[3/4] rounded-md overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
-              >
-                {/* Ảnh nền full khung, auto crop cho đều */}
+          <SwiperSlide key={story.id}>
+            <Link
+              to={`/story/${storySlug}`}
+              className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
+            >
+              {/* 🔹 Khung chứa ảnh với tỷ lệ cố định */}
+              <div className="relative w-full" style={{ aspectRatio: "3 / 4" }}>
                 <img
                   src={imageSrc}
                   alt={story.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
-
-                {/* Lớp phủ tối nhẹ */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
-
-                {/* Tiêu đề đè lên ảnh */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+          
+                {/* 🔹 Tiêu đề + lượt xem */}
                 <div className="absolute bottom-0 left-0 right-0 p-2">
                   <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight drop-shadow-md">
                     {story.title}
@@ -366,8 +365,10 @@ return (
                     <span>lượt xem</span>
                   </div>
                 </div>
-              </Link>
-            </SwiperSlide>
+              </div>
+            </Link>
+          </SwiperSlide>
+
           );
         })}
       </Swiper>
