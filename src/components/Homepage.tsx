@@ -587,7 +587,7 @@ return (
       <iframe
         src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ftruyenlight&tabs=&width=500&height=220&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true"
         width="100%"
-        height="220"
+        height="140"
         style={{
           border: "none",
           overflow: "hidden",
