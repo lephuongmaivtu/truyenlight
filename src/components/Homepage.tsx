@@ -581,36 +581,35 @@ return (
 
         {/* 🔸 CỘT PHẢI giữ nguyên */}
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5 text-primary" />
-                <span>Theo dõi fanpage</span>
-              </CardTitle>
-            </CardHeader>
-          
-            <CardContent className="overflow-hidden max-w-full">
-              <div
-                className="fb-page"
-                data-href="https://www.facebook.com/truyenlight"
-                data-tabs=""                // 👉 bỏ timeline đi
-                data-width="100%"
-                data-height="130"
-                data-small-header="true"    // 👉 header nhỏ gọn
-                data-adapt-container-width="true"
-                data-hide-cover="false"
-                data-show-facepile="true"   // 👉 hiện avatar bạn bè
-              >
-                <blockquote
-                  cite="https://www.facebook.com/truyenlight"
-                  className="fb-xfbml-parse-ignore"
-                >
-                  <a href="https://www.facebook.com/truyenlight">TruyenLight</a>
-                </blockquote>
-              </div>
-            </CardContent>
-          </Card>
+       <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <CheckCircle className="h-5 w-5 text-primary" />
+            <span>Theo dõi fanpage</span>
+          </CardTitle>
+        </CardHeader>
 
+        <CardContent className="overflow-hidden max-w-full">
+          <div
+            className="fb-page"
+            data-href="https://www.facebook.com/truyenlight"
+            data-tabs=""
+            data-width="100%"
+            data-height="130"
+            data-small-header="true"
+            data-adapt-container-width="true"
+            data-hide-cover="false"
+            data-show-facepile="true"
+          >
+            <blockquote
+              cite="https://www.facebook.com/truyenlight"
+              className="fb-xfbml-parse-ignore"
+            >
+              <a href="https://www.facebook.com/truyenlight">TruyenLight</a>
+            </blockquote>
+          </div>
+        </CardContent>
+      </Card>
 
 
           <Card>
