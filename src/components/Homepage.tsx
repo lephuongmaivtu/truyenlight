@@ -581,17 +581,18 @@ return (
 
         {/* 🔸 CỘT PHẢI giữ nguyên */}
         <div className="space-y-6">
-       <CardContent className="overflow-hidden max-w-full">
-        <iframe
-          src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ftruyenlight&tabs=timeline&width=340&height=420&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true"
-          width="100%"
-          height="420"
-          style={{ border: "none", overflow: "hidden", borderRadius: "12px" }}
-          scrolling="no"
-          frameBorder="0"
-          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-        ></iframe>
-      </CardContent>
+     <CardContent className="overflow-hidden max-w-full">
+      <iframe
+        src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ftruyenlight&tabs=&width=340&height=180&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true"
+        width="100%"
+        height="180"
+        style={{ border: "none", overflow: "hidden", borderRadius: "12px" }}
+        scrolling="no"
+        frameBorder="0"
+        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+      ></iframe>
+    </CardContent>
+
 
 
 
