@@ -8,10 +8,10 @@ module.exports = {
     extend: {},
   },
   safelist: [
-    "bg-gradient-to-t",
-    "from-black/90",
-    "via-black/50",
-    "to-transparent",
-  ],
+  {
+    pattern: /(bg-gradient-to-t|from-black\/90|via-black\/50|to-transparent)/,
+  },
+],
+
   plugins: [],
 };
