@@ -306,7 +306,8 @@ return (
     )}
 
 
-{/* 🔹 TOP ĐỀ XUẤT (có khung bao quanh) */}
+
+{/* 🔹 TOP ĐỀ XUẤT — có khung và có thể click */}
 <section className="py-8">
   <div className="container mx-auto px-4">
     <div className="flex items-center space-x-2 mb-6">
@@ -315,7 +316,7 @@ return (
     </div>
 
     {/* ✅ Khung bao quanh toàn bộ swiper */}
-    <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-md p-4">
+    <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-md p-5">
       <Swiper
         modules={[Autoplay, Pagination]}
         spaceBetween={16}
@@ -340,24 +341,31 @@ return (
             story.thumbnail ||
             "https://placehold.co/300x400?text=No+Image";
 
+          const storySlug = story.slug || story.id;
+
           return (
             <SwiperSlide key={story.id}>
-              <div className="relative group rounded-lg overflow-hidden shadow hover:shadow-xl transition-all duration-300">
-                <img
-                  src={imageSrc}
-                  alt={story.title}
-                  className="w-full aspect-[3/4] object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-2 py-2">
-                  <p className="text-sm font-semibold text-white line-clamp-2">
-                    {story.title}
-                  </p>
-                  <p className="text-xs text-gray-200 flex items-center gap-1 mt-1">
-                    <Eye className="h-3 w-3 text-gray-300" />
-                    {story.views?.toLocaleString() || 0} lượt xem
-                  </p>
+              <Link
+                to={`/story/${storySlug}`}
+                className="group block rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 shadow hover:shadow-lg transition-all duration-300 bg-card"
+              >
+                <div className="relative">
+                  <img
+                    src={imageSrc}
+                    alt={story.title}
+                    className="w-full aspect-[3/4] object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-2 py-2">
+                    <p className="text-sm font-semibold text-white line-clamp-2">
+                      {story.title}
+                    </p>
+                    <p className="text-xs text-gray-200 flex items-center gap-1 mt-1">
+                      <Eye className="h-3 w-3 text-gray-300" />
+                      {story.views?.toLocaleString() || 0} lượt xem
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </SwiperSlide>
           );
         })}
@@ -365,7 +373,6 @@ return (
     </div>
   </div>
 </section>
-
 
 
     {/* 🕒 CỘT CHÍNH + CỘT PHẢI */}
