@@ -355,7 +355,7 @@ return (
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
 
-      <div className="absolute inset-0 z-30 flex flex-col justify-end px-2 py-2 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+    <div className="absolute inset-0 z-30 flex flex-col justify-end px-2 py-2 bg-gradient-to-t from-[rgba(0,0,0,0.9)] via-[rgba(0,0,0,0.5)] to-[rgba(0,0,0,0)]">
         <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight drop-shadow">
           {story.title}
         </h3>
