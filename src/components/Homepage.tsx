@@ -320,6 +320,7 @@ return (
         modules={[Autoplay, Pagination]}
         spaceBetween={16}
         slidesPerView={2}
+        style={{ paddingLeft: "8px", paddingRight: "8px" }}
         breakpoints={{
           640: { slidesPerView: 3 },
           1024: { slidesPerView: 6 },
@@ -343,20 +344,20 @@ return (
           const storySlug = story.slug || story.id;
 
           return (
-            <SwiperSlide key={story.id}>
+          <SwiperSlide key={story.id}>
               <Link
                 to={`/story/${storySlug}`}
-                className="group block rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 shadow hover:shadow-lg transition-all duration-300 bg-white dark:bg-neutral-800"
+                className="group block h-full flex flex-col rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 shadow hover:shadow-lg transition-all duration-300 bg-white dark:bg-neutral-800"
               >
                 {/* Ảnh thumbnail */}
-                <div className="relative w-full aspect-[3/4] overflow-hidden">
+                <div className="relative w-full aspect-[3/4] overflow-hidden flex-shrink-0">
                   <img
                     src={imageSrc}
                     alt={story.title}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
-
+            
                 {/* Phần thông tin bên dưới */}
                 <div className="p-2 flex flex-col justify-between h-[80px]">
                   <p className="text-sm font-semibold text-foreground line-clamp-2">
@@ -370,6 +371,7 @@ return (
                 </div>
               </Link>
             </SwiperSlide>
+
           );
         })}
       </Swiper>
