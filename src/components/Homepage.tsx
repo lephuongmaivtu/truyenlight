@@ -330,59 +330,48 @@ return (
         pagination={{ clickable: true }}
         className="pb-6 !pl-3 !pr-3"
       >
-        {featuredStories.map((story) => {
-          const imageSrc =
-            story.cover_image ||
-            story.coverImage ||
-            story.image_url ||
-            story.thumbnail ||
-            "https://placehold.co/300x400?text=No+Image";
-          const storySlug = story.slug || story.id;
+ {featuredStories.map((story) => {
+  const imageSrc =
+    story.cover_image ||
+    story.coverImage ||
+    story.image_url ||
+    story.thumbnail ||
+    "https://placehold.co/300x400?text=No+Image";
+  const storySlug = story.slug || story.id;
 
-          return (
+  return (
+    <SwiperSlide key={story.id}>
+      <Link
+        to={`/story/${storySlug}`}
+        className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
+      >
+        <div
+          className="relative block w-full overflow-hidden"
+          style={{ aspectRatio: "3 / 4", minHeight: "240px" }}
+        >
+          <img
+            src={imageSrc}
+            alt={story.title}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
 
-   })}<SwiperSlide key={story.id}>
-  <Link
-    to={`/story/${storySlug}`}
-    className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
-  >
-    <div
-      className="relative block w-full overflow-hidden"
-      style={{ aspectRatio: "3 / 4", minHeight: "240px" }}
-    >
-      <img
-        src={imageSrc}
-        alt={story.title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 z-10"
-      />
-
-      {/* 🔥 chỉ nền đen mờ phía dưới + chữ trắng */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 bg-black/70 px-2 py-2">
-        <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight">
-          {story.title}
-        </h3>
-        <div className="flex items-center gap-1 text-[11px] text-gray-200 mt-[2px]">
-          <Eye className="w-3 h-3 text-primary" />
-          <span>{story.views?.toLocaleString() || 0}</span>
-          <span>lượt xem</span>
+          {/* 🔥 chỉ nền đen mờ phía dưới + chữ trắng */}
+          <div className="absolute bottom-0 left-0 right-0 z-20 bg-black/70 px-2 py-2">
+            <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight">
+              {story.title}
+            </h3>
+            <div className="flex items-center gap-1 text-[11px] text-gray-200 mt-[2px]">
+              <Eye className="w-3 h-3 text-primary" />
+              <span>{story.views?.toLocaleString() || 0}</span>
+              <span>lượt xem</span>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </Link>
-</SwiperSlide>
+      </Link>
+    </SwiperSlide>
+  );
+})}
 
-      </Swiper>
-    </div>
-  </div>
-</section>
-
-
-
-
-
-
-
-          );
      
     {/* 🕒 CỘT CHÍNH + CỘT PHẢI */}
     <div className="container mx-auto px-4 py-8">
