@@ -307,6 +307,54 @@ useEffect(() => {
         </section>
       )}
 
+  {/* 🕒 Top đề xuất */}
+<div className="container mx-auto px-4 py-8">
+  <section>
+    <div className="flex items-center space-x-2 mb-6">
+      <Star className="h-6 w-6 text-primary" />
+      <h2 className="text-2xl font-bold text-foreground">Top đề xuất</h2>
+    </div>
+
+    {/* hiển thị 6 cột desktop, 3 cột mobile */}
+    <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      {featuredStories.map((story) => (
+        <div
+          key={story.id}
+          className="relative flex flex-col items-center text-center rounded-lg overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-transform duration-200"
+        >
+          {/* nhãn FULL góc trái */}
+          {story.status === "completed" && (
+            <span className="absolute top-2 left-2 bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded-sm z-10">
+              FULL
+            </span>
+          )}
+
+          {/* ảnh truyện */}
+          <a href={`/story/${story.slug}`} className="block w-full">
+            <img
+              src={story.coverImage}
+              alt={story.title}
+              className="w-full aspect-[3/4] object-cover"
+            />
+          </a>
+
+          {/* tên truyện + chương */}
+          <div className="p-2">
+            <h3 className="text-sm font-semibold line-clamp-2">{story.title}</h3>
+            <p className="text-xs text-muted-foreground mt-1">
+              Chương {story.latestChapter || 0}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</div>
+
+
+
+
+      
 {/* 🌟 BẢNG TIN MỚI NHẤT + TOP TRUYỆN TRONG THÁNG (2 CỘT NGANG 50/50) */}
 <div className="container mx-auto px-4 py-8">
   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -451,24 +499,7 @@ useEffect(() => {
 
 
 
-          {/* 🕒 top đề xuất */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-3 space-y-8">
-            <section>
-              <div className="flex items-center space-x-2 mb-6">
-                <Star className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold text-foreground">
-                  Top đề xuất
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {featuredStories.map((story) => (
-                  <StoryCard key={story.id} story={story} variant="compact" />
-                ))}
-              </div>
-            </section>
-
+      
             <section>
               <div className="flex items-center space-x-2 mb-6">
                 <Clock className="h-6 w-6 text-primary" />
