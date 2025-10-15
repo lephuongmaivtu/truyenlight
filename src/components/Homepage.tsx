@@ -306,8 +306,7 @@ return (
     )}
 
 
-
-{/* 🔹 TOP ĐỀ XUẤT — có khung và có thể click */}
+{/* 🔹 TOP ĐỀ XUẤT — dạng card thumbnail giống MonkeyD */}
 <section className="py-8">
   <div className="container mx-auto px-4">
     <div className="flex items-center space-x-2 mb-6">
@@ -315,7 +314,7 @@ return (
       <h2 className="text-2xl font-bold text-foreground">Top đề xuất</h2>
     </div>
 
-    {/* ✅ Khung bao quanh toàn bộ swiper */}
+    {/* ✅ Khung tổng bao quanh */}
     <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-md p-5">
       <Swiper
         modules={[Autoplay, Pagination]}
@@ -326,7 +325,7 @@ return (
           1024: { slidesPerView: 6 },
         }}
         autoplay={{
-          delay: 2500,
+          delay: 3000,
           disableOnInteraction: false,
         }}
         loop={true}
@@ -347,22 +346,26 @@ return (
             <SwiperSlide key={story.id}>
               <Link
                 to={`/story/${storySlug}`}
-                className="group block rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 shadow hover:shadow-lg transition-all duration-300 bg-card"
+                className="group block rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 shadow hover:shadow-lg transition-all duration-300 bg-white dark:bg-neutral-800"
               >
-                <div className="relative">
+                {/* Ảnh thumbnail */}
+                <div className="relative w-full aspect-[3/4] overflow-hidden">
                   <img
                     src={imageSrc}
                     alt={story.title}
-                    className="w-full aspect-[3/4] object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-2 py-2">
-                    <p className="text-sm font-semibold text-white line-clamp-2">
-                      {story.title}
-                    </p>
-                    <p className="text-xs text-gray-200 flex items-center gap-1 mt-1">
-                      <Eye className="h-3 w-3 text-gray-300" />
-                      {story.views?.toLocaleString() || 0} lượt xem
-                    </p>
+                </div>
+
+                {/* Phần thông tin bên dưới */}
+                <div className="p-2 flex flex-col justify-between h-[80px]">
+                  <p className="text-sm font-semibold text-foreground line-clamp-2">
+                    {story.title}
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-gray-500 mt-auto">
+                    <Eye className="h-3 w-3 text-primary" />
+                    <span>{story.views?.toLocaleString() || 0}</span>
+                    <span>lượt xem</span>
                   </div>
                 </div>
               </Link>
