@@ -244,9 +244,10 @@ useEffect(() => {
           }
         }, []);
   
+
 return (
   <div className="min-h-screen bg-background">
-    {/* 🔹 Banner + Search */}
+    {/* 🌈 Banner + Search */}
     <section className="bg-gradient-to-r from-primary/5 to-primary/5 py-6">
       <div className="container mx-auto px-4">
         <img
@@ -275,39 +276,62 @@ return (
       </div>
     </section>
 
-    {/* 🔹 TOP ĐỀ XUẤT - đứng riêng, trên cùng */}
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center space-x-2 mb-6">
-        <Star className="h-6 w-6 text-primary" />
-        <h2 className="text-2xl font-bold text-foreground">Top đề xuất</h2>
-      </div>
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-        {featuredStories.map((story) => (
-          <div key={story.id} className="text-center">
-            <a href={`/story/${story.slug}`} className="block group">
+    {/* 🌟 TOP ĐỀ XUẤT — tách riêng và đặt trên cùng */}
+    <section className="py-10 bg-muted/20">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center space-x-2 mb-6">
+          <Star className="h-6 w-6 text-primary" />
+          <h2 className="text-2xl font-bold text-foreground">Top đề xuất</h2>
+        </div>
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+          {featuredStories.map((story) => (
+            <div
+              key={story.id}
+              className="flex flex-col items-center text-center space-y-2 hover:opacity-90 transition"
+            >
               <img
-                src={story.cover_image || "https://placehold.co/200x280"}
+                src={story.cover_image || "/placeholder.jpg"}
                 alt={story.title}
-                className="w-full aspect-[3/4] object-cover rounded-lg shadow group-hover:opacity-90"
+                className="w-full h-40 object-cover rounded-lg shadow"
               />
-              <h3 className="mt-2 text-sm font-medium truncate group-hover:text-primary">
+              <p className="text-sm font-medium truncate w-full">
                 {story.title}
-              </h3>
-              <p className="text-xs text-gray-500">{story.views || 0} lượt xem</p>
-            </a>
-          </div>
-        ))}
+              </p>
+              <p className="text-xs text-gray-500">{story.views} lượt xem</p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
 
-    {/* 🔹 BẢNG TIN MỚI NHẤT + FACEBOOK + YOU MAY ALSO LIKE + TOP TRUYỆN TRONG THÁNG */}
+    {/* 📰 TRUYỆN MỚI NHẤT (thay thế chỗ top đề xuất cũ, giữ nguyên layout) */}
     <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* 🧩 CỘT TRÁI: BẢNG TIN MỚI NHẤT */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* 🔹 CỘT TRÁI — Truyện mới nhất */}
+        <section>
+          <div className="flex items-center space-x-2 mb-6">
+            <Clock className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold">Truyện mới nhất</h2>
+          </div>
+          <div className="grid grid-cols-1 gap-4">
+            {latestUpdates.slice(0, 6).map((story) => (
+              <StoryCard
+                key={story.id}
+                story={story}
+                onRated={refreshStoryRating}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* 🔹 CỘT PHẢI — Bảng tin + Facebook + You May Also Like + Top truyện trong tháng */}
         <div className="space-y-6">
+          {/* 🗞️ Bảng tin mới nhất */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl font-semibold">Bảng tin mới nhất</CardTitle>
+              <CardTitle className="text-xl font-semibold">
+                Bảng tin mới nhất
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -341,6 +365,18 @@ return (
                             {expanded === s.id ? "Thu gọn" : "Xem thêm"}
                           </button>
                         )}
+                        <button
+                          onClick={() => {
+                            const link =
+                              window.location.origin +
+                              `/story/${s.stories?.[0]?.slug ?? ""}`;
+                            navigator.clipboard.writeText(link);
+                            alert("Đã sao chép link bài viết!");
+                          }}
+                          className="text-gray-500 hover:text-gray-700"
+                        >
+                          Chia sẻ
+                        </button>
                         {s.stories?.[0]?.slug && (
                           <a
                             href={`/story/${s.stories[0].slug}`}
@@ -360,7 +396,7 @@ return (
             </CardContent>
           </Card>
 
-          {/* 🧩 FACEBOOK PREVIEW */}
+          {/* 🧿 Facebook Preview */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -374,44 +410,16 @@ return (
                 data-href="https://www.facebook.com/truyenlight"
                 data-tabs="timeline"
                 data-width="340"
-                data-height="500"
+                data-height="400"
                 data-small-header="false"
                 data-adapt-container-width="true"
                 data-hide-cover="false"
                 data-show-facepile="true"
-              >
-                <blockquote
-                  cite="https://www.facebook.com/truyenlight"
-                  className="fb-xfbml-parse-ignore"
-                >
-                  <a href="https://www.facebook.com/truyenlight">TruyenLight</a>
-                </blockquote>
-              </div>
+              ></div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* 🧩 CỘT GIỮA: TRUYỆN MỚI NHẤT NÈ (chia 2 cột) */}
-        <div className="lg:col-span-1 space-y-8">
-          <div>
-            <div className="flex items-center space-x-2 mb-6">
-              <Clock className="h-6 w-6 text-primary" />
-              <h2 className="text-2xl font-bold">Truyện mới nhất nè</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {latestUpdates.slice(0, 6).map((story) => (
-                <StoryCard
-                  key={story.id}
-                  story={story}
-                  onRated={refreshStoryRating}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* 🧩 CỘT PHẢI: YOU MAY ALSO LIKE + TOP TRUYỆN */}
-        <div className="space-y-8">
+          {/* 💫 You May Also Like */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -426,6 +434,7 @@ return (
             </CardContent>
           </Card>
 
+          {/* 🔝 Top truyện trong tháng */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2 text-xl font-bold">
@@ -436,8 +445,8 @@ return (
             <CardContent>
               <Tabs defaultValue="views" className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="views">By Views</TabsTrigger>
-                  <TabsTrigger value="rating">By Rating</TabsTrigger>
+                  <TabsTrigger value="views">Views</TabsTrigger>
+                  <TabsTrigger value="rating">Rating</TabsTrigger>
                   <TabsTrigger value="recent">Recent</TabsTrigger>
                 </TabsList>
 
@@ -448,9 +457,7 @@ return (
                         <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
                           {index + 1}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <StoryCard story={story} variant="compact" />
-                        </div>
+                        <StoryCard story={story} variant="compact" />
                       </div>
                     ))}
                   </div>
@@ -463,24 +470,7 @@ return (
                         <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
                           {index + 1}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <StoryCard story={story} variant="compact" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="recent" className="mt-4">
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {latestUpdates.slice(0, 5).map((story, index) => (
-                      <div key={story.id} className="flex items-center gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
-                          {index + 1}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <StoryCard story={story} variant="compact" />
-                        </div>
+                        <StoryCard story={story} variant="compact" />
                       </div>
                     ))}
                   </div>
@@ -491,7 +481,22 @@ return (
         </div>
       </div>
     </div>
+
+    {/* 🧩 TẤT CẢ TRUYỆN (giữ nguyên như cũ) */}
+    <div className="container mx-auto px-4 py-8">
+      <section>
+        <div className="flex items-center space-x-2 mb-6">
+          <h2 className="text-2xl font-bold text-foreground">Tất cả truyện</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {visibleStories.map((story) => (
+            <StoryCard key={story.id} story={story} />
+          ))}
+        </div>
+      </section>
+    </div>
   </div>
 );
+
 }
 
