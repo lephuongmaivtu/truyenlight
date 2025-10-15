@@ -4,7 +4,9 @@ declare global {
   }
 }
 
-
+import "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css";
+import { Swiper, SwiperSlide } from "https://cdn.jsdelivr.net/npm/swiper@11/swiper-react.mjs";
+import { Autoplay, Pagination } from "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs";
 import React, { useEffect, useState } from "react";
 import { Search, Star, Clock, TrendingUp, CheckCircle, Eye } from "lucide-react";
 import { Search, TrendingUp, Clock, Star, CheckCircle } from "lucide-react";
