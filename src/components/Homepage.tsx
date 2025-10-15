@@ -305,9 +305,7 @@ return (
       </section>
     )}
 
-
-
-{/* 🔹 TOP ĐỀ XUẤT — hiển thị ảnh thumbnail + đồng chiều cao */}
+{/* 🔹 TOP ĐỀ XUẤT — giao diện đồng đều như truyenfull */}
 <section className="py-8">
   <div className="container mx-auto px-4">
     <div className="flex items-center space-x-2 mb-6">
@@ -315,7 +313,6 @@ return (
       <h2 className="text-2xl font-bold text-foreground">Top đề xuất</h2>
     </div>
 
-    {/* ✅ Khung bao quanh có khoảng cách 2 bên đẹp */}
     <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-md p-5">
       <Swiper
         modules={[Autoplay, Pagination]}
@@ -344,27 +341,27 @@ return (
 
           return (
             <SwiperSlide key={story.id}>
-              {/* 👇 Card có chiều cao cố định, ảnh luôn hiển thị */}
               <Link
                 to={`/story/${storySlug}`}
-                className="group block rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 shadow hover:shadow-lg transition-all duration-300 bg-white dark:bg-neutral-800 flex flex-col h-[320px]"
+                className="relative group block w-full aspect-[3/4] rounded-md overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
               >
-                {/* Ảnh thumbnail: cố định tỷ lệ và luôn fill vùng trên */}
-                <div className="relative w-full h-[220px] overflow-hidden flex-shrink-0">
-                  <img
-                    src={imageSrc}
-                    alt={story.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
+                {/* Ảnh nền full khung, auto crop cho đều */}
+                <img
+                  src={imageSrc}
+                  alt={story.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
 
-                {/* Text bên dưới cố định chiều cao */}
-                <div className="p-3 flex flex-col justify-between flex-1">
-                  <p className="text-sm font-semibold text-foreground line-clamp-2 min-h-[40px] leading-snug">
+                {/* Lớp phủ tối nhẹ */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+
+                {/* Tiêu đề đè lên ảnh */}
+                <div className="absolute bottom-0 left-0 right-0 p-2">
+                  <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight drop-shadow-md">
                     {story.title}
-                  </p>
-                  <div className="flex items-center gap-2 text-xs text-gray-500 mt-auto">
-                    <Eye className="h-3 w-3 text-primary" />
+                  </h3>
+                  <div className="flex items-center gap-1 text-[11px] text-gray-200 mt-1">
+                    <Eye className="w-3 h-3 text-primary" />
                     <span>{story.views?.toLocaleString() || 0}</span>
                     <span>lượt xem</span>
                   </div>
@@ -377,7 +374,6 @@ return (
     </div>
   </div>
 </section>
-
 
     {/* 🕒 CỘT CHÍNH + CỘT PHẢI */}
     <div className="container mx-auto px-4 py-8">
