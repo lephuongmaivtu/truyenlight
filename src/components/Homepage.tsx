@@ -6,6 +6,7 @@ declare global {
 
 
 import React, { useEffect, useState } from "react";
+import { Search, Star, Clock, TrendingUp, CheckCircle, Eye } from "lucide-react";
 import { Search, TrendingUp, Clock, Star, CheckCircle } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
