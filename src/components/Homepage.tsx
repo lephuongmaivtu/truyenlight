@@ -326,72 +326,26 @@ return (
       </div>
     </section>
 
-    {/* 🕒 TOP TRONG THÁNG + CỘT PHẢI (đã hoán đổi vị trí với bảng tin) */}
+    {/* 🕒 CỘT CHÍNH + CỘT PHẢI */}
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* 🔹 CỘT TRÁI (Top truyện trong tháng + truyện mới nhất) */}
+        {/* 🔹 CỘT TRÁI (Truyện mới nhất nè + Bảng tin + Top tháng) */}
         <div className="lg:col-span-3 space-y-8">
-         {/* 🏆 Top truyện trong tháng — bỏ khung cuộn */}
-<Card>
-  <CardHeader>
-    <CardTitle className="flex items-center space-x-2 text-xl font-bold">
-      <TrendingUp className="h-5 w-5 text-primary" />
-      <span>Top truyện trong tháng</span>
-    </CardTitle>
-  </CardHeader>
-  <CardContent>
-    <Tabs defaultValue="views" className="w-full">
-      <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="views">Views</TabsTrigger>
-        <TabsTrigger value="rating">Rating</TabsTrigger>
-        <TabsTrigger value="recent">Recent</TabsTrigger>
-      </TabsList>
 
-      {/* 👇 Bỏ max-h-96 overflow-y-auto */}
-      <TabsContent value="views" className="mt-4 space-y-3">
-        {topStories.slice(0, 5).map((story, index) => (
-          <div key={story.id} className="flex items-center gap-3">
-            <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
-              {index + 1}
+          {/* 🔄 Truyện mới nhất nè — chuyển lên đầu */}
+          <section>
+            <div className="flex items-center space-x-2 mb-6">
+              <Clock className="h-6 w-6 text-primary" />
+              <h2 className="text-2xl font-bold text-foreground">Truyện mới nhất nè</h2>
             </div>
-            <div className="flex-1 min-w-0">
-              <StoryCard story={story} variant="compact" />
+            <div className="grid grid-cols-1 gap-4">
+              {latestUpdates.slice(0, 6).map((story) => (
+                <StoryCard key={story.id} story={story} onRated={refreshStoryRating} />
+              ))}
             </div>
-          </div>
-        ))}
-      </TabsContent>
+          </section>
 
-      <TabsContent value="rating" className="mt-4 space-y-3">
-        {topRatedStories.slice(0, 5).map((story, index) => (
-          <div key={story.id} className="flex items-center gap-3">
-            <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
-              {index + 1}
-            </div>
-            <div className="flex-1 min-w-0">
-              <StoryCard story={story} variant="compact" />
-            </div>
-          </div>
-        ))}
-      </TabsContent>
-
-      <TabsContent value="recent" className="mt-4 space-y-3">
-        {latestUpdates.slice(0, 5).map((story, index) => (
-          <div key={story.id} className="flex items-center gap-3">
-            <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
-              {index + 1}
-            </div>
-            <div className="flex-1 min-w-0">
-              <StoryCard story={story} variant="compact" />
-            </div>
-          </div>
-        ))}
-      </TabsContent>
-    </Tabs>
-  </CardContent>
-</Card>
-
-
-          {/* 📰 Bảng tin mới nhất — dời xuống sau Top tháng */}
+          {/* 📰 Bảng tin mới nhất */}
           <Card className="w-full h-full">
             <CardHeader>
               <CardTitle className="text-xl font-semibold">Bảng tin mới nhất</CardTitle>
@@ -459,20 +413,65 @@ return (
             </CardContent>
           </Card>
 
-          {/* Truyện mới nhất nè */}
-          <section>
-            <div className="flex items-center space-x-2 mb-6">
-              <Clock className="h-6 w-6 text-primary" />
-              <h2 className="text-2xl font-bold text-foreground">Truyện mới nhất nè</h2>
-            </div>
-            <div className="grid grid-cols-1 gap-4">
-              {latestUpdates.slice(0, 6).map((story) => (
-                <StoryCard key={story.id} story={story} onRated={refreshStoryRating} />
-              ))}
-            </div>
-          </section>
+          {/* 🏆 Top truyện trong tháng — dời xuống sau bảng tin, bỏ khung cuộn */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-xl font-bold">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <span>Top truyện trong tháng</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="views" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="views">Views</TabsTrigger>
+                  <TabsTrigger value="rating">Rating</TabsTrigger>
+                  <TabsTrigger value="recent">Recent</TabsTrigger>
+                </TabsList>
 
-          {/* Tất cả truyện giữ nguyên */}
+                <TabsContent value="views" className="mt-4 space-y-3">
+                  {topStories.slice(0, 5).map((story, index) => (
+                    <div key={story.id} className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <StoryCard story={story} variant="compact" />
+                      </div>
+                    </div>
+                  ))}
+                </TabsContent>
+
+                <TabsContent value="rating" className="mt-4 space-y-3">
+                  {topRatedStories.slice(0, 5).map((story, index) => (
+                    <div key={story.id} className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <StoryCard story={story} variant="compact" />
+                      </div>
+                    </div>
+                  ))}
+                </TabsContent>
+
+                <TabsContent value="recent" className="mt-4 space-y-3">
+                  {latestUpdates.slice(0, 5).map((story, index) => (
+                    <div key={story.id} className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <StoryCard story={story} variant="compact" />
+                      </div>
+                    </div>
+                  ))}
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+
+          {/* 🗂️ Tất cả truyện giữ nguyên */}
           <section>
             <div className="flex items-center space-x-2 mb-6">
               <h2 className="text-2xl font-bold text-foreground">Tất cả truyện</h2>
