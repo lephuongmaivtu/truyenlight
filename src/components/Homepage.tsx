@@ -306,7 +306,8 @@ return (
     )}
 
 
-{/* 🔹 TOP ĐỀ XUẤT — dạng card thumbnail giống MonkeyD */}
+
+{/* 🔹 TOP ĐỀ XUẤT — card đồng chiều cao, có link */}
 <section className="py-8">
   <div className="container mx-auto px-4">
     <div className="flex items-center space-x-2 mb-6">
@@ -314,24 +315,18 @@ return (
       <h2 className="text-2xl font-bold text-foreground">Top đề xuất</h2>
     </div>
 
-    {/* ✅ Khung tổng bao quanh */}
+    {/* Khung tổng có khoảng cách trong đẹp */}
     <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-md p-5">
       <Swiper
         modules={[Autoplay, Pagination]}
         spaceBetween={16}
         slidesPerView={2}
-        style={{ paddingLeft: "8px", paddingRight: "8px" }}
-        breakpoints={{
-          640: { slidesPerView: 3 },
-          1024: { slidesPerView: 6 },
-        }}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
-        loop={true}
+        breakpoints={{ 640: { slidesPerView: 3 }, 1024: { slidesPerView: 6 } }}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        loop
         pagination={{ clickable: true }}
-        className="pb-6"
+        // 👇 padding hai đầu để card đầu/cuối không dính mép khung
+        className="pb-6 !pl-3 !pr-3"
       >
         {featuredStories.map((story) => {
           const imageSrc =
@@ -340,27 +335,27 @@ return (
             story.image_url ||
             story.thumbnail ||
             "https://placehold.co/300x400?text=No+Image";
-
           const storySlug = story.slug || story.id;
 
           return (
-          <SwiperSlide key={story.id}>
+            <SwiperSlide key={story.id} className="!h-auto">
+              {/* 👇 Card đồng chiều cao: fix tổng chiều cao + chia vùng ảnh / text */}
               <Link
                 to={`/story/${storySlug}`}
-                className="group block h-full flex flex-col rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 shadow hover:shadow-lg transition-all duration-300 bg-white dark:bg-neutral-800"
+                className="group block rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 shadow hover:shadow-lg transition-all duration-300 bg-white dark:bg-neutral-800 h-[360px] flex flex-col"
               >
-                {/* Ảnh thumbnail */}
-                <div className="relative w-full aspect-[3/4] overflow-hidden flex-shrink-0">
+                {/* Ảnh: cố định tỉ lệ và chiều cao để mọi card bằng nhau */}
+                <div className="relative w-full h-[240px] overflow-hidden flex-shrink-0">
                   <img
                     src={imageSrc}
                     alt={story.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
-            
-                {/* Phần thông tin bên dưới */}
-                <div className="p-2 flex flex-col justify-between h-[80px]">
-                  <p className="text-sm font-semibold text-foreground line-clamp-2">
+
+                {/* Text: chiều cao cố định, tên 2 dòng tối đa */}
+                <div className="p-3 flex-1 flex flex-col">
+                  <p className="text-sm font-semibold text-foreground line-clamp-2 min-h-[40px]">
                     {story.title}
                   </p>
                   <div className="flex items-center gap-2 text-xs text-gray-500 mt-auto">
@@ -371,14 +366,12 @@ return (
                 </div>
               </Link>
             </SwiperSlide>
-
           );
         })}
       </Swiper>
     </div>
   </div>
 </section>
-
 
     {/* 🕒 CỘT CHÍNH + CỘT PHẢI */}
     <div className="container mx-auto px-4 py-8">
