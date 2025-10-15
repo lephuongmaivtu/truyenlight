@@ -357,16 +357,24 @@ return (
       />
 
       {/* 🔹 Nền đen mờ phía dưới chứa tiêu đề + lượt xem */}
-      <div className="absolute bottom-0 left-0 right-0 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/50 to-transparent px-2 py-2">
-        <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight drop-shadow">
-          {story.title}
-        </h3>
-        <div className="flex items-center gap-1 text-[11px] text-gray-200 mt-[2px]">
-          <Eye className="w-3 h-3 text-primary" />
-          <span>{story.views?.toLocaleString() || 0}</span>
-          <span>lượt xem</span>
-        </div>
-      </div>
+   {/* ✅ Lớp overlay gradient và text tách riêng, hiển thị đúng thứ tự */}
+<div className="absolute inset-0">
+  {/* Lớp gradient phủ toàn ảnh */}
+  <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+  
+  {/* Text nằm trên lớp gradient */}
+  <div className="absolute bottom-0 left-0 right-0 z-20 px-2 py-2">
+    <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight drop-shadow">
+      {story.title}
+    </h3>
+    <div className="flex items-center gap-1 text-[11px] text-gray-200 mt-[2px]">
+      <Eye className="w-3 h-3 text-primary" />
+      <span>{story.views?.toLocaleString() || 0}</span>
+      <span>lượt xem</span>
+    </div>
+  </div>
+</div>
+
     </div>
   </Link>
 </SwiperSlide>
