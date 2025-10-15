@@ -340,7 +340,16 @@ return (
           const storySlug = story.slug || story.id;
 
           return (
-<SwiperSlide key={story.id}>
+
+
+
+
+
+
+
+
+          );
+        })}<SwiperSlide key={story.id}>
   <Link
     to={`/story/${storySlug}`}
     className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
@@ -352,11 +361,12 @@ return (
       <img
         src={imageSrc}
         alt={story.title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 z-10"
       />
 
-    <div className="absolute inset-0 z-30 flex flex-col justify-end px-2 py-2 bg-gradient-to-t from-[rgba(0,0,0,0.9)] via-[rgba(0,0,0,0.5)] to-[rgba(0,0,0,0)]">
-        <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight drop-shadow">
+      {/* 🔥 chỉ nền đen mờ phía dưới + chữ trắng */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 bg-black/70 px-2 py-2">
+        <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight">
           {story.title}
         </h3>
         <div className="flex items-center gap-1 text-[11px] text-gray-200 mt-[2px]">
@@ -369,14 +379,6 @@ return (
   </Link>
 </SwiperSlide>
 
-
-
-
-
-
-
-          );
-        })}
       </Swiper>
     </div>
   </div>
