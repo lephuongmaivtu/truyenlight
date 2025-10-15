@@ -355,17 +355,56 @@ return (
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
 
-            {/* 🔥 Lớp đen chiếm 1/3 chân ảnh */}
-            <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-black/85 flex flex-col justify-end px-3 py-2">
-              <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight">
-                {story.title}
-              </h3>
-              <div className="flex items-center gap-1 text-[11px] text-gray-300 mt-[2px]">
-                <Eye className="w-3 h-3 text-primary" />
-                <span>{story.views?.toLocaleString() || 0}</span>
-                <span>lượt xem</span>
-              </div>
+
+          {/* 🔥 Lớp đen chiếm 1/3 chân ảnh - dùng inline style, không cần Tailwind */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: "33%",
+              backgroundColor: "rgba(0, 0, 0, 0.85)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              padding: "8px 12px",
+              zIndex: 10,
+            }}
+          >
+            <h3
+              style={{
+                color: "#fff",
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                margin: 0,
+                lineHeight: 1.3,
+                overflow: "hidden",
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 2,
+              }}
+            >
+              {story.title}
+            </h3>
+          
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                marginTop: "2px",
+                fontSize: "11px",
+                color: "#ddd",
+              }}
+            >
+              <Eye size={12} color="#00bfff" />
+              <span>{story.views?.toLocaleString() || 0}</span>
+              <span>lượt xem</span>
             </div>
+          </div>
+
+            
           </div>
         </Link>
       </SwiperSlide>
