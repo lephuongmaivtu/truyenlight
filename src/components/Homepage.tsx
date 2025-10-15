@@ -582,29 +582,23 @@ return (
         {/* 🔸 CỘT PHẢI giữ nguyên */}
         <div className="space-y-6">
     {/* Theo dõi fanpage */}
-      <section className="w-full">
-  <div className="border bg-card shadow-md overflow-hidden">
-    <iframe
-      src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ftruyenlight&tabs=&width=500&height=100&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=true"
-      width="100%"
-      height="100"
-      style={{
-        border: "none",
-        overflow: "hidden",
-        display: "block",
-      }}
-      scrolling="no"
-      frameBorder="0"
-      allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-    ></iframe>
-  </div>
-</section>
-
-
-
-
-
-
+   <section className="w-full">
+    <div className="border bg-card shadow-md overflow-hidden">
+      <iframe
+        src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ftruyenlight&tabs=&width=500&height=220&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true"
+        width="100%"
+        height="220"
+        style={{
+          border: "none",
+          overflow: "hidden",
+          display: "block",
+        }}
+        scrolling="no"
+        frameBorder="0"
+        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+      ></iframe>
+    </div>
+  </section>
 
           <Card>
             <CardHeader>
