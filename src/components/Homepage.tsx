@@ -527,10 +527,11 @@ useEffect(() => {
                     ))}
                   </div>
                 </section>
-            
-          </div>
+                      </div>
 
           <div className="space-y-6">
+    </div>
+
            <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
