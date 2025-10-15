@@ -345,10 +345,9 @@ return (
     to={`/story/${storySlug}`}
     className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
   >
-    {/* 🔹 Khung ảnh tỷ lệ 3:4 */}
     <div
       className="relative block w-full overflow-hidden"
-      style={{ aspectRatio: "3 / 4", minHeight: "240px" }} // ✅ ép chiều cao tối thiểu
+      style={{ aspectRatio: "3 / 4", minHeight: "240px" }}
     >
       <img
         src={imageSrc}
@@ -356,28 +355,20 @@ return (
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
 
-      {/* 🔹 Nền đen mờ phía dưới chứa tiêu đề + lượt xem */}
-   {/* ✅ Lớp overlay gradient và text tách riêng, hiển thị đúng thứ tự */}
-<div className="absolute inset-0">
-  {/* Lớp gradient phủ toàn ảnh */}
-  <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-  
-  {/* Text nằm trên lớp gradient */}
-  <div className="absolute bottom-0 left-0 right-0 z-20 px-2 py-2">
-    <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight drop-shadow">
-      {story.title}
-    </h3>
-    <div className="flex items-center gap-1 text-[11px] text-gray-200 mt-[2px]">
-      <Eye className="w-3 h-3 text-primary" />
-      <span>{story.views?.toLocaleString() || 0}</span>
-      <span>lượt xem</span>
-    </div>
-  </div>
-</div>
-
+      <div className="absolute inset-0 z-30 flex flex-col justify-end px-2 py-2 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+        <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight drop-shadow">
+          {story.title}
+        </h3>
+        <div className="flex items-center gap-1 text-[11px] text-gray-200 mt-[2px]">
+          <Eye className="w-3 h-3 text-primary" />
+          <span>{story.views?.toLocaleString() || 0}</span>
+          <span>lượt xem</span>
+        </div>
+      </div>
     </div>
   </Link>
 </SwiperSlide>
+
 
 
 
