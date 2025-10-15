@@ -588,18 +588,18 @@ return (
                 <span>Theo dõi fanpage</span>
               </CardTitle>
             </CardHeader>
+          
             <CardContent className="overflow-hidden max-w-full">
               <div
                 className="fb-page"
                 data-href="https://www.facebook.com/truyenlight"
-                data-tabs="timeline"
+                data-tabs=""                // 👉 bỏ timeline đi
                 data-width="100%"
-                data-height="500"
-                data-small-header="false"
+                data-height="130"
+                data-small-header="true"    // 👉 header nhỏ gọn
                 data-adapt-container-width="true"
                 data-hide-cover="false"
-                data-show-facepile="true"
-                style={{ width: "100%", overflow: "hidden" }}
+                data-show-facepile="true"   // 👉 hiện avatar bạn bè
               >
                 <blockquote
                   cite="https://www.facebook.com/truyenlight"
@@ -612,11 +612,12 @@ return (
           </Card>
 
 
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Star className="h-5 w-5 text-primary" />
-                <span>You May Also Like</span>
+                <span>Chắc là bạn sẽ thích</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
