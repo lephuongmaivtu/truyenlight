@@ -341,15 +341,7 @@ return (
 
           return (
 
-
-
-
-
-
-
-
-          );
-        })}<SwiperSlide key={story.id}>
+   })}<SwiperSlide key={story.id}>
   <Link
     to={`/story/${storySlug}`}
     className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
@@ -384,6 +376,14 @@ return (
   </div>
 </section>
 
+
+
+
+
+
+
+          );
+     
     {/* 🕒 CỘT CHÍNH + CỘT PHẢI */}
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
