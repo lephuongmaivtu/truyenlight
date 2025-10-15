@@ -581,35 +581,18 @@ return (
 
         {/* 🔸 CỘT PHẢI giữ nguyên */}
         <div className="space-y-6">
-       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <CheckCircle className="h-5 w-5 text-primary" />
-            <span>Theo dõi fanpage</span>
-          </CardTitle>
-        </CardHeader>
+       <CardContent className="overflow-hidden max-w-full">
+        <iframe
+          src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ftruyenlight&tabs=timeline&width=340&height=420&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true"
+          width="100%"
+          height="420"
+          style={{ border: "none", overflow: "hidden", borderRadius: "12px" }}
+          scrolling="no"
+          frameBorder="0"
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+        ></iframe>
+      </CardContent>
 
-        <CardContent className="overflow-hidden max-w-full">
-          <div
-            className="fb-page"
-            data-href="https://www.facebook.com/truyenlight"
-            data-tabs=""
-            data-width="100%"
-            data-height="130"
-            data-small-header="true"
-            data-adapt-container-width="true"
-            data-hide-cover="false"
-            data-show-facepile="true"
-          >
-            <blockquote
-              cite="https://www.facebook.com/truyenlight"
-              className="fb-xfbml-parse-ignore"
-            >
-              <a href="https://www.facebook.com/truyenlight">TruyenLight</a>
-            </blockquote>
-          </div>
-        </CardContent>
-      </Card>
 
 
           <Card>
