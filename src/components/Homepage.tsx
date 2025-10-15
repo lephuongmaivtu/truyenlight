@@ -340,33 +340,34 @@ return (
           const storySlug = story.slug || story.id;
 
           return (
-         <SwiperSlide key={story.id}>
-  <Link
-    to={`/story/${storySlug}`}
-    className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
-  >
-    {/* 🔹 Khung ảnh tỷ lệ 3:4 */}
-    <div className="relative w-full" style={{ aspectRatio: "3 / 4" }}>
-      <img
-        src={imageSrc}
-        alt={story.title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-      />
-    </div>
+       <SwiperSlide key={story.id}>
+        <Link
+          to={`/story/${storySlug}`}
+          className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
+        >
+          {/* 🔹 Khung ảnh tỷ lệ 3:4 */}
+          <div className="relative w-full" style={{ aspectRatio: "3 / 4" }}>
+            <img
+              src={imageSrc}
+              alt={story.title}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+      
+            {/* 🔹 Nền đen mờ phía dưới chứa tiêu đề + lượt xem */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-2 py-2">
+              <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight drop-shadow">
+                {story.title}
+              </h3>
+              <div className="flex items-center gap-1 text-[11px] text-gray-200 mt-[2px]">
+                <Eye className="w-3 h-3 text-primary" />
+                <span>{story.views?.toLocaleString() || 0}</span>
+                <span>lượt xem</span>
+              </div>
+            </div>
+          </div>
+        </Link>
+      </SwiperSlide>
 
-    {/* 🔹 Nền đen mờ phía dưới chứa tiêu đề + lượt xem */}
-    <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-[2px] px-2 py-1">
-      <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight">
-        {story.title}
-      </h3>
-      <div className="flex items-center gap-1 text-[11px] text-gray-200 mt-[2px]">
-        <Eye className="w-3 h-3 text-primary" />
-        <span>{story.views?.toLocaleString() || 0}</span>
-        <span>lượt xem</span>
-      </div>
-    </div>
-  </Link>
-</SwiperSlide>
 
 
           );
