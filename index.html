@@ -4,14 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Title hiển thị trên tab & Google -->
+    <!-- Title & SEO -->
     <title>TruyenLight: Truyện Zhihu, Online Miễn Phí, Cập Nhật Nhanh Nhất</title>
-    <meta name="description" content="TruyenLight: Truyện Zhihu, ngôn tình, cung đấu, trọng sinh, trả thù, làm lại cuộc đời, xuyên không, tận thế sinh tồn, miễn phí, tốc độ tải trang nhanh nhất.">
+    <meta
+      name="description"
+      content="TruyenLight: Truyện Zhihu, ngôn tình, cung đấu, trọng sinh, trả thù, làm lại cuộc đời, xuyên không, tận thế sinh tồn, miễn phí, tốc độ tải trang nhanh nhất."
+    />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="https://i.ibb.co/m5mYfJqB/Real-Estate-Agency-Logo-3.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://i.ibb.co/m5mYfJqB/Real-Estate-Agency-Logo-3.png"
+    />
 
-    <!-- Open Graph (Facebook / Zalo / Messenger share) -->
+    <!-- Open Graph -->
     <meta property="og:title" content="TruyenLight: Truyện Zhihu, Online Miễn Phí, Cập Nhật Nhanh Nhất" />
     <meta property="og:description" content="Cập nhật truyện Zhihu, ngôn tình, cung đấu, trọng sinh, làm lại cuộc đời, xuyên không, tận thế sinh tồn." />
     <meta property="og:image" content="https://i.ibb.co/n9RRYzq/preview.png" />
@@ -23,33 +30,52 @@
     <meta name="twitter:title" content="TruyenLight: Truyện Zhihu, Online Miễn Phí, Cập Nhật Nhanh Nhất" />
     <meta name="twitter:description" content="Cập nhật truyện Zhihu, ngôn tình, cung đấu, trọng sinh, làm lại cuộc đời, xuyên không, tận thế sinh tồn." />
     <meta name="twitter:image" content="https://i.ibb.co/n9RRYzq/preview.png" />
-    <!-- Google tag (gtag.js) -->
+
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VGEK4LYF2W"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-VGEK4LYF2W');
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-VGEK4LYF2W");
     </script>
-<!-- Swiper CSS -->
+
+    <!-- Swiper CSS -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     />
-
   </head>
-  
-   <div id="fb-root"></div>
-      <script
-        async
-        defer
-        crossorigin="anonymous"
-        src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v18.0"
-      ></script>
-  
+
   <body>
+    <!-- React root -->
     <div id="root"></div>
+
+    <!-- Facebook SDK root -->
+    <div id="fb-root"></div>
+    <script>
+      // ✅ Khởi tạo Facebook SDK an toàn
+      window.fbAsyncInit = function () {
+        FB.init({
+          xfbml: true,
+          version: "v19.0",
+        });
+      };
+
+      (function (d, s, id) {
+        var js,
+          fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://connect.facebook.net/vi_VN/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      })(document, "script", "facebook-jssdk");
+    </script>
+
+    <!-- Main React bundle -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
