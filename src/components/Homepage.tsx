@@ -346,7 +346,10 @@ return (
     className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
   >
     {/* 🔹 Khung ảnh tỷ lệ 3:4 */}
-    <div className="relative w-full h-full" style={{ aspectRatio: "3 / 4" }}>  {/* <== THÊM h-full */}
+    <div
+      className="relative block w-full overflow-hidden"
+      style={{ aspectRatio: "3 / 4", minHeight: "240px" }} // ✅ ép chiều cao tối thiểu
+    >
       <img
         src={imageSrc}
         alt={story.title}
@@ -354,8 +357,7 @@ return (
       />
 
       {/* 🔹 Nền đen mờ phía dưới chứa tiêu đề + lượt xem */}
-      <div className="absolute bottom-0 left-0 right-0 h-full flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/40 to-transparent px-2 py-2">
-        {/* <== THÊM h-full để flex bám full khung ảnh */}
+      <div className="absolute bottom-0 left-0 right-0 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/50 to-transparent px-2 py-2">
         <h3 className="text-white text-sm font-semibold line-clamp-2 leading-tight drop-shadow">
           {story.title}
         </h3>
@@ -368,6 +370,7 @@ return (
     </div>
   </Link>
 </SwiperSlide>
+
 
 
 
