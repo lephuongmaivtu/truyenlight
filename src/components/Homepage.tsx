@@ -307,7 +307,7 @@ return (
 
 
 
-{/* 🔹 TOP ĐỀ XUẤT — card đồng chiều cao, có link */}
+{/* 🔹 TOP ĐỀ XUẤT — hiển thị ảnh thumbnail + đồng chiều cao */}
 <section className="py-8">
   <div className="container mx-auto px-4">
     <div className="flex items-center space-x-2 mb-6">
@@ -315,17 +315,22 @@ return (
       <h2 className="text-2xl font-bold text-foreground">Top đề xuất</h2>
     </div>
 
-    {/* Khung tổng có khoảng cách trong đẹp */}
+    {/* ✅ Khung bao quanh có khoảng cách 2 bên đẹp */}
     <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-md p-5">
       <Swiper
         modules={[Autoplay, Pagination]}
         spaceBetween={16}
         slidesPerView={2}
-        breakpoints={{ 640: { slidesPerView: 3 }, 1024: { slidesPerView: 6 } }}
-        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        breakpoints={{
+          640: { slidesPerView: 3 },
+          1024: { slidesPerView: 6 },
+        }}
+        autoplay={{
+          delay: 3000,
+          disableOnInteraction: false,
+        }}
         loop
         pagination={{ clickable: true }}
-        // 👇 padding hai đầu để card đầu/cuối không dính mép khung
         className="pb-6 !pl-3 !pr-3"
       >
         {featuredStories.map((story) => {
@@ -338,24 +343,24 @@ return (
           const storySlug = story.slug || story.id;
 
           return (
-            <SwiperSlide key={story.id} className="!h-auto">
-              {/* 👇 Card đồng chiều cao: fix tổng chiều cao + chia vùng ảnh / text */}
+            <SwiperSlide key={story.id}>
+              {/* 👇 Card có chiều cao cố định, ảnh luôn hiển thị */}
               <Link
                 to={`/story/${storySlug}`}
-                className="group block rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 shadow hover:shadow-lg transition-all duration-300 bg-white dark:bg-neutral-800 h-[360px] flex flex-col"
+                className="group block rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 shadow hover:shadow-lg transition-all duration-300 bg-white dark:bg-neutral-800 flex flex-col h-[320px]"
               >
-                {/* Ảnh: cố định tỉ lệ và chiều cao để mọi card bằng nhau */}
-                <div className="relative w-full h-[240px] overflow-hidden flex-shrink-0">
+                {/* Ảnh thumbnail: cố định tỷ lệ và luôn fill vùng trên */}
+                <div className="relative w-full h-[220px] overflow-hidden flex-shrink-0">
                   <img
                     src={imageSrc}
                     alt={story.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
 
-                {/* Text: chiều cao cố định, tên 2 dòng tối đa */}
-                <div className="p-3 flex-1 flex flex-col">
-                  <p className="text-sm font-semibold text-foreground line-clamp-2 min-h-[40px]">
+                {/* Text bên dưới cố định chiều cao */}
+                <div className="p-3 flex flex-col justify-between flex-1">
+                  <p className="text-sm font-semibold text-foreground line-clamp-2 min-h-[40px] leading-snug">
                     {story.title}
                   </p>
                   <div className="flex items-center gap-2 text-xs text-gray-500 mt-auto">
@@ -372,6 +377,7 @@ return (
     </div>
   </div>
 </section>
+
 
     {/* 🕒 CỘT CHÍNH + CỘT PHẢI */}
     <div className="container mx-auto px-4 py-8">
