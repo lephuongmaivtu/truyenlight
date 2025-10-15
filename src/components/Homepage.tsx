@@ -306,8 +306,7 @@ return (
     )}
 
 
-// ...
-
+{/* 🔹 TOP ĐỀ XUẤT (có khung bao quanh) */}
 <section className="py-8">
   <div className="container mx-auto px-4">
     <div className="flex items-center space-x-2 mb-6">
@@ -315,55 +314,58 @@ return (
       <h2 className="text-2xl font-bold text-foreground">Top đề xuất</h2>
     </div>
 
-    {/* ✅ Swiper hiển thị 6 card desktop, 2 card mobile */}
-    <Swiper
-      modules={[Autoplay, Pagination]}
-      spaceBetween={16}
-      slidesPerView={2}
-      breakpoints={{
-        768: { slidesPerView: 3 },
-        1024: { slidesPerView: 6 },
-      }}
-      autoplay={{
-        delay: 2500,
-        disableOnInteraction: false,
-      }}
-      loop={true}
-      pagination={{ clickable: true }}
-      className="pb-6"
-    >
-      {featuredStories.map((story) => {
-        const imageSrc =
-          story.cover_image ||
-          story.coverImage ||
-          story.image_url ||
-          story.thumbnail ||
-          "https://placehold.co/300x400?text=No+Image";
+    {/* ✅ Khung bao quanh toàn bộ swiper */}
+    <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-md p-4">
+      <Swiper
+        modules={[Autoplay, Pagination]}
+        spaceBetween={16}
+        slidesPerView={2}
+        breakpoints={{
+          640: { slidesPerView: 3 },
+          1024: { slidesPerView: 6 },
+        }}
+        autoplay={{
+          delay: 2500,
+          disableOnInteraction: false,
+        }}
+        loop={true}
+        pagination={{ clickable: true }}
+        className="pb-6"
+      >
+        {featuredStories.map((story) => {
+          const imageSrc =
+            story.cover_image ||
+            story.coverImage ||
+            story.image_url ||
+            story.thumbnail ||
+            "https://placehold.co/300x400?text=No+Image";
 
-        return (
-          <SwiperSlide key={story.id}>
-            <div className="relative group rounded-lg overflow-hidden shadow hover:shadow-xl transition-all duration-300">
-              <img
-                src={imageSrc}
-                alt={story.title}
-                className="w-full aspect-[3/4] object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-2 py-2">
-                <p className="text-sm font-semibold text-white line-clamp-2">
-                  {story.title}
-                </p>
-                <p className="text-xs text-gray-200 flex items-center gap-1 mt-1">
-                  <Eye className="h-3 w-3 text-gray-300" />
-                  {story.views?.toLocaleString() || 0} lượt xem
-                </p>
+          return (
+            <SwiperSlide key={story.id}>
+              <div className="relative group rounded-lg overflow-hidden shadow hover:shadow-xl transition-all duration-300">
+                <img
+                  src={imageSrc}
+                  alt={story.title}
+                  className="w-full aspect-[3/4] object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-2 py-2">
+                  <p className="text-sm font-semibold text-white line-clamp-2">
+                    {story.title}
+                  </p>
+                  <p className="text-xs text-gray-200 flex items-center gap-1 mt-1">
+                    <Eye className="h-3 w-3 text-gray-300" />
+                    {story.views?.toLocaleString() || 0} lượt xem
+                  </p>
+                </div>
               </div>
-            </div>
-          </SwiperSlide>
-        );
-      })}
-    </Swiper>
+            </SwiperSlide>
+          );
+        })}
+      </Swiper>
+    </div>
   </div>
 </section>
+
 
 
     {/* 🕒 CỘT CHÍNH + CỘT PHẢI */}
