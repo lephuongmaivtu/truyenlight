@@ -332,18 +332,20 @@ return (
         {/* 🔹 CỘT TRÁI (Truyện mới nhất nè + Bảng tin + Top tháng) */}
         <div className="lg:col-span-3 space-y-8">
 
-          {/* 🔄 Truyện mới nhất nè — chuyển lên đầu */}
+          {/* 🔄 Truyện mới nhất nè — chia 2 cột */}
           <section>
             <div className="flex items-center space-x-2 mb-6">
               <Clock className="h-6 w-6 text-primary" />
               <h2 className="text-2xl font-bold text-foreground">Truyện mới nhất nè</h2>
             </div>
-            <div className="grid grid-cols-1 gap-4">
+            {/* 👉 đổi grid-cols-1 thành grid-cols-2 trên màn hình md trở lên */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {latestUpdates.slice(0, 6).map((story) => (
                 <StoryCard key={story.id} story={story} onRated={refreshStoryRating} />
               ))}
             </div>
           </section>
+
 
           {/* 📰 Bảng tin mới nhất */}
           <Card className="w-full h-full">
