@@ -364,7 +364,7 @@ return (
               left: 0,
               right: 0,
               height: "25%",
-              backgroundColor: "rgba(0, 0, 0, 0.25)",
+              backgroundColor: "rgba(0, 0, 0, 0.4)",
               display: "flex",
               flexDirection: "column",
               justifyContent: "flex-end",
