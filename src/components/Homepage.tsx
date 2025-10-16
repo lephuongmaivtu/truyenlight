@@ -375,7 +375,7 @@ return (
             <h3
               style={{
                 color: "#fff",
-                fontSize: "0.875rem",
+                fontSize: "0.75rem",
                 fontWeight: 600,
                 margin: 0,
                 lineHeight: 1.3,
