@@ -434,7 +434,7 @@ export function StoryDetail() {
                             <div>
                               <h4 className="font-medium">{chapter.title}</h4>
                               <p className="text-sm text-muted-foreground">
-                                {(chapter.views ?? 0).toLocaleString()} views
+                               
                               </p>
                             </div>
                           </div>
