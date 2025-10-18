@@ -16,7 +16,7 @@ import { usePageTracking } from "./hooks/usePageTracking";
 import { AuthorDashboard } from "./pages/author/AuthorDashboard";
 import { UploadStoryPage } from "./pages/author/UploadStoryPage";
 import { UploadChapterPage } from "./pages/author/UploadChapterPage";
-
+import { RevenuePage } from "./pages/author/RevenuePage";
 function App() {
   return (
     <ReadingProvider>
@@ -53,6 +53,8 @@ function AppContent() {
           <Route path="/author" element={<AuthorDashboard />} />
           <Route path="/author/upload-story" element={<UploadStoryPage />} />
           <Route path="/author/upload-chapter" element={<UploadChapterPage />} />
+          <Route path="/author/revenue" element={<RevenuePage />} />
+
         </Routes>
       </main>
 
