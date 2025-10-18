@@ -13,9 +13,10 @@ import { RegisterPage } from "./pages/RegisterPage";
 import { usePageTracking } from "./hooks/usePageTracking";
 
 // Author pages
-import { AuthorDashboard } from "./pages/AuthorDashboard";
-import { UploadStoryPage } from "./pages/UploadStoryPage";
-import { UploadChapterPage } from "./pages/UploadChapterPage";
+import { AuthorDashboard } from "./pages/author/AuthorDashboard";
+import { UploadStoryPage } from "./pages/author/UploadStoryPage";
+import { UploadChapterPage } from "./pages/author/UploadChapterPage";
+
 
 function App() {
   return (
