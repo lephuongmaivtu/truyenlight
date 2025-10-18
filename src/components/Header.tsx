@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Menu, X, BookOpen, User, LogOut, PenSquare } from "lucide-react";
+import {
+  Search,
+  Menu,
+  X,
+  BookOpen,
+  User,
+  LogOut,
+  PenSquare,
+  ChevronDown,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { searchStories } from "./mockData";
@@ -13,6 +22,7 @@ export function Header() {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [genres, setGenres] = useState<any[]>([]);
+  const [isGenreOpen, setIsGenreOpen] = useState(false);
   const navigate = useNavigate();
 
   // 🧩 Fetch user state
@@ -30,10 +40,13 @@ export function Header() {
     };
   }, []);
 
-  // 🧠 Fetch genres từ Supabase
+  // 🧠 Fetch genres
   useEffect(() => {
     async function fetchGenres() {
-      const { data, error } = await supabase.from("genres").select("id, name, slug").order("name");
+      const { data, error } = await supabase
+        .from("genres")
+        .select("id, name, slug, emoji")
+        .order("name");
       if (!error && data) setGenres(data);
     }
     fetchGenres();
@@ -72,39 +85,49 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-foreground hover:text-primary transition-colors">
+          <nav className="hidden md:flex items-center space-x-8 relative">
+            <Link
+              to="/"
+              className="text-foreground hover:text-primary transition-colors"
+            >
               Trang chủ
             </Link>
 
             {/* Dropdown Thể loại (Mega Menu) */}
-          <div className="relative group">
-            <span className="cursor-pointer text-foreground hover:text-primary transition-colors">
-              Thể loại ▾
-            </span>
-          
-            {/* Mega menu */}
-            <div className="absolute left-0 mt-2 hidden group-hover:grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-8 gap-y-2 bg-card border border-border rounded-md shadow-lg p-4 w-[700px] z-50">
-              {genres.length > 0 ? (
-                genres.map((genre) => (
-                  <Link
-                    key={genre.id}
-                    to={`/genres/${genre.slug}`}
-                    className="flex items-center text-sm text-foreground hover:text-primary transition-colors"
-                  >
-                    <span className="mr-2">»</span>
-                    {genre.name}
-                  </Link>
-                ))
-              ) : (
-                <div className="text-sm text-muted-foreground">Đang tải thể loại...</div>
+            <div
+              className="relative"
+              onMouseEnter={() => setIsGenreOpen(true)}
+              onMouseLeave={() => setIsGenreOpen(false)}
+            >
+              <button className="flex items-center text-foreground hover:text-primary transition-colors">
+                Thể loại
+                <ChevronDown className="h-4 w-4 ml-1" />
+              </button>
+
+              {isGenreOpen && (
+                <div className="absolute left-0 mt-2 bg-card border border-border rounded-md shadow-lg w-[700px] p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-2 animate-fadeIn">
+                  {genres.length > 0 ? (
+                    genres.map((genre) => (
+                      <Link
+                        key={genre.id}
+                        to={`/genres/${genre.slug}`}
+                        className="flex items-center text-sm text-foreground hover:text-primary transition-colors"
+                      >
+                        <span className="mr-2">{genre.emoji || "📘"}</span>
+                        {genre.name}
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="text-sm text-muted-foreground">
+                      Đang tải thể loại...
+                    </div>
+                  )}
+                </div>
               )}
             </div>
-          </div>
-
           </nav>
 
-          {/* Search Bar - Desktop */}
+          {/* Search Bar */}
           <div className="hidden md:block relative">
             <form onSubmit={handleSearchSubmit} className="relative">
               <Input
@@ -117,7 +140,6 @@ export function Header() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </form>
 
-            {/* Search Results Dropdown */}
             {showSearchResults && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-md shadow-lg max-h-96 overflow-y-auto z-50">
                 {searchResults.length > 0 ? (
@@ -148,7 +170,7 @@ export function Header() {
             )}
           </div>
 
-          {/* Login/Profile + Author buttons */}
+          {/* Profile + Author */}
           <div className="hidden md:flex items-center space-x-2">
             {user ? (
               <>
@@ -189,7 +211,7 @@ export function Header() {
             )}
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile Menu */}
           <Button
             variant="ghost"
             size="sm"
@@ -200,7 +222,7 @@ export function Header() {
           </Button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu content */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-border py-4">
             <div className="space-y-2">
@@ -218,7 +240,7 @@ export function Header() {
                   className="block py-2 text-foreground hover:text-primary transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {g.name}
+                  {g.emoji || "📘"} {g.name}
                 </Link>
               ))}
             </div>
