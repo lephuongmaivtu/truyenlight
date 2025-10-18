@@ -253,8 +253,7 @@ return (
   <div className="min-h-screen bg-background">
     <div className="max-w-[1280px] mx-auto px-4">
       {/* toàn bộ nội dung còn lại */}
-    </div>
-  </div>
+   
     {/* 🔹 Banner + Search */}
     <section className="bg-gradient-to-r from-primary/5 to-primary/5 py-6">
       <div className="container mx-auto px-4">
@@ -621,6 +620,8 @@ return (
       </div>
     </div>
   </div>
+</div>
+
 );
 
 
