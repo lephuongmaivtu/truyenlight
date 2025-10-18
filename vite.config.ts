@@ -6,17 +6,18 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'), // alias chuẩn để import từ src
+      '@': path.resolve(__dirname, './src'),
     },
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
   },
   build: {
     target: 'esnext',
-    outDir: 'dist', // Vercel build xong sẽ lấy dist làm output
+    outDir: 'dist',
   },
   server: {
     port: 3000,
     open: true,
   },
-  base: './', // quan trọng: để assets load đúng khi deploy
+  // ⚡ CHỈNH DÒNG NÀY: base phải là "/" chứ KHÔNG phải "./"
+  base: '/',
 })
