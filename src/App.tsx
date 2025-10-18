@@ -12,11 +12,10 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { usePageTracking } from "./hooks/usePageTracking";
 
-// Author pages
+// ✅ Đúng đường dẫn (sau khi tách ra thư mục author)
 import { AuthorDashboard } from "./pages/author/AuthorDashboard";
 import { UploadStoryPage } from "./pages/author/UploadStoryPage";
 import { UploadChapterPage } from "./pages/author/UploadChapterPage";
-
 
 function App() {
   return (
