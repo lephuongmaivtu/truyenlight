@@ -355,16 +355,26 @@ return (
             height: "auto",         // Không giới hạn cứng
           }}
         >
-          <img
-            src={imageSrc}
-            alt={story.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            style={{
-              objectFit: "cover",
-              width: "100%",
-              height: "100%",
-            }}
-          />
+          <Link
+            to={`/story/${storySlug}`}
+            className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
+            style={{ overflow: "hidden" }} // ✅ đảm bảo ảnh không tràn ra ngoài
+          >
+            <div
+              className="relative w-full overflow-hidden rounded-md"
+              style={{
+                aspectRatio: "3 / 4",
+                height: "auto",
+              }}
+            >
+              <img
+                src={imageSrc}
+                alt={story.title}
+                className="w-full h-full object-cover transform transition-transform duration-500 ease-out group-hover:scale-110" // ✅ hiệu ứng phóng to rõ hơn
+              />
+            </div>
+          </Link>
+
 
 
 
