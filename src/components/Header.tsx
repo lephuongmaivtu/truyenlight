@@ -94,32 +94,38 @@ export function Header() {
             </Link>
 
           {/* Dropdown Thể loại (Mega Menu) */}
-<div className="relative group">
-  <span className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors">
-    Thể loại
-    <ChevronDown className="ml-1 h-4 w-4" />
-  </span>
+          {/* Dropdown Thể loại (Mega Menu) */}
+          <div className="relative"
+            onMouseEnter={() => setIsGenreOpen(true)}
+            onMouseLeave={() => setIsGenreOpen(false)}
+          >
+            <button className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors">
+              Thể loại
+              <ChevronDown className="ml-1 h-4 w-4" />
+            </button>
+          
+            {isGenreOpen && (
+              <div className="absolute left-0 mt-2 bg-card border border-border rounded-xl shadow-lg p-5 w-[700px] grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-3 animate-fadeIn z-50">
+                {genres.length > 0 ? (
+                  genres.map((genre) => (
+                    <Link
+                      key={genre.id}
+                      to={`/genres/${genre.slug}`}
+                      className="flex items-center text-sm text-foreground hover:text-primary transition-all hover:translate-x-1"
+                    >
+                      <span className="mr-2 text-lg">{genre.emoji || "📘"}</span>
+                      <span>{genre.name}</span>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="text-sm text-muted-foreground col-span-full">
+                    Đang tải thể loại...
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
-  {/* Mega menu */}
-  <div className="absolute left-0 mt-2 hidden group-hover:grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-3 bg-card border border-border rounded-xl shadow-lg p-5 w-[700px] z-50 animate-fadeIn">
-    {genres.length > 0 ? (
-      genres.map((genre) => (
-        <Link
-          key={genre.id}
-          to={`/genres/${genre.slug}`}
-          className="flex items-center text-sm text-foreground hover:text-primary transition-all hover:translate-x-1"
-        >
-          <span className="mr-2 text-lg">{genre.emoji || "📘"}</span>
-          <span>{genre.name}</span>
-        </Link>
-      ))
-    ) : (
-      <div className="text-sm text-muted-foreground col-span-full">
-        Đang tải thể loại...
-      </div>
-    )}
-  </div>
-</div>
 
           </nav>
 
