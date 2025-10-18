@@ -10,6 +10,11 @@ import { ProfilePage } from "./pages/ProfilePage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { usePageTracking } from "./hooks/usePageTracking";
+// ... imports khác
+import { AuthorDashboard } from "./pages/AuthorDashboard";
+import { UploadStoryPage } from "./pages/UploadStoryPage";
+import { UploadChapterPage } from "./pages/UploadChapterPage";
+
 
 function App() {
   return (
@@ -35,6 +40,11 @@ function AppContent() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          // bên trong <Routes>
+          <Route path="/author" element={<AuthorDashboard />} />
+          <Route path="/author/upload-story" element={<UploadStoryPage />} />
+          <Route path="/author/upload-chapter" element={<UploadChapterPage />} />
+
         </Routes>
       </main>
       <Footer />
