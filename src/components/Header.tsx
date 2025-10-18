@@ -95,7 +95,9 @@ export function Header() {
 
           {/* Dropdown Thể loại (Mega Menu) */}
           {/* Dropdown Thể loại (Mega Menu) */}
-          <div className="relative"
+        {/* Dropdown Thể loại (Mega Menu) */}
+          <div
+            className="relative"
             onMouseEnter={() => setIsGenreOpen(true)}
             onMouseLeave={() => setIsGenreOpen(false)}
           >
@@ -105,26 +107,40 @@ export function Header() {
             </button>
           
             {isGenreOpen && (
-              <div className="absolute left-0 mt-2 bg-card border border-border rounded-xl shadow-lg p-5 w-[700px] grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-3 animate-fadeIn z-50">
+              <div
+                className="
+                  absolute left-0 mt-2
+                  bg-card border border-border rounded-xl shadow-lg
+                  p-5 w-[720px] z-50
+                  grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5
+                  gap-x-8 gap-y-3
+                  animate-fadeIn
+                "
+              >
                 {genres.length > 0 ? (
                   genres.map((genre) => (
                     <Link
                       key={genre.id}
                       to={`/genres/${genre.slug}`}
-                      className="flex items-center text-sm text-foreground hover:text-primary transition-all hover:translate-x-1"
+                      className="
+                        flex items-center text-sm text-foreground
+                        hover:text-primary hover:bg-muted rounded-md px-2 py-1
+                        transition-all
+                      "
                     >
-                      <span className="mr-2 text-lg">{genre.emoji || "📘"}</span>
-                      <span>{genre.name}</span>
+                      <span className="mr-2 text-base">{genre.emoji || "📘"}</span>
+                      <span className="truncate">{genre.name}</span>
                     </Link>
                   ))
                 ) : (
-                  <div className="text-sm text-muted-foreground col-span-full">
+                  <div className="col-span-full text-sm text-muted-foreground">
                     Đang tải thể loại...
                   </div>
                 )}
               </div>
             )}
           </div>
+          
 
 
           </nav>
