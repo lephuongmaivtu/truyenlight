@@ -88,38 +88,34 @@ export function StoryDetail() {
 
   // ⭐ GA4 tracking + update view (có chống spam)
   useEffect(() => {
-    if (!story?.id) return;
+  if (!story?.id) return;
 
-    const key = `story_view_${story.id}`;
-    const lastViewTime = localStorage.getItem(key);
-    const now = Date.now();
+  const recordView = async () => {
+    try {
+      // Lấy user info
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData?.user?.id || null;
 
-    // chỉ đếm nếu quá 30 phút kể từ lần trước
-    if (lastViewTime && now - Number(lastViewTime) < 30 * 60 * 1000) return;
+      // Lấy IP public (nếu có backend có thể lấy từ req.headers, tạm hardcode)
+      const ip = localStorage.getItem("ip_cache") || null;
+      const userAgent = navigator.userAgent;
 
-    // 1️⃣ Gửi event lên GA4
-    if (window.gtag) {
-      window.gtag("event", "story_view", {
+      // Gọi RPC ghi log + cộng view
+      const { error } = await supabase.rpc("log_story_view", {
         story_id: story.id,
-        story_slug: story.slug,
-        story_title: story.title,
+        user_id: userId,
+        ip_address: ip,
+        user_agent: userAgent,
       });
+      if (error) console.error("❌ Lỗi log view:", error);
+    } catch (err) {
+      console.error("Error:", err);
     }
+  };
 
-    // 2️⃣ Gọi Supabase để cộng view
-    const updateView = async () => {
-      const { error } = await supabase.rpc("increment_story_view", {
-        story_id: story.id,
-      });
-      if (error) console.error("❌ Lỗi update view:", error);
-      else {
-        localStorage.setItem(key, String(now));
-        const updated = await fetchStoryWithChapters(story.slug);
-        setStory(updated);
-      }
-    };
-    updateView();
-  }, [story?.id]);
+  recordView();
+}, [story?.id]);
+
 
   // 🔹 Load rating stats
   useEffect(() => {
