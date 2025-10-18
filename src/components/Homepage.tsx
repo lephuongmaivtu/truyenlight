@@ -348,15 +348,24 @@ return (
           to={`/story/${storySlug}`}
           className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
         >
-          <div
-            className="relative block w-full overflow-hidden"
-            style={{ aspectRatio: "3 / 4", minHeight: "240px" }}
-          >
-            <img
-              src={imageSrc}
-              alt={story.title}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
+         <div
+          className="relative w-full overflow-hidden rounded-md"
+          style={{
+            aspectRatio: "3 / 4",   // Giữ tỉ lệ 3:4 (chuẩn truyện)
+            height: "auto",         // Không giới hạn cứng
+          }}
+        >
+          <img
+            src={imageSrc}
+            alt={story.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            style={{
+              objectFit: "cover",
+              width: "100%",
+              height: "100%",
+            }}
+          />
+
 
 
           {/* 🔥 Lớp đen chiếm 1/3 chân ảnh - dùng inline style, không cần Tailwind */}
