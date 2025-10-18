@@ -116,6 +116,7 @@ export function UploadStoryPage() {
   };
 
   return (
+    <AuthorLayout>
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <Card>
         <CardHeader>
@@ -249,5 +250,6 @@ export function UploadStoryPage() {
         </CardContent>
       </Card>
     </div>
+    </AuthorLayout>
   );
 }
