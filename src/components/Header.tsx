@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, Menu, X, BookOpen, User, LogOut } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { searchStories } from './mockData';
-import { supabase } from '../supabaseClient';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Search, Menu, X, BookOpen, User, LogOut, PenSquare } from "lucide-react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { searchStories } from "./mockData";
+import { supabase } from "../supabaseClient";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -32,7 +32,7 @@ export function Header() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
-    navigate('/');
+    navigate("/");
   };
 
   const handleSearch = (query: string) => {
@@ -48,9 +48,7 @@ export function Header() {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      setShowSearchResults(false);
-    }
+    if (searchQuery.trim()) setShowSearchResults(false);
   };
 
   return (
@@ -91,7 +89,7 @@ export function Header() {
               />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </form>
-            
+
             {/* Search Results Dropdown */}
             {showSearchResults && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-md shadow-lg max-h-96 overflow-y-auto z-50">
@@ -117,7 +115,7 @@ export function Header() {
                     </Link>
                   ))
                 ) : (
-                  <div className="p-3 text-muted-foreground">No stories found</div>
+                  <div className="p-3 text-muted-foreground">Không tìm thấy truyện</div>
                 )}
               </div>
             )}
@@ -127,12 +125,23 @@ export function Header() {
           <div className="hidden md:flex items-center space-x-2">
             {user ? (
               <>
+                {/* Nút khu vực tác giả */}
+                <Link to="/author">
+                  <Button variant="outline" size="sm" className="flex items-center">
+                    <PenSquare className="h-4 w-4 mr-2" />
+                    Khu vực tác giả
+                  </Button>
+                </Link>
+
+                {/* Hồ sơ */}
                 <Link to="/profile">
                   <Button variant="ghost" size="sm">
                     <User className="h-4 w-4 mr-2" />
-                    Profile
+                    Hồ sơ
                   </Button>
                 </Link>
+
+                {/* Đăng xuất */}
                 <Button
                   variant="outline"
                   size="sm"
@@ -140,7 +149,7 @@ export function Header() {
                   className="bg-white text-primary hover:bg-gray-100"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
-                  Logout
+                  Thoát
                 </Button>
               </>
             ) : (
@@ -152,7 +161,7 @@ export function Header() {
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button size="sm">Register</Button>
+                  <Button size="sm">Đăng ký</Button>
                 </Link>
               </>
             )}
@@ -177,7 +186,7 @@ export function Header() {
               <form onSubmit={handleSearchSubmit} className="relative">
                 <Input
                   type="text"
-                  placeholder="Search stories..."
+                  placeholder="Tìm truyện..."
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                   className="w-full pl-10"
@@ -193,41 +202,53 @@ export function Header() {
                 className="block py-2 text-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Home
+                Trang chủ
               </Link>
-              <a href="#genres" className="block py-2 text-foreground hover:text-primary transition-colors">Genres</a>
-              <a href="#search" className="block py-2 text-foreground hover:text-primary transition-colors">Search</a>
-              <a href="#contact" className="block py-2 text-foreground hover:text-primary transition-colors">Contact</a>
+              <a href="#genres" className="block py-2 text-foreground hover:text-primary transition-colors">
+                Thể loại
+              </a>
+              <a href="#search" className="block py-2 text-foreground hover:text-primary transition-colors">
+                Tìm kiếm
+              </a>
+              <a href="#contact" className="block py-2 text-foreground hover:text-primary transition-colors">
+                Liên hệ
+              </a>
             </nav>
 
-            {/* Mobile Login/Register hoặc Profile/Logout */}
-            <div className="flex items-center space-x-2 mt-4 pt-4 border-t border-border">
+            {/* Mobile Login/Profile */}
+            <div className="flex flex-col space-y-2 mt-4 pt-4 border-t border-border">
               {user ? (
                 <>
-                  <Link to="/profile" className="flex-1">
-                    <Button variant="ghost" size="sm" className="w-full">
+                  <Link to="/author">
+                    <Button variant="outline" size="sm" className="w-full flex items-center justify-center">
+                      <PenSquare className="h-4 w-4 mr-2" />
+                      Khu vực tác giả
+                    </Button>
+                  </Link>
+                  <Link to="/profile">
+                    <Button variant="ghost" size="sm" className="w-full flex items-center justify-center">
                       <User className="h-4 w-4 mr-2" />
-                      Profile
+                      Hồ sơ
                     </Button>
                   </Link>
                   <Button
                     size="sm"
-                    className="flex-1 bg-white text-primary"
+                    className="w-full bg-white text-primary"
                     onClick={handleLogout}
                   >
                     <LogOut className="h-4 w-4 mr-2" />
-                    Logout
+                    Đăng xuất
                   </Button>
                 </>
               ) : (
                 <>
-                  <Link to="/login" className="flex-1">
+                  <Link to="/login">
                     <Button variant="ghost" size="sm" className="w-full">
                       <User className="h-4 w-4 mr-2" />
                       Đăng nhập
                     </Button>
                   </Link>
-                  <Link to="/register" className="flex-1">
+                  <Link to="/register">
                     <Button size="sm" className="w-full">Đăng ký</Button>
                   </Link>
                 </>
