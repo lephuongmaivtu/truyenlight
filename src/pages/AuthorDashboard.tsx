@@ -1,195 +1,111 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
 import { supabase } from "../supabaseClient";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { LayoutDashboard, BookOpen, PlusCircle, DollarSign, ListTodo, LogOut } from "lucide-react";
-
-type MyStory = {
-  id: string;
-  title: string;
-  slug: string;
-  coverImage: string | null;
-  views: number | null;
-  status: string | null;
-};
-
-type TotalRevenueRow = {
-  author_id: string;
-  author_email: string | null;
-  total_views: number | null;
-  total_revenue: number | null;
-};
+import { PenSquare, PlusCircle } from "lucide-react";
 
 export function AuthorDashboard() {
+  const [stories, setStories] = useState<any[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
-  const [myStories, setMyStories] = useState<MyStory[]>([]);
-  const [totals, setTotals] = useState<TotalRevenueRow | null>(null);
   const [loading, setLoading] = useState(true);
-  const location = useLocation();
 
-  // lấy user id
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
+    async function fetchUserStories() {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) {
         window.location.href = "/login";
         return;
       }
-      setUserId(data.user.id);
-    });
+      setUserId(auth.user.id);
+
+      const { data, error } = await supabase
+        .from("stories")
+        .select("id, title, slug, coverImage, status, story_type, views, genres")
+        .eq("user_id", auth.user.id)
+        .order("created_at", { ascending: false });
+
+      if (!error && data) setStories(data);
+      setLoading(false);
+    }
+
+    fetchUserStories();
   }, []);
 
-  // fetch data
-  useEffect(() => {
-    if (!userId) return;
-    (async () => {
-      setLoading(true);
-      const [{ data: stories }, { data: totalRow }] = await Promise.all([
-        supabase
-          .from("stories")
-          .select("id, title, slug, coverImage, coverimage, views, status")
-          .eq("user_id", userId)
-          .order("title", { ascending: true }),
-        supabase
-          .from("author_total_revenue")
-          .select("*")
-          .eq("author_id", userId)
-          .maybeSingle(),
-      ]);
-
-      setMyStories(
-        (stories ?? []).map((s: any) => ({
-          id: s.id,
-          title: s.title,
-          slug: s.slug,
-          coverImage: s.coverImage || s.coverimage || null,
-          views: s.views ?? 0,
-          status: s.status ?? "Ongoing",
-        }))
-      );
-      setTotals(totalRow ?? { author_id: userId, author_email: null, total_revenue: 0, total_views: 0 });
-      setLoading(false);
-    })();
-  }, [userId]);
-
-  // sidebar item config
-  const sidebarItems = [
-    { label: "Tổng quan", icon: <LayoutDashboard className="h-4 w-4" />, link: "/author" },
-    { label: "Truyện của tôi", icon: <BookOpen className="h-4 w-4" />, link: "/author" },
-    { label: "Đăng truyện", icon: <PlusCircle className="h-4 w-4" />, link: "/author/upload-story" },
-    { label: "Đăng chapter", icon: <PlusCircle className="h-4 w-4" />, link: "/author/upload-chapter" },
-    { label: "Doanh thu", icon: <DollarSign className="h-4 w-4" />, link: "/author/revenue" },
-    { label: "Nhiệm vụ", icon: <ListTodo className="h-4 w-4" />, link: "/author/tasks" },
-  ];
-
   if (loading) {
-    return <div className="container mx-auto px-4 py-8">Đang tải khu vực tác giả…</div>;
+    return <div className="text-center py-10 text-muted-foreground">Đang tải truyện của bạn...</div>;
   }
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/";
-  };
-
   return (
-    <div className="min-h-screen flex bg-background text-foreground">
-      {/* Sidebar */}
-      <aside className="w-60 border-r border-border p-4 flex flex-col justify-between bg-muted/30">
-        <div>
-          <h2 className="text-xl font-bold mb-4">👩‍💻 Khu Vực Tác Giả</h2>
-          <nav className="space-y-1">
-            {sidebarItems.map((item) => (
-              <Link
-                key={item.label}
-                to={item.link}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-muted transition ${
-                  location.pathname === item.link ? "bg-muted font-semibold" : ""
-                }`}
-              >
-                {item.icon}
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 text-sm text-red-500 hover:text-red-600 mt-4"
-        >
-          <LogOut className="h-4 w-4" /> Đăng xuất
-        </button>
-      </aside>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">📚 Truyện của tôi</h1>
+        <Link to="/author/upload-story">
+          <Button className="flex items-center gap-2">
+            <PlusCircle className="h-4 w-4" /> Đăng truyện mới
+          </Button>
+        </Link>
+      </div>
 
-      {/* Main content */}
-      <main className="flex-1 p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader><CardTitle>Doanh thu (tổng)</CardTitle></CardHeader>
-            <CardContent className="text-2xl font-bold">
-              {(totals?.total_revenue ?? 0).toLocaleString("vi-VN")} ₫
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader><CardTitle>Tổng lượt xem</CardTitle></CardHeader>
-            <CardContent className="text-2xl font-bold">
-              {(totals?.total_views ?? 0).toLocaleString("vi-VN")}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader><CardTitle>Truyện của tôi</CardTitle></CardHeader>
-            <CardContent className="text-2xl font-bold">{myStories.length}</CardContent>
-          </Card>
+      {stories.length === 0 ? (
+        <div className="text-center text-muted-foreground py-10">
+          Bạn chưa đăng truyện nào.  
+          <br />
+          <Link to="/author/upload-story" className="text-primary underline">
+            Đăng truyện đầu tiên ngay →
+          </Link>
         </div>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {stories.map((story) => (
+            <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              {story.coverImage ? (
+                <img
+                  src={story.coverImage}
+                  alt={story.title}
+                  className="w-full h-52 object-cover"
+                />
+              ) : (
+                <div className="w-full h-52 bg-muted flex items-center justify-center text-sm text-muted-foreground">
+                  Không có ảnh bìa
+                </div>
+              )}
+              <CardHeader>
+                <CardTitle className="line-clamp-1">{story.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex flex-wrap gap-2">
+                  {story.genres?.slice(0, 3).map((g: string) => (
+                    <Badge key={g} variant="secondary">
+                      {g}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {story.story_type === "translated" ? "Truyện dịch" : "Sáng tác"} ·{" "}
+                  {story.status === "Ongoing"
+                    ? "Đang ra"
+                    : story.status === "Completed"
+                    ? "Hoàn thành"
+                    : "Tạm ngưng"}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  👁 {story.views || 0} lượt xem
+                </div>
 
-        {/* Danh sách truyện */}
-        <Card>
-          <CardHeader><CardTitle>Truyện của tôi</CardTitle></CardHeader>
-          <CardContent>
-            {myStories.length === 0 ? (
-              <div className="text-muted-foreground">
-                Chưa có truyện nào. <Link to="/author/upload-story" className="underline">Đăng truyện ngay</Link>.
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {myStories.map((s) => (
-                  <Link
-                    to={`/story/${s.slug}`}
-                    key={s.id}
-                    className="block border rounded-lg overflow-hidden hover:shadow"
-                  >
-                    <div className="aspect-[3/4] bg-muted">
-                      {s.coverImage && (
-                        <img
-                          src={s.coverImage}
-                          className="w-full h-full object-cover"
-                          alt={s.title}
-                        />
-                      )}
-                    </div>
-                    <div className="p-3">
-                      <div className="font-semibold line-clamp-1">{s.title}</div>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground mt-1">
-                        <span>👁️ {(s.views ?? 0).toLocaleString("vi-VN")}</span>
-                        <Badge
-                          variant={s.status === "Completed" ? "default" : "secondary"}
-                        >
-                          {s.status}
-                        </Badge>
-                      </div>
-                      <div className="text-sm mt-1">
-                        Doanh thu:{" "}
-                        {Math.round(((s.views ?? 0) / 1000) * 5000).toLocaleString("vi-VN")} ₫
-                      </div>
-                    </div>
+                <div className="pt-3">
+                  <Link to={`/story/${story.slug}`}>
+                    <Button size="sm" variant="outline" className="w-full flex items-center gap-2">
+                      <PenSquare className="h-4 w-4" /> Xem chi tiết
+                    </Button>
                   </Link>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </main>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
-
