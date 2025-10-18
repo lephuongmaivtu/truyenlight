@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "../supabaseClient";
-import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Textarea } from "../components/ui/textarea";
-import { Badge } from "../components/ui/badge";
-import { Checkbox } from "../components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { supabase } from "../../supabaseClient"; // ✅ sửa ../ → ../../
+import { Button } from "../../components/ui/button"; // ✅
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"; // ✅
+import { Input } from "../../components/ui/input"; // ✅
+import { Textarea } from "../../components/ui/textarea"; // ✅
+import { Badge } from "../../components/ui/badge"; // ✅
+import { Checkbox } from "../../components/ui/checkbox"; // ✅
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "../../components/ui/select"; // ✅
 
 function slugify(s: string) {
   return s
