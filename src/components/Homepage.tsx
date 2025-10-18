@@ -384,21 +384,26 @@ return (
               zIndex: 10,
             }}
           >
-            <h3
-              style={{
-                color: "#fff",
-                fontSize: "0.75rem",
-                fontWeight: 600,
-                margin: 0,
-                lineHeight: 1.3,
-                overflow: "hidden",
-                display: "-webkit-box",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 2,
-              }}
-            >
-              {story.title}
-            </h3>
+           <h3
+            style={{
+              color: "#fff",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              margin: 0,
+              lineHeight: 1.4,
+              overflow: "hidden",
+              textOverflow: "ellipsis",       // ✨ hiển thị dấu “...”
+              display: "-webkit-box",         // ✨ cho phép clamp nhiều dòng
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 2,             // ✨ tối đa 2 dòng
+              whiteSpace: "normal",           // ✨ cho phép xuống dòng
+              wordBreak: "break-word",        // ✨ cắt từ dài
+            }}
+            className="truncate-title"
+          >
+            {story.title}
+          </h3>
+
           
             <div
               style={{
