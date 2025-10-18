@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 import { Input } from "../../components/ui/input"; // ✅
 import { Textarea } from "../../components/ui/textarea"; // ✅
 import { Badge } from "../../components/ui/badge"; // ✅
+import AuthorLayout from "./AuthorLayout";
 import { Checkbox } from "../../components/ui/checkbox"; // ✅
 import { 
   Select, 
