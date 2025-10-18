@@ -41,6 +41,7 @@ function AppContent() {
           {/* Truyện & Chương */}
           <Route path="/story/:slug" element={<StoryDetail />} />
           <Route path="/story/:slug/:chapterSlug" element={<ChapterReader />} />
+          <Route path="/genres/:slug" element={<GenrePage />} />
 
           {/* Tài khoản */}
           <Route path="/profile" element={<ProfilePage />} />
