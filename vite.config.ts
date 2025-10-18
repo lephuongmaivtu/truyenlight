@@ -18,6 +18,6 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
-  // ⚡ CHỈNH DÒNG NÀY: base phải là "/" chứ KHÔNG phải "./"
+  // ⚠️ Phải là dấu gạch chéo "/" — KHÔNG để "./"
   base: '/',
 })
