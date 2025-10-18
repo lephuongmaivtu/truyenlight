@@ -94,15 +94,13 @@ export function Header() {
             </Link>
 
           {/* Dropdown Thể loại (Mega Menu) */}
-          {/* Dropdown Thể loại (Mega Menu) */}
-        {/* Dropdown Thể loại (Mega Menu) */}
-          <div
+         <div
             className="relative"
             onMouseEnter={() => setIsGenreOpen(true)}
             onMouseLeave={() => setIsGenreOpen(false)}
           >
             <button className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors">
-              Thể loại
+              Thể Loại
               <ChevronDown className="ml-1 h-4 w-4" />
             </button>
           
@@ -110,10 +108,9 @@ export function Header() {
               <div
                 className="
                   absolute left-0 mt-2
-                  bg-card border border-border rounded-xl shadow-lg
-                  p-5 w-[720px] z-50
-                  grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5
-                  gap-x-8 gap-y-3
+                  bg-card border border-border rounded-lg shadow-md
+                  p-4 w-[640px] z-50
+                  grid grid-cols-4 gap-x-10 gap-y-2
                   animate-fadeIn
                 "
               >
@@ -123,13 +120,13 @@ export function Header() {
                       key={genre.id}
                       to={`/genres/${genre.slug}`}
                       className="
-                        flex items-center text-sm text-foreground
-                        hover:text-primary hover:bg-muted rounded-md px-2 py-1
-                        transition-all
+                        flex items-center text-[15px] text-foreground
+                        hover:text-primary transition-colors
+                        px-1 py-[3px] leading-tight
                       "
                     >
-                      <span className="mr-2 text-base">{genre.emoji || "📘"}</span>
-                      <span className="truncate">{genre.name}</span>
+                      <span className="mr-2 text-[14px] opacity-80">{genre.emoji || "»"}</span>
+                      <span className="whitespace-nowrap">{genre.name}</span>
                     </Link>
                   ))
                 ) : (
@@ -140,6 +137,7 @@ export function Header() {
               </div>
             )}
           </div>
+
           
 
 
