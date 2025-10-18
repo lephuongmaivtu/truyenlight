@@ -183,10 +183,10 @@ export function ChapterReader() {
       </div>
 
       {/* Chapter content */}
-      <div className="max-w-3xl mx-auto px-6 py-8 leading-relaxed">
+      <div className="container max-w-[900px] py-10 leading-relaxed">
         <h1 className="text-2xl font-bold mb-4">{chapter.title}</h1>
         <p className="text-sm text-muted-foreground mb-6">{wordCount} words</p>
-
+      
         <div className="space-y-4 text-lg">
           {(chapter.content ?? "")
             .split("\n")
@@ -195,6 +195,7 @@ export function ChapterReader() {
             )}
         </div>
       </div>
+
 
       <CommentSection chapterId={chapter.id} />
 
