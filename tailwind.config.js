@@ -10,7 +10,15 @@ module.exports = {
     "bg-black/50"
   ],
   theme: {
-    extend: {},
+    extend: {
+      transitionProperty: {
+        'transform': 'transform',
+        'filter': 'filter',
+      },
+      scale: {
+        110: '1.10',
+      },
+    },
   },
   plugins: [],
-}
+};
