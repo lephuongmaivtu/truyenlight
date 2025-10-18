@@ -2518,8 +2518,8 @@ html {
   max-width: 1200px; /* hoặc 1280 / 1440 tùy thích */
   margin-left: auto;
   margin-right: auto;
-  padding-left: 2rem;   /* cách hai bên ở mobile */
-  padding-right: 2rem;
+  padding-left: 0.75rem;   /* cách hai bên ở mobile */
+  padding-right: 0.75rem;
 }
 
 @media (min-width: 1024px) {
