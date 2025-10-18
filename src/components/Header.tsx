@@ -77,27 +77,31 @@ export function Header() {
               Trang chủ
             </Link>
 
-            {/* Dropdown Thể loại */}
-            <div className="relative group">
-              <span className="cursor-pointer text-foreground hover:text-primary transition-colors">
-                Thể loại
-              </span>
-              <div className="absolute left-0 mt-2 hidden group-hover:block bg-card border border-border rounded-md shadow-lg w-48 max-h-80 overflow-y-auto z-50">
-                {genres.length > 0 ? (
-                  genres.map((genre) => (
-                    <Link
-                      key={genre.id}
-                      to={`/genres/${genre.slug}`}
-                      className="block px-4 py-2 hover:bg-muted text-sm text-foreground border-b border-border last:border-b-0"
-                    >
-                      {genre.name}
-                    </Link>
-                  ))
-                ) : (
-                  <div className="px-4 py-2 text-sm text-muted-foreground">Đang tải...</div>
-                )}
-              </div>
+            {/* Dropdown Thể loại (Mega Menu) */}
+          <div className="relative group">
+            <span className="cursor-pointer text-foreground hover:text-primary transition-colors">
+              Thể loại ▾
+            </span>
+          
+            {/* Mega menu */}
+            <div className="absolute left-0 mt-2 hidden group-hover:grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-8 gap-y-2 bg-card border border-border rounded-md shadow-lg p-4 w-[700px] z-50">
+              {genres.length > 0 ? (
+                genres.map((genre) => (
+                  <Link
+                    key={genre.id}
+                    to={`/genres/${genre.slug}`}
+                    className="flex items-center text-sm text-foreground hover:text-primary transition-colors"
+                  >
+                    <span className="mr-2">»</span>
+                    {genre.name}
+                  </Link>
+                ))
+              ) : (
+                <div className="text-sm text-muted-foreground">Đang tải thể loại...</div>
+              )}
             </div>
+          </div>
+
           </nav>
 
           {/* Search Bar - Desktop */}
