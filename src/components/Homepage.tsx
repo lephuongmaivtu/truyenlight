@@ -251,6 +251,10 @@ useEffect(() => {
 
 return (
   <div className="min-h-screen bg-background">
+    <div className="max-w-[1280px] mx-auto px-4">
+      {/* toàn bộ nội dung còn lại */}
+    </div>
+  </div>
     {/* 🔹 Banner + Search */}
     <section className="bg-gradient-to-r from-primary/5 to-primary/5 py-6">
       <div className="container mx-auto px-4">
@@ -316,19 +320,19 @@ return (
     <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-md p-5">
    <Swiper
   modules={[Autoplay, Pagination]}
-  spaceBetween={16}
+  spaceBetween={20}
   slidesPerView={2}
   breakpoints={{
     640: { slidesPerView: 3 },
     1024: { slidesPerView: 6 },
   }}
   autoplay={{
-    delay: 3000,
+    delay: 2000,
     disableOnInteraction: false,
   }}
   loop
   pagination={{ clickable: true }}
-  className="pb-6 !pl-3 !pr-3"
+  className="pb-6"
 >
   {featuredStories.map((story) => {
     const imageSrc =
