@@ -251,7 +251,7 @@ useEffect(() => {
 
 return (
   <div className="min-h-screen bg-background">
-    <div className="max-w-[1280px] mx-auto px-8">
+    <div className="max-w-[1280px] mx-auto px-6">
       {/* toàn bộ nội dung còn lại */}
    
     {/* 🔹 Banner + Search */}
