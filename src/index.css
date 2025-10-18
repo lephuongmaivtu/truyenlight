@@ -2528,3 +2528,13 @@ html {
     padding-right: 5rem;
   }
 }
+
+.truncate-title {
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+}
