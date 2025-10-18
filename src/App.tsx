@@ -16,7 +16,7 @@ import { usePageTracking } from "./hooks/usePageTracking";
 import { AuthorDashboard } from "./pages/author/AuthorDashboard";
 import { UploadStoryPage } from "./pages/author/UploadStoryPage";
 import { UploadChapterPage } from "./pages/author/UploadChapterPage";
-import { RevenuePage } from "./pages/author/RevenuePage";
+import RevenuePage from "./pages/author/RevenuePage";
 function App() {
   return (
     <ReadingProvider>
