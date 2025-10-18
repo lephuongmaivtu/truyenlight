@@ -12,9 +12,10 @@ export function Header() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [genres, setGenres] = useState<any[]>([]);
   const navigate = useNavigate();
 
-  // Lấy trạng thái user hiện tại
+  // 🧩 Fetch user state
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) setUser(data.user);
@@ -27,6 +28,15 @@ export function Header() {
     return () => {
       listener.subscription.unsubscribe();
     };
+  }, []);
+
+  // 🧠 Fetch genres từ Supabase
+  useEffect(() => {
+    async function fetchGenres() {
+      const { data, error } = await supabase.from("genres").select("id, name, slug").order("name");
+      if (!error && data) setGenres(data);
+    }
+    fetchGenres();
   }, []);
 
   const handleLogout = async () => {
@@ -66,15 +76,28 @@ export function Header() {
             <Link to="/" className="text-foreground hover:text-primary transition-colors">
               Trang chủ
             </Link>
-            <a href="#genres" className="text-foreground hover:text-primary transition-colors">
-              Thể loại
-            </a>
-            <a href="#search" className="text-foreground hover:text-primary transition-colors">
-              Tìm kiếm
-            </a>
-            <a href="#contact" className="text-foreground hover:text-primary transition-colors">
-              Liên hệ
-            </a>
+
+            {/* Dropdown Thể loại */}
+            <div className="relative group">
+              <span className="cursor-pointer text-foreground hover:text-primary transition-colors">
+                Thể loại
+              </span>
+              <div className="absolute left-0 mt-2 hidden group-hover:block bg-card border border-border rounded-md shadow-lg w-48 max-h-80 overflow-y-auto z-50">
+                {genres.length > 0 ? (
+                  genres.map((genre) => (
+                    <Link
+                      key={genre.id}
+                      to={`/genres/${genre.slug}`}
+                      className="block px-4 py-2 hover:bg-muted text-sm text-foreground border-b border-border last:border-b-0"
+                    >
+                      {genre.name}
+                    </Link>
+                  ))
+                ) : (
+                  <div className="px-4 py-2 text-sm text-muted-foreground">Đang tải...</div>
+                )}
+              </div>
+            </div>
           </nav>
 
           {/* Search Bar - Desktop */}
@@ -121,27 +144,22 @@ export function Header() {
             )}
           </div>
 
-          {/* Login/Register hoặc Profile/Logout - Desktop */}
+          {/* Login/Profile + Author buttons */}
           <div className="hidden md:flex items-center space-x-2">
             {user ? (
               <>
-                {/* Nút khu vực tác giả */}
                 <Link to="/author">
                   <Button variant="outline" size="sm" className="flex items-center">
                     <PenSquare className="h-4 w-4 mr-2" />
                     Khu vực tác giả
                   </Button>
                 </Link>
-
-                {/* Hồ sơ */}
                 <Link to="/profile">
                   <Button variant="ghost" size="sm">
                     <User className="h-4 w-4 mr-2" />
                     Hồ sơ
                   </Button>
                 </Link>
-
-                {/* Đăng xuất */}
                 <Button
                   variant="outline"
                   size="sm"
@@ -167,7 +185,7 @@ export function Header() {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile menu button */}
           <Button
             variant="ghost"
             size="sm"
@@ -181,22 +199,7 @@ export function Header() {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-border py-4">
-            {/* Mobile Search */}
-            <div className="mb-4">
-              <form onSubmit={handleSearchSubmit} className="relative">
-                <Input
-                  type="text"
-                  placeholder="Tìm truyện..."
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full pl-10"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              </form>
-            </div>
-
-            {/* Mobile Navigation */}
-            <nav className="space-y-2">
+            <div className="space-y-2">
               <Link
                 to="/"
                 className="block py-2 text-foreground hover:text-primary transition-colors"
@@ -204,55 +207,16 @@ export function Header() {
               >
                 Trang chủ
               </Link>
-              <a href="#genres" className="block py-2 text-foreground hover:text-primary transition-colors">
-                Thể loại
-              </a>
-              <a href="#search" className="block py-2 text-foreground hover:text-primary transition-colors">
-                Tìm kiếm
-              </a>
-              <a href="#contact" className="block py-2 text-foreground hover:text-primary transition-colors">
-                Liên hệ
-              </a>
-            </nav>
-
-            {/* Mobile Login/Profile */}
-            <div className="flex flex-col space-y-2 mt-4 pt-4 border-t border-border">
-              {user ? (
-                <>
-                  <Link to="/author">
-                    <Button variant="outline" size="sm" className="w-full flex items-center justify-center">
-                      <PenSquare className="h-4 w-4 mr-2" />
-                      Khu vực tác giả
-                    </Button>
-                  </Link>
-                  <Link to="/profile">
-                    <Button variant="ghost" size="sm" className="w-full flex items-center justify-center">
-                      <User className="h-4 w-4 mr-2" />
-                      Hồ sơ
-                    </Button>
-                  </Link>
-                  <Button
-                    size="sm"
-                    className="w-full bg-white text-primary"
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Đăng xuất
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link to="/login">
-                    <Button variant="ghost" size="sm" className="w-full">
-                      <User className="h-4 w-4 mr-2" />
-                      Đăng nhập
-                    </Button>
-                  </Link>
-                  <Link to="/register">
-                    <Button size="sm" className="w-full">Đăng ký</Button>
-                  </Link>
-                </>
-              )}
+              {genres.map((g) => (
+                <Link
+                  key={g.id}
+                  to={`/genres/${g.slug}`}
+                  className="block py-2 text-foreground hover:text-primary transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {g.name}
+                </Link>
+              ))}
             </div>
           </div>
         )}
