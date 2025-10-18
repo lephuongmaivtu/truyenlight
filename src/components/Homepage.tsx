@@ -375,11 +375,11 @@ return (
               bottom: 0,
               left: 0,
               right: 0,
-              height: "25%",
+              height: "32%",
               backgroundColor: "rgba(0, 0, 0, 0.4)",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "flex-end",
+              justifyContent: "flex-start",
               padding: "8px 12px",
               zIndex: 10,
             }}
