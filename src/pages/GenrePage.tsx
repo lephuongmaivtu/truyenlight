@@ -1,99 +1,85 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
-import { Card, CardContent } from "../components/ui/card";
-import { Eye } from "lucide-react";
+import { StoryCard } from "../components/StoryCard";
+import { Button } from "../components/ui/button";
 
 export function GenrePage() {
   const { slug } = useParams<{ slug: string }>();
-  const [genre, setGenre] = useState<any>(null);
   const [stories, setStories] = useState<any[]>([]);
+  const [genreName, setGenreName] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchGenreAndStories() {
-      setLoading(true);
-
-      // 1️⃣ Lấy thông tin thể loại theo slug
-      const { data: genreData, error: genreErr } = await supabase
-        .from("genres")
-        .select("*")
-        .eq("slug", slug)
-        .single();
-
-      if (genreErr || !genreData) {
-        console.error("Không tìm thấy thể loại:", genreErr);
-        setLoading(false);
-        return;
-      }
-
-      setGenre(genreData);
-
-      // 2️⃣ Lấy truyện thuộc thể loại đó
-      const { data: storyData, error: storyErr } = await supabase
-        .from("stories")
-        .select("id, title, slug, cover_url, views, author, genres (slug)")
-        .contains("genres", [slug])
-        .order("views", { ascending: false });
-
-      if (storyErr) console.error(storyErr);
-      setStories(storyData || []);
-      setLoading(false);
+    if (slug) {
+      fetchGenreName();
+      fetchStoriesByGenre();
     }
-
-    if (slug) fetchGenreAndStories();
   }, [slug]);
 
-  if (loading) {
-    return (
-      <div className="container mx-auto py-10 text-center text-muted-foreground">
-        Đang tải truyện...
-      </div>
-    );
+  async function fetchGenreName() {
+    const { data, error } = await supabase
+      .from("genres")
+      .select("name")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (!error && data) setGenreName(data.name);
   }
 
-  if (!genre) {
+  async function fetchStoriesByGenre() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("stories")
+      .select("*")
+      .contains("genres", [slug]) // lọc theo thể loại
+      .order("created_at", { ascending: false });
+    if (!error && data) setStories(data);
+    setLoading(false);
+  }
+
+  if (loading)
     return (
-      <div className="container mx-auto py-10 text-center text-muted-foreground">
-        Không tìm thấy thể loại.
+      <div className="container mx-auto px-4 py-8">
+        <p className="text-muted-foreground text-center">Đang tải truyện...</p>
       </div>
     );
-  }
+
+  if (stories.length === 0)
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-2xl font-bold mb-4 text-foreground">
+          {genreName || "Thể loại"} chưa có truyện nào
+        </h1>
+        <Link to="/">
+          <Button>Quay lại trang chủ</Button>
+        </Link>
+      </div>
+    );
 
   return (
-    <div className="container mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-6 text-foreground">
-        {genre.name}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8 text-foreground">
+        Thể loại: {genreName || slug}
       </h1>
-
-      {stories.length === 0 ? (
-        <p className="text-muted-foreground">Hiện chưa có truyện nào trong thể loại này.</p>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {stories.map((story) => (
-            <Link key={story.id} to={`/story/${story.slug}`}>
-              <Card className="hover:shadow-lg transition-all duration-200">
-                <CardContent className="p-0">
-                  <img
-                    src={story.cover_url}
-                    alt={story.title}
-                    className="w-full h-56 object-cover rounded-t-md"
-                  />
-                  <div className="p-3">
-                    <h3 className="font-semibold line-clamp-2 text-foreground">{story.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
-                      {story.author || "Đang cập nhật"}
-                    </p>
-                    <div className="flex items-center text-xs text-muted-foreground mt-2">
-                      <Eye className="h-3 w-3 mr-1" /> {story.views ?? 0} lượt xem
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        {stories.map((story) => (
+          <StoryCard
+            key={story.id}
+            story={{
+              id: story.id,
+              title: story.title,
+              author: story.author || "Đang cập nhật",
+              coverImage: story.coverImage || story.coverimage || "https://placehold.co/300x400?text=No+Image",
+              slug: story.slug,
+              rating: story.rating || 0,
+              views: story.views || 0,
+              status: story.status || "Ongoing",
+              genres: story.genres || [],
+              lastUpdated: story.updated_at || story.created_at,
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }
