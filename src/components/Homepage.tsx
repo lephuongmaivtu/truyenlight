@@ -344,100 +344,73 @@ return (
 
     return (
       <SwiperSlide key={story.id}>
-        <Link
-          to={`/story/${storySlug}`}
-          className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
-        >
-         <div
-          className="relative w-full overflow-hidden rounded-md"
-          style={{
-            aspectRatio: "3 / 4",   // Giữ tỉ lệ 3:4 (chuẩn truyện)
-            height: "auto",         // Không giới hạn cứng
-          }}
-        >
-          <Link
-            to={`/story/${storySlug}`}
-            className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-lg transition-all duration-300"
-            style={{ overflow: "hidden" }} // ✅ đảm bảo ảnh không tràn ra ngoài
-          >
-            <div
-              className="relative w-full overflow-hidden rounded-md"
-              style={{
-                aspectRatio: "3 / 4",
-                height: "auto",
-              }}
-            >
-              <img
-                src={imageSrc}
-                alt={story.title}
-                className="w-full h-full object-cover transform transition-transform duration-500 ease-out group-hover:scale-110" // ✅ hiệu ứng phóng to rõ hơn
-              />
-            </div>
-          </Link>
+  <Link
+    to={`/story/${storySlug}`}
+    className="group relative block overflow-hidden rounded-md shadow-md hover:shadow-xl transition-all duration-500 ease-out"
+  >
+    {/* Ảnh truyện */}
+    <div className="relative w-full overflow-hidden rounded-md" style={{ aspectRatio: "3 / 4" }}>
+      <img
+        src={imageSrc}
+        alt={story.title}
+        className="w-full h-full object-cover transform transition-transform duration-500 ease-out group-hover:scale-110 group-hover:brightness-110"
+      />
+    </div>
 
+    {/* Overlay đen + tiêu đề + lượt xem */}
+    <div
+      style={{
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: "35%",
+        backgroundColor: "rgba(0, 0, 0, 0.45)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        padding: "10px 14px 8px 14px",
+        zIndex: 10,
+      }}
+    >
+      <h3
+        style={{
+          color: "#fff",
+          fontSize: "0.85rem",
+          fontWeight: 600,
+          margin: 0,
+          lineHeight: 1.4,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          display: "-webkit-box",
+          WebkitBoxOrient: "vertical",
+          WebkitLineClamp: 2,
+          whiteSpace: "normal",
+          wordBreak: "break-word",
+        }}
+        className="truncate-title"
+      >
+        {story.title}
+      </h3>
 
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "4px",
+          marginTop: "2px",
+          fontSize: "11px",
+          color: "#ddd",
+        }}
+      >
+        <Eye size={12} color="#00bfff" />
+        <span>{story.views?.toLocaleString() || 0}</span>
+        <span>lượt xem</span>
+      </div>
+    </div>
+  </Link>
+</SwiperSlide>
 
-
-          {/* 🔥 Lớp đen chiếm 1/3 chân ảnh - dùng inline style, không cần Tailwind */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: "32%",
-              backgroundColor: "rgba(0, 0, 0, 0.4)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              padding: "8px 12px",
-              zIndex: 10,
-            }}
-          >
-           <h3
-            style={{
-              color: "#fff",
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              margin: 0,
-              lineHeight: 1.4,
-              overflow: "hidden",
-              textOverflow: "ellipsis",       // ✨ hiển thị dấu “...”
-              display: "-webkit-box",         // ✨ cho phép clamp nhiều dòng
-              WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 2,             // ✨ tối đa 2 dòng
-              whiteSpace: "normal",           // ✨ cho phép xuống dòng
-              wordBreak: "break-word",        // ✨ cắt từ dài
-            }}
-            className="truncate-title"
-          >
-            {story.title}
-          </h3>
-
-          
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                marginTop: "2px",
-                fontSize: "11px",
-                color: "#ddd",
-              }}
-            >
-              <Eye size={12} color="#00bfff" />
-              <span>{story.views?.toLocaleString() || 0}</span>
-              <span>lượt xem</span>
-            </div>
-          </div>
-
-            
-          </div>
-        </Link>
-      </SwiperSlide>
-    );
-  })}
-</Swiper>
 
     </div>
   </div>
