@@ -251,12 +251,12 @@ useEffect(() => {
 
 return (
   <div className="min-h-screen bg-background">
-    <div className="max-w-[1280px] mx-auto px-6">
+   <div className="max-w-[1280px] mx-auto px-0 md:px-6">
       {/* toàn bộ nội dung còn lại */}
    
     {/* 🔹 Banner + Search */}
     <section className="bg-gradient-to-r from-primary/5 to-primary/5 py-6">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-0 md:px-4">
         <img
           src="https://i.ibb.co/zhKSq1L0/Truyenlighttl-2.png"
           alt="Banner"
