@@ -11,8 +11,8 @@ import { ProfilePage } from "./pages/ProfilePage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { usePageTracking } from "./hooks/usePageTracking";
-import DailyTasks from "./components/Author/DailyTasks";
-import RewardShop from "./components/Author/RewardShop";
+import DailyTasks from "./components/author/DailyTasks";
+import RewardShop from "./components/author/RewardShop";
 
 
 // ✅ Đúng đường dẫn (sau khi tách ra thư mục author)
