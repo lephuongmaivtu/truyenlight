@@ -21,7 +21,7 @@ export default function DailyTasks() {
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
-  // 🧠 Lấy user hiện tại
+  // 🧠 Lấy user
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) {
@@ -38,25 +38,13 @@ export default function DailyTasks() {
     (async () => {
       setLoading(true);
 
-      // ✅ Lấy nhiệm vụ, nếu bảng không có hoặc lỗi thì fallback sang default
-      let baseTasks: any[] = [];
-      const { data: dbTasks, error: taskErr } = await supabase
-        .from("tasks")
-        .select("id, name, description, reward_points");
+      // 🗂️ Nhiệm vụ mặc định (loại bỏ chia sẻ link)
+      const baseTasks = [
+        { id: "1", name: "Điểm danh hôm nay", description: "Đăng nhập & bấm điểm danh", reward_points: 10 },
+        { id: "2", name: "Đọc truyện 30 phút", description: "Đọc tích lũy ≥ 30 phút", reward_points: 30 },
+        { id: "3", name: "Bình luận 1 chương", description: "Viết ít nhất 1 bình luận hợp lệ", reward_points: 10 },
+      ];
 
-      if (taskErr || !dbTasks) {
-        console.warn("⚠️ Không lấy được dữ liệu từ bảng tasks, dùng mặc định");
-        baseTasks = [
-          { id: "1", name: "Điểm danh hôm nay", description: "Đăng nhập & bấm điểm danh", reward_points: 10 },
-          { id: "2", name: "Đọc truyện 30 phút", description: "Đọc tích lũy ≥ 30 phút", reward_points: 30 },
-          { id: "3", name: "Bình luận 1 chương", description: "Viết ít nhất 1 bình luận hợp lệ", reward_points: 10 },
-        ];
-      } else {
-        // lọc bỏ nhiệm vụ chia sẻ link nếu có
-        baseTasks = dbTasks.filter((t) => t.name !== "Chia sẻ 1 truyện");
-      }
-
-      // 🧾 Lấy ví
       const { data: balanceRow } = await supabase
         .from("user_balances")
         .select("balance")
@@ -65,7 +53,6 @@ export default function DailyTasks() {
 
       setBalance(balanceRow?.balance ?? 0);
 
-      // 🧾 Lấy trạng thái nhiệm vụ user
       const { data: userTaskRows } = await supabase
         .from("user_tasks")
         .select("*")
@@ -89,30 +76,15 @@ export default function DailyTasks() {
     })();
   }, [userId]);
 
-  // 🪙 Nhận thưởng
-  async function claimReward(task: Task) {
-    if (!userId) return;
-
-    // Check lại tránh bug nhận nhiều lần
-    const { data: existing } = await supabase
-      .from("user_tasks")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("task_id", task.id)
-      .maybeSingle();
-
-    if (existing?.reward_claimed) {
-      alert("⚠️ Bạn đã nhận thưởng nhiệm vụ này rồi!");
-      return;
-    }
-
+  // 🪙 Cộng xu + update task
+  async function addCoins(taskId: string, amount: number) {
     const { data: balanceRow } = await supabase
       .from("user_balances")
       .select("balance")
       .eq("user_id", userId)
       .maybeSingle();
 
-    const newBalance = (balanceRow?.balance ?? 0) + task.reward_points;
+    const newBalance = (balanceRow?.balance ?? 0) + amount;
     await supabase
       .from("user_balances")
       .upsert({
@@ -121,32 +93,18 @@ export default function DailyTasks() {
         updated_at: new Date().toISOString(),
       });
 
-    await supabase
-      .from("user_tasks")
-      .upsert({
-        user_id: userId,
-        task_id: task.id,
-        completed: true,
-        reward_claimed: true,
-        claimed_at: new Date().toISOString(),
-      });
-
     await supabase.from("user_transactions").insert([
-      { user_id: userId, task_id: task.id, amount: task.reward_points, type: "reward" },
+      { user_id: userId, task_id: taskId, amount, type: "reward" },
     ]);
 
     setBalance(newBalance);
-    setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, reward_claimed: true } : t)));
-    alert(`🎉 Nhận thành công ${task.reward_points} xu!`);
   }
 
-  // 🕓 Điểm danh hôm nay
-  async function checkInToday() {
+  // 🎯 Điểm danh hôm nay
+  async function handleCheckIn(task: Task) {
     if (!userId) return;
-    const task = tasks.find((t) => t.name === "Điểm danh hôm nay");
-    if (!task) return;
-
     const today = new Date().toISOString().slice(0, 10);
+
     const { data: existing } = await supabase
       .from("user_tasks")
       .select("*")
@@ -165,17 +123,49 @@ export default function DailyTasks() {
         user_id: userId,
         task_id: task.id,
         completed: true,
-        reward_claimed: false,
+        reward_claimed: true,
         completed_at: new Date().toISOString(),
+      });
+
+    await addCoins(task.id, task.reward_points);
+
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === task.id ? { ...t, completed: true, reward_claimed: true } : t
+      )
+    );
+
+    alert(`🎉 Điểm danh thành công +${task.reward_points} xu!`);
+  }
+
+  // 🪙 Nhận thưởng cho các task khác
+  async function claimReward(task: Task) {
+    if (!userId) return;
+
+    if (task.reward_claimed) {
+      alert("⚠️ Bạn đã nhận thưởng nhiệm vụ này rồi!");
+      return;
+    }
+
+    await addCoins(task.id, task.reward_points);
+
+    await supabase
+      .from("user_tasks")
+      .upsert({
+        user_id: userId,
+        task_id: task.id,
+        completed: true,
+        reward_claimed: true,
+        claimed_at: new Date().toISOString(),
       });
 
     setTasks((prev) =>
       prev.map((t) =>
-        t.id === task.id ? { ...t, completed: true, reward_claimed: false } : t
+        t.id === task.id ? { ...t, reward_claimed: true } : t
       )
     );
 
-    alert("🎯 Điểm danh thành công! Giờ bạn có thể nhận thưởng!");
+    alert(`🎉 Nhận thành công ${task.reward_points} xu!`);
   }
 
   if (loading) {
@@ -199,11 +189,10 @@ export default function DailyTasks() {
         </div>
       </div>
 
-      {tasks.length === 0 ? (
-        <div className="text-center text-muted-foreground">Không có nhiệm vụ nào.</div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {tasks.map((task) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {tasks.map((task) => {
+          const isCheckIn = task.name === "Điểm danh hôm nay";
+          return (
             <Card
               key={task.id}
               className={`transition border ${
@@ -228,22 +217,22 @@ export default function DailyTasks() {
                   <span className="text-green-600 flex items-center gap-1">
                     <CheckCircle className="w-4 h-4" /> Đã nhận
                   </span>
+                ) : isCheckIn ? (
+                  <Button size="sm" onClick={() => handleCheckIn(task)}>
+                    Điểm danh
+                  </Button>
                 ) : task.completed ? (
                   <Button size="sm" onClick={() => claimReward(task)}>
                     Nhận thưởng
-                  </Button>
-                ) : task.name === "Điểm danh hôm nay" ? (
-                  <Button size="sm" onClick={checkInToday}>
-                    Điểm danh
                   </Button>
                 ) : (
                   <span className="text-xs">Chưa hoàn thành</span>
                 )}
               </CardContent>
             </Card>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
     </AuthorLayout>
   );
 }
