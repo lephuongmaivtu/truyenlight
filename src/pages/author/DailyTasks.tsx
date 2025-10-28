@@ -60,25 +60,63 @@ export default function DailyTasks() {
   }, [userId]);
 
   // 🪙 Hàm bấm “Nhận thưởng”
-  async function claimReward(taskId: string) {
-    if (!userId) return;
+     async function claimReward(taskId: string) {
+      if (!userId) return;
+    
+      const task = tasks.find((t) => t.id === taskId);
+      if (!task) return;
+    
+      // B1: Kiểm tra ví user đã có chưa
+      const { data: balanceRow } = await supabase
+        .from("user_balances")
+        .select("balance")
+        .eq("user_id", userId)
+        .maybeSingle();
+    
+      // B2: Nếu chưa có -> tạo ví mới
+      if (!balanceRow) {
+        await supabase.from("user_balances").insert([
+          { user_id: userId, balance: task.reward_points },
+        ]);
+      } else {
+        // B3: Nếu đã có -> cộng xu
+        await supabase
+          .from("user_balances")
+          .update({
+            balance: (balanceRow.balance ?? 0) + task.reward_points,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("user_id", userId);
+      }
+    
+      // B4: Ghi log giao dịch
+      await supabase.from("user_transactions").insert([
+        {
+          user_id: userId,
+          task_id: taskId,
+          amount: task.reward_points,
+          type: "reward",
+        },
+      ]);
+    
+      // B5: Đánh dấu nhiệm vụ đã nhận thưởng
+      await supabase
+        .from("user_tasks")
+        .update({
+          reward_claimed: true,
+          claimed_at: new Date().toISOString(),
+        })
+        .eq("user_id", userId)
+        .eq("task_id", taskId);
+    
+      // B6: Cập nhật UI
+      setTasks((prev) =>
+        prev.map((t) => (t.id === taskId ? { ...t, reward_claimed: true } : t))
+      );
+    
+      alert(`🎉 Bạn đã nhận ${task.reward_points} xu vào ví!`);
+    }
 
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
-
-    // Cập nhật UI ngay
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === taskId ? { ...t, reward_claimed: true } : t
-      )
-    );
-
-    // Ghi log xu (mock, nếu có bảng user_balance thì update thật)
-    await supabase
-      .from("user_transactions")
-      .insert([{ user_id: userId, task_id: taskId, amount: task.reward_points, type: "reward" }]);
-
-    console.log(`Cộng ${task.reward_points} xu cho user ${userId}`);
 
     // Nếu có bảng user_tasks
     // await supabase.from("user_tasks").update({ reward_claimed: true }).eq("user_id", userId).eq("task_id", taskId);
