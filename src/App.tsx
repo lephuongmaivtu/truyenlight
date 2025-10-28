@@ -55,6 +55,9 @@ function AppContent() {
           <Route path="/author/upload-chapter" element={<UploadChapterPage />} />
           <Route path="/author/revenue" element={<RevenuePage />} />
 
+           {/* Khu vực nhiệm vụ */}
+           <Route path="/author/tasks" element={<DailyTasks />} />
+           <Route path="/shop" element={<RewardShop />} />
         </Routes>
       </main>
 
