@@ -6,7 +6,7 @@ import { Button } from "../../components/ui/button";
 import { Gift, CheckCircle } from "lucide-react";
 
 type Task = {
-  id: string;
+  id: string; // uuid từ bảng tasks
   name: string;
   description: string;
   reward_points: number;
@@ -32,7 +32,7 @@ export default function DailyTasks() {
     });
   }, []);
 
-  // ⚙️ 2️⃣ Load balance & nhiệm vụ khi có userId
+  // ⚙️ 2️⃣ Load balance + nhiệm vụ khi có userId
   useEffect(() => {
     if (!userId) return;
     (async () => {
@@ -48,35 +48,45 @@ export default function DailyTasks() {
       if (balanceErr) console.error("⚠️ Lỗi khi lấy ví:", balanceErr);
       if (balanceRow) setBalance(balanceRow.balance);
 
-      // --- Fetch user_tasks ---
-      const { data: userTaskRows, error: userTaskErr } = await supabase
+      // --- Fetch danh sách task gốc từ bảng tasks ---
+      const { data: baseTasks, error: taskErr } = await supabase
+        .from("tasks")
+        .select("id, name, description, reward_points");
+
+      if (taskErr) {
+        console.error("⚠️ Lỗi khi lấy tasks:", taskErr);
+        setLoading(false);
+        return;
+      }
+
+      // --- Fetch user_tasks của user ---
+      const { data: userTasks, error: userTaskErr } = await supabase
         .from("user_tasks")
         .select("*")
         .eq("user_id", userId);
 
       if (userTaskErr) console.error("⚠️ Lỗi khi lấy user_tasks:", userTaskErr);
 
-      // --- Danh sách nhiệm vụ cơ bản ---
-      const baseTasks = [
-        { id: "1", name: "Điểm danh hôm nay", description: "Đăng nhập & bấm điểm danh", reward_points: 10 },
-        { id: "2", name: "Đọc truyện 30 phút", description: "Đọc tích lũy ≥ 30 phút", reward_points: 30 },
-        { id: "3", name: "Bình luận 1 chương", description: "Viết ít nhất 1 bình luận hợp lệ", reward_points: 10 },
-      ];
-
       const today = new Date().toDateString();
 
-      const merged: Task[] = baseTasks.map((t) => {
-        const ut = userTaskRows?.find((x) => String(x.task_id) === t.id);
-        const completedToday =
-          ut?.completed_at && new Date(ut.completed_at).toDateString() === today;
+      // Gộp 2 bảng lại (baseTasks + userTasks)
+      const merged: Task[] =
+        baseTasks?.map((t) => {
+          const ut = userTasks?.find((x) => x.task_id === t.id);
+          const completedToday =
+            ut?.completed_at &&
+            new Date(ut.completed_at).toDateString() === today;
 
-        return {
-          ...t,
-          completed: completedToday,
-          reward_claimed: completedToday,
-          completed_at: ut?.completed_at ?? null,
-        };
-      });
+          return {
+            id: t.id,
+            name: t.name,
+            description: t.description,
+            reward_points: t.reward_points,
+            completed: completedToday,
+            reward_claimed: !!ut?.reward_claimed,
+            completed_at: ut?.completed_at ?? null,
+          };
+        }) ?? [];
 
       setTasks(merged);
       setLoading(false);
@@ -106,10 +116,10 @@ export default function DailyTasks() {
     if (balanceErr) console.error("⚠️ Lỗi khi cập nhật balance:", balanceErr);
 
     const { error: txErr } = await supabase.from("user_transactions").insert([
-      { user_id: userId, task_id: taskId, amount, type: "reward", note: "Điểm danh hằng ngày" },
+      { user_id: userId, task_id: taskId, amount, type: "reward", note: "Thưởng nhiệm vụ hàng ngày" },
     ]);
 
-    if (txErr) console.error("⚠️ Lỗi khi insert user_transactions:", txErr);
+    if (txErr) console.error("⚠️ Lỗi khi ghi user_transactions:", txErr);
 
     setBalance(newBalance);
   }
@@ -121,7 +131,7 @@ export default function DailyTasks() {
     const today = new Date().toISOString().slice(0, 10);
     console.log("✅ Check-in started for task:", task.id, "user:", userId);
 
-    // Kiểm tra task hôm nay
+    // Kiểm tra xem user đã hoàn thành task này hôm nay chưa
     const { data: existing, error: checkErr } = await supabase
       .from("user_tasks")
       .select("completed_at")
@@ -132,7 +142,7 @@ export default function DailyTasks() {
     if (checkErr) console.error("⚠️ Lỗi khi kiểm tra task:", checkErr);
 
     if (existing?.completed_at && existing.completed_at.slice(0, 10) === today) {
-      alert("✅ Hôm nay bạn đã điểm danh rồi!");
+      alert("✅ Hôm nay bạn đã hoàn thành nhiệm vụ này rồi!");
       return;
     }
 
@@ -160,7 +170,7 @@ export default function DailyTasks() {
       )
     );
 
-    alert(`🎉 Điểm danh thành công +${task.reward_points} xu!`);
+    alert(`🎉 Nhiệm vụ hoàn thành! +${task.reward_points} xu`);
   }
 
   // 🕒 5️⃣ Loading state
@@ -210,7 +220,7 @@ export default function DailyTasks() {
                 </span>
               ) : (
                 <Button size="sm" onClick={() => handleCheckIn(task)}>
-                  Điểm danh
+                  Hoàn thành
                 </Button>
               )}
             </CardContent>
