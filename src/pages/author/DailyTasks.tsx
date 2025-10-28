@@ -45,7 +45,7 @@ export default function DailyTasks() {
         .eq("user_id", userId)
         .maybeSingle();
 
-      if (balanceErr) console.error("Lỗi khi lấy ví:", balanceErr);
+      if (balanceErr) console.error("⚠️ Lỗi khi lấy ví:", balanceErr);
       if (balanceRow) setBalance(balanceRow.balance);
 
       // --- Fetch user_tasks ---
@@ -54,19 +54,19 @@ export default function DailyTasks() {
         .select("*")
         .eq("user_id", userId);
 
-      if (userTaskErr) console.error("Lỗi khi lấy nhiệm vụ:", userTaskErr);
+      if (userTaskErr) console.error("⚠️ Lỗi khi lấy user_tasks:", userTaskErr);
 
-      // --- Tính toán trạng thái nhiệm vụ ---
-      const today = new Date().toDateString(); // Dùng local timezone
-
+      // --- Danh sách nhiệm vụ cơ bản ---
       const baseTasks = [
         { id: "1", name: "Điểm danh hôm nay", description: "Đăng nhập & bấm điểm danh", reward_points: 10 },
         { id: "2", name: "Đọc truyện 30 phút", description: "Đọc tích lũy ≥ 30 phút", reward_points: 30 },
         { id: "3", name: "Bình luận 1 chương", description: "Viết ít nhất 1 bình luận hợp lệ", reward_points: 10 },
       ];
 
+      const today = new Date().toDateString();
+
       const merged: Task[] = baseTasks.map((t) => {
-        const ut = userTaskRows?.find((x) => x.task_id === t.id);
+        const ut = userTaskRows?.find((x) => String(x.task_id) === t.id);
         const completedToday =
           ut?.completed_at && new Date(ut.completed_at).toDateString() === today;
 
@@ -96,87 +96,72 @@ export default function DailyTasks() {
     const currentBalance = balanceRow?.balance ?? 0;
     const newBalance = currentBalance + amount;
 
-    // ✅ upsert có onConflict để tránh reset balance
-    await supabase
+    const { error: balanceErr } = await supabase
       .from("user_balances")
       .upsert(
         { user_id: userId, balance: newBalance, updated_at: new Date().toISOString() },
         { onConflict: "user_id" }
       );
 
-    await supabase.from("user_transactions").insert([
-      { user_id: userId, task_id: taskId, amount, type: "reward" },
+    if (balanceErr) console.error("⚠️ Lỗi khi cập nhật balance:", balanceErr);
+
+    const { error: txErr } = await supabase.from("user_transactions").insert([
+      { user_id: userId, task_id: taskId, amount, type: "reward", note: "Điểm danh hằng ngày" },
     ]);
+
+    if (txErr) console.error("⚠️ Lỗi khi insert user_transactions:", txErr);
 
     setBalance(newBalance);
   }
 
   // 🎯 4️⃣ Xử lý khi user bấm “Điểm danh”
-      async function handleCheckIn(task: Task) {
-      if (!userId) return;
-    
-      const today = new Date().toISOString().slice(0, 10);
-      console.log("✅ Check-in started for task:", task.id, "user:", userId);
-    
-      // Kiểm tra task hôm nay
-      const { data: existing, error: checkErr } = await supabase
-        .from("user_tasks")
-        .select("completed_at")
-        .eq("user_id", userId)
-        .eq("task_id", task.id)
-        .maybeSingle();
-    
-      if (checkErr) console.error("❌ Lỗi khi kiểm tra task:", checkErr);
-    
-      if (existing?.completed_at && existing.completed_at.slice(0, 10) === today) {
-        alert("✅ Hôm nay bạn đã điểm danh rồi!");
-        return;
-      }
-    
-      // ✅ Ghi task + cộng xu
-      const { error: upsertErr } = await supabase.from("user_tasks").upsert({
-        user_id: userId,
-        task_id: task.id,
-        completed: true,
-        reward_claimed: true,
-        completed_at: new Date().toISOString(),
-      });
-    
-      if (upsertErr) {
-        console.error("❌ Lỗi upsert user_tasks:", upsertErr);
-        alert("Lỗi ghi nhiệm vụ, xem console!");
-        return;
-      }
-    
-      const { error: txErr } = await supabase.from("user_transactions").insert([
-        {
-          user_id: userId,
-          task_id: task.id,
-          amount: task.reward_points,
-          type: "reward",
-          note: "Điểm danh hằng ngày",
-        },
-      ]);
-    
-      if (txErr) {
-        console.error("❌ Lỗi ghi user_transactions:", txErr);
-      } else {
-        console.log("✅ Transaction saved!");
-      }
-    
-      await addCoins(task.id, task.reward_points);
-    
-      setTasks((prev) =>
-        prev.map((t) =>
-          t.id === task.id
-            ? { ...t, completed: true, reward_claimed: true }
-            : t
-        )
-      );
-    
-      alert(`🎉 Điểm danh thành công +${task.reward_points} xu!`);
+  async function handleCheckIn(task: Task) {
+    if (!userId) return;
+
+    const today = new Date().toISOString().slice(0, 10);
+    console.log("✅ Check-in started for task:", task.id, "user:", userId);
+
+    // Kiểm tra task hôm nay
+    const { data: existing, error: checkErr } = await supabase
+      .from("user_tasks")
+      .select("completed_at")
+      .eq("user_id", userId)
+      .eq("task_id", task.id)
+      .maybeSingle();
+
+    if (checkErr) console.error("⚠️ Lỗi khi kiểm tra task:", checkErr);
+
+    if (existing?.completed_at && existing.completed_at.slice(0, 10) === today) {
+      alert("✅ Hôm nay bạn đã điểm danh rồi!");
+      return;
     }
 
+    // ✅ Ghi task + cộng xu
+    const { error: upsertErr } = await supabase.from("user_tasks").upsert({
+      user_id: userId,
+      task_id: task.id,
+      completed: true,
+      reward_claimed: true,
+      completed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    if (upsertErr) {
+      console.error("❌ Lỗi upsert user_tasks:", upsertErr);
+      alert("Lỗi ghi nhiệm vụ, xem console!");
+      return;
+    }
+
+    await addCoins(task.id, task.reward_points);
+
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === task.id ? { ...t, completed: true, reward_claimed: true } : t
+      )
+    );
+
+    alert(`🎉 Điểm danh thành công +${task.reward_points} xu!`);
+  }
 
   // 🕒 5️⃣ Loading state
   if (loading) {
