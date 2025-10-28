@@ -112,53 +112,71 @@ export default function DailyTasks() {
   }
 
   // 🎯 4️⃣ Xử lý khi user bấm “Điểm danh”
-  async function handleCheckIn(task: Task) {
-    if (!userId) return;
-    if (task.completed) {
-      alert("✅ Hôm nay bạn đã điểm danh rồi!");
-      return;
-    }
-
-    const today = new Date().toDateString();
-
-    // Kiểm tra nhiệm vụ trong DB
-    const { data: existing } = await supabase
-      .from("user_tasks")
-      .select("completed_at")
-      .eq("user_id", userId)
-      .eq("task_id", task.id)
-      .maybeSingle();
-
-    if (existing?.completed_at && new Date(existing.completed_at).toDateString() === today) {
-      alert("✅ Hôm nay bạn đã điểm danh rồi!");
-      return;
-    }
-
-    // ✅ Ghi nhận nhiệm vụ + cộng xu
-    await supabase.from("user_tasks").upsert(
-      {
+      async function handleCheckIn(task: Task) {
+      if (!userId) return;
+    
+      const today = new Date().toISOString().slice(0, 10);
+      console.log("✅ Check-in started for task:", task.id, "user:", userId);
+    
+      // Kiểm tra task hôm nay
+      const { data: existing, error: checkErr } = await supabase
+        .from("user_tasks")
+        .select("completed_at")
+        .eq("user_id", userId)
+        .eq("task_id", task.id)
+        .maybeSingle();
+    
+      if (checkErr) console.error("❌ Lỗi khi kiểm tra task:", checkErr);
+    
+      if (existing?.completed_at && existing.completed_at.slice(0, 10) === today) {
+        alert("✅ Hôm nay bạn đã điểm danh rồi!");
+        return;
+      }
+    
+      // ✅ Ghi task + cộng xu
+      const { error: upsertErr } = await supabase.from("user_tasks").upsert({
         user_id: userId,
         task_id: task.id,
         completed: true,
         reward_claimed: true,
         completed_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id,task_id" }
-    );
+      });
+    
+      if (upsertErr) {
+        console.error("❌ Lỗi upsert user_tasks:", upsertErr);
+        alert("Lỗi ghi nhiệm vụ, xem console!");
+        return;
+      }
+    
+      const { error: txErr } = await supabase.from("user_transactions").insert([
+        {
+          user_id: userId,
+          task_id: task.id,
+          amount: task.reward_points,
+          type: "reward",
+          note: "Điểm danh hằng ngày",
+        },
+      ]);
+    
+      if (txErr) {
+        console.error("❌ Lỗi ghi user_transactions:", txErr);
+      } else {
+        console.log("✅ Transaction saved!");
+      }
+    
+      await addCoins(task.id, task.reward_points);
+    
+      setTasks((prev) =>
+        prev.map((t) =>
+          t.id === task.id
+            ? { ...t, completed: true, reward_claimed: true }
+            : t
+        )
+      );
+    
+      alert(`🎉 Điểm danh thành công +${task.reward_points} xu!`);
+    }
 
-    await addCoins(task.id, task.reward_points);
-
-    // Cập nhật UI
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === task.id
-          ? { ...t, completed: true, reward_claimed: true, completed_at: new Date().toISOString() }
-          : t
-      )
-    );
-
-    alert(`🎉 Điểm danh thành công +${task.reward_points} xu!`);
-  }
 
   // 🕒 5️⃣ Loading state
   if (loading) {
