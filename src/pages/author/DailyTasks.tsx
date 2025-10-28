@@ -38,20 +38,25 @@ export default function DailyTasks() {
     (async () => {
       setLoading(true);
 
-      // 1️⃣ Lấy nhiệm vụ từ bảng tasks (bỏ nhiệm vụ chia sẻ)
-      const { data: baseTasks } = await supabase
+      // ✅ Lấy nhiệm vụ, nếu bảng không có hoặc lỗi thì fallback sang default
+      let baseTasks: any[] = [];
+      const { data: dbTasks, error: taskErr } = await supabase
         .from("tasks")
-        .select("id, name, description, reward_points")
-        .neq("name", "Chia sẻ 1 truyện")
-        .eq("active", true);
+        .select("id, name, description, reward_points");
 
-      // 2️⃣ Lấy trạng thái nhiệm vụ của user
-      const { data: userTaskRows } = await supabase
-        .from("user_tasks")
-        .select("*")
-        .eq("user_id", userId);
+      if (taskErr || !dbTasks) {
+        console.warn("⚠️ Không lấy được dữ liệu từ bảng tasks, dùng mặc định");
+        baseTasks = [
+          { id: "1", name: "Điểm danh hôm nay", description: "Đăng nhập & bấm điểm danh", reward_points: 10 },
+          { id: "2", name: "Đọc truyện 30 phút", description: "Đọc tích lũy ≥ 30 phút", reward_points: 30 },
+          { id: "3", name: "Bình luận 1 chương", description: "Viết ít nhất 1 bình luận hợp lệ", reward_points: 10 },
+        ];
+      } else {
+        // lọc bỏ nhiệm vụ chia sẻ link nếu có
+        baseTasks = dbTasks.filter((t) => t.name !== "Chia sẻ 1 truyện");
+      }
 
-      // 3️⃣ Lấy số dư xu
+      // 🧾 Lấy ví
       const { data: balanceRow } = await supabase
         .from("user_balances")
         .select("balance")
@@ -60,31 +65,35 @@ export default function DailyTasks() {
 
       setBalance(balanceRow?.balance ?? 0);
 
-      // 4️⃣ Gộp nhiệm vụ + trạng thái
-      const merged: Task[] =
-        baseTasks?.map((t) => {
-          const ut = userTaskRows?.find((x) => x.task_id === t.id);
-          return {
-            id: t.id,
-            name: t.name,
-            description: t.description,
-            reward_points: t.reward_points,
-            completed: ut?.completed ?? false,
-            reward_claimed: ut?.reward_claimed ?? false,
-            completed_at: ut?.completed_at ?? null,
-          };
-        }) ?? [];
+      // 🧾 Lấy trạng thái nhiệm vụ user
+      const { data: userTaskRows } = await supabase
+        .from("user_tasks")
+        .select("*")
+        .eq("user_id", userId);
+
+      const merged: Task[] = baseTasks.map((t) => {
+        const ut = userTaskRows?.find((x) => x.task_id === t.id);
+        return {
+          id: t.id,
+          name: t.name,
+          description: t.description,
+          reward_points: t.reward_points,
+          completed: ut?.completed ?? false,
+          reward_claimed: ut?.reward_claimed ?? false,
+          completed_at: ut?.completed_at ?? null,
+        };
+      });
 
       setTasks(merged);
       setLoading(false);
     })();
   }, [userId]);
 
-  // 🪙 Hàm nhận thưởng
+  // 🪙 Nhận thưởng
   async function claimReward(task: Task) {
     if (!userId) return;
 
-    // 🧩 kiểm tra lại trạng thái mới nhất
+    // Check lại tránh bug nhận nhiều lần
     const { data: existing } = await supabase
       .from("user_tasks")
       .select("*")
@@ -93,11 +102,10 @@ export default function DailyTasks() {
       .maybeSingle();
 
     if (existing?.reward_claimed) {
-      alert("⚠️ Bạn đã nhận thưởng cho nhiệm vụ này rồi!");
+      alert("⚠️ Bạn đã nhận thưởng nhiệm vụ này rồi!");
       return;
     }
 
-    // 🪙 Cộng xu
     const { data: balanceRow } = await supabase
       .from("user_balances")
       .select("balance")
@@ -105,19 +113,14 @@ export default function DailyTasks() {
       .maybeSingle();
 
     const newBalance = (balanceRow?.balance ?? 0) + task.reward_points;
-
     await supabase
       .from("user_balances")
       .upsert({
         user_id: userId,
         balance: newBalance,
         updated_at: new Date().toISOString(),
-      })
-      .eq("user_id", userId);
+      });
 
-    setBalance(newBalance);
-
-    // 🧾 Cập nhật nhiệm vụ
     await supabase
       .from("user_tasks")
       .upsert({
@@ -128,34 +131,22 @@ export default function DailyTasks() {
         claimed_at: new Date().toISOString(),
       });
 
-    // 🧾 Ghi log
     await supabase.from("user_transactions").insert([
-      {
-        user_id: userId,
-        task_id: task.id,
-        amount: task.reward_points,
-        type: "reward",
-      },
+      { user_id: userId, task_id: task.id, amount: task.reward_points, type: "reward" },
     ]);
 
-    // 🔁 Update UI
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === task.id ? { ...t, reward_claimed: true } : t
-      )
-    );
-
+    setBalance(newBalance);
+    setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, reward_claimed: true } : t)));
     alert(`🎉 Nhận thành công ${task.reward_points} xu!`);
   }
 
   // 🕓 Điểm danh hôm nay
   async function checkInToday() {
     if (!userId) return;
-
-    const today = new Date().toISOString().slice(0, 10);
     const task = tasks.find((t) => t.name === "Điểm danh hôm nay");
     if (!task) return;
 
+    const today = new Date().toISOString().slice(0, 10);
     const { data: existing } = await supabase
       .from("user_tasks")
       .select("*")
@@ -163,14 +154,11 @@ export default function DailyTasks() {
       .eq("task_id", task.id)
       .maybeSingle();
 
-    const lastCheckIn = existing?.completed_at?.slice(0, 10);
-
-    if (lastCheckIn === today) {
+    if (existing?.completed_at?.slice(0, 10) === today) {
       alert("✅ Hôm nay bạn đã điểm danh rồi!");
       return;
     }
 
-    // Chưa điểm danh hôm nay → cập nhật
     await supabase
       .from("user_tasks")
       .upsert({
@@ -211,47 +199,51 @@ export default function DailyTasks() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {tasks.map((task) => (
-          <Card
-            key={task.id}
-            className={`transition border ${
-              task.reward_claimed
-                ? "border-green-400 bg-green-50"
-                : task.completed
-                ? "border-yellow-300 bg-yellow-50"
-                : ""
-            }`}
-          >
-            <CardHeader className="pb-2 flex justify-between items-center">
-              <CardTitle className="text-lg">{task.name}</CardTitle>
-              <span className="text-sm font-medium text-primary">
-                +{task.reward_points} xu
-              </span>
-            </CardHeader>
-
-            <CardContent className="text-sm text-muted-foreground flex justify-between items-center">
-              <p>{task.description}</p>
-
-              {task.reward_claimed ? (
-                <span className="text-green-600 flex items-center gap-1">
-                  <CheckCircle className="w-4 h-4" /> Đã nhận
+      {tasks.length === 0 ? (
+        <div className="text-center text-muted-foreground">Không có nhiệm vụ nào.</div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {tasks.map((task) => (
+            <Card
+              key={task.id}
+              className={`transition border ${
+                task.reward_claimed
+                  ? "border-green-400 bg-green-50"
+                  : task.completed
+                  ? "border-yellow-300 bg-yellow-50"
+                  : ""
+              }`}
+            >
+              <CardHeader className="pb-2 flex justify-between items-center">
+                <CardTitle className="text-lg">{task.name}</CardTitle>
+                <span className="text-sm font-medium text-primary">
+                  +{task.reward_points} xu
                 </span>
-              ) : task.completed ? (
-                <Button size="sm" onClick={() => claimReward(task)}>
-                  Nhận thưởng
-                </Button>
-              ) : task.name === "Điểm danh hôm nay" ? (
-                <Button size="sm" onClick={checkInToday}>
-                  Điểm danh
-                </Button>
-              ) : (
-                <span className="text-xs">Chưa hoàn thành</span>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardHeader>
+
+              <CardContent className="text-sm text-muted-foreground flex justify-between items-center">
+                <p>{task.description}</p>
+
+                {task.reward_claimed ? (
+                  <span className="text-green-600 flex items-center gap-1">
+                    <CheckCircle className="w-4 h-4" /> Đã nhận
+                  </span>
+                ) : task.completed ? (
+                  <Button size="sm" onClick={() => claimReward(task)}>
+                    Nhận thưởng
+                  </Button>
+                ) : task.name === "Điểm danh hôm nay" ? (
+                  <Button size="sm" onClick={checkInToday}>
+                    Điểm danh
+                  </Button>
+                ) : (
+                  <span className="text-xs">Chưa hoàn thành</span>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </AuthorLayout>
   );
 }
