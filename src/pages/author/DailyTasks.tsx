@@ -199,7 +199,7 @@ export default function DailyTasks() {
       .maybeSingle();
 
     if (findErr || !ut) {
-      console.error("Find user_task error:", findErr);
+      console.error("Find user_tasks error:", findErr);
       setActing(null);
       return;
     }
@@ -220,7 +220,7 @@ export default function DailyTasks() {
       .select();
 
     if (updErr) {
-      console.error("Update user_task error:", updErr);
+      console.error("Update user_tasks error:", updErr);
       setActing(null);
       return;
     }
