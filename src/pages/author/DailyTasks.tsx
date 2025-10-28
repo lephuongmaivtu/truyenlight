@@ -21,6 +21,7 @@ export default function DailyTasks() {
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
+  // 🧠 1️⃣ Lấy user hiện tại
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) {
@@ -31,10 +32,32 @@ export default function DailyTasks() {
     });
   }, []);
 
+  // ⚙️ 2️⃣ Load balance & nhiệm vụ khi có userId
   useEffect(() => {
     if (!userId) return;
     (async () => {
       setLoading(true);
+
+      // --- Fetch balance ---
+      const { data: balanceRow, error: balanceErr } = await supabase
+        .from("user_balances")
+        .select("balance")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (balanceErr) console.error("Lỗi khi lấy ví:", balanceErr);
+      if (balanceRow) setBalance(balanceRow.balance);
+
+      // --- Fetch user_tasks ---
+      const { data: userTaskRows, error: userTaskErr } = await supabase
+        .from("user_tasks")
+        .select("*")
+        .eq("user_id", userId);
+
+      if (userTaskErr) console.error("Lỗi khi lấy nhiệm vụ:", userTaskErr);
+
+      // --- Tính toán trạng thái nhiệm vụ ---
+      const today = new Date().toDateString(); // Dùng local timezone
 
       const baseTasks = [
         { id: "1", name: "Điểm danh hôm nay", description: "Đăng nhập & bấm điểm danh", reward_points: 10 },
@@ -42,31 +65,13 @@ export default function DailyTasks() {
         { id: "3", name: "Bình luận 1 chương", description: "Viết ít nhất 1 bình luận hợp lệ", reward_points: 10 },
       ];
 
-      const { data: balanceRow } = await supabase
-        .from("user_balances")
-        .select("balance")
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      setBalance(balanceRow?.balance ?? 0);
-
-      const { data: userTaskRows } = await supabase
-        .from("user_tasks")
-        .select("*")
-        .eq("user_id", userId);
-
-      const today = new Date().toISOString().slice(0, 10);
-
       const merged: Task[] = baseTasks.map((t) => {
         const ut = userTaskRows?.find((x) => x.task_id === t.id);
         const completedToday =
-          ut?.completed_at && ut.completed_at.slice(0, 10) === today;
+          ut?.completed_at && new Date(ut.completed_at).toDateString() === today;
 
         return {
-          id: t.id,
-          name: t.name,
-          description: t.description,
-          reward_points: t.reward_points,
+          ...t,
           completed: completedToday,
           reward_claimed: completedToday,
           completed_at: ut?.completed_at ?? null,
@@ -78,20 +83,26 @@ export default function DailyTasks() {
     })();
   }, [userId]);
 
+  // 💰 3️⃣ Cộng xu an toàn
   async function addCoins(taskId: string, amount: number) {
+    if (!userId) return;
+
     const { data: balanceRow } = await supabase
       .from("user_balances")
       .select("balance")
       .eq("user_id", userId)
       .maybeSingle();
 
-    const newBalance = (balanceRow?.balance ?? 0) + amount;
+    const currentBalance = balanceRow?.balance ?? 0;
+    const newBalance = currentBalance + amount;
 
-    await supabase.from("user_balances").upsert({
-      user_id: userId,
-      balance: newBalance,
-      updated_at: new Date().toISOString(),
-    });
+    // ✅ upsert có onConflict để tránh reset balance
+    await supabase
+      .from("user_balances")
+      .upsert(
+        { user_id: userId, balance: newBalance, updated_at: new Date().toISOString() },
+        { onConflict: "user_id" }
+      );
 
     await supabase.from("user_transactions").insert([
       { user_id: userId, task_id: taskId, amount, type: "reward" },
@@ -100,11 +111,17 @@ export default function DailyTasks() {
     setBalance(newBalance);
   }
 
-  // ✅ Logic điểm danh — chỉ cộng xu 1 lần/ngày
+  // 🎯 4️⃣ Xử lý khi user bấm “Điểm danh”
   async function handleCheckIn(task: Task) {
     if (!userId) return;
+    if (task.completed) {
+      alert("✅ Hôm nay bạn đã điểm danh rồi!");
+      return;
+    }
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = new Date().toDateString();
+
+    // Kiểm tra nhiệm vụ trong DB
     const { data: existing } = await supabase
       .from("user_tasks")
       .select("completed_at")
@@ -112,22 +129,26 @@ export default function DailyTasks() {
       .eq("task_id", task.id)
       .maybeSingle();
 
-    if (existing?.completed_at && existing.completed_at.slice(0, 10) === today) {
+    if (existing?.completed_at && new Date(existing.completed_at).toDateString() === today) {
       alert("✅ Hôm nay bạn đã điểm danh rồi!");
       return;
     }
 
-    // Ghi nhận + cộng xu
-    await supabase.from("user_tasks").upsert({
-      user_id: userId,
-      task_id: task.id,
-      completed: true,
-      reward_claimed: true,
-      completed_at: new Date().toISOString(),
-    });
+    // ✅ Ghi nhận nhiệm vụ + cộng xu
+    await supabase.from("user_tasks").upsert(
+      {
+        user_id: userId,
+        task_id: task.id,
+        completed: true,
+        reward_claimed: true,
+        completed_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,task_id" }
+    );
 
     await addCoins(task.id, task.reward_points);
 
+    // Cập nhật UI
     setTasks((prev) =>
       prev.map((t) =>
         t.id === task.id
@@ -139,6 +160,7 @@ export default function DailyTasks() {
     alert(`🎉 Điểm danh thành công +${task.reward_points} xu!`);
   }
 
+  // 🕒 5️⃣ Loading state
   if (loading) {
     return (
       <AuthorLayout>
@@ -149,6 +171,7 @@ export default function DailyTasks() {
     );
   }
 
+  // 🎁 6️⃣ Render giao diện
   return (
     <AuthorLayout>
       <div className="flex items-center justify-between mb-6">
@@ -165,9 +188,7 @@ export default function DailyTasks() {
           <Card
             key={task.id}
             className={`transition border ${
-              task.reward_claimed
-                ? "border-green-400 bg-green-50"
-                : "border-gray-200"
+              task.reward_claimed ? "border-green-400 bg-green-50" : "border-gray-200"
             }`}
           >
             <CardHeader className="pb-2 flex justify-between items-center">
