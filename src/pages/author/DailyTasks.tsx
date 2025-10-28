@@ -5,23 +5,49 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 import { Button } from "../../components/ui/button";
 import { Gift, CheckCircle } from "lucide-react";
 
+/** ====== Types đúng với bảng trên Supabase ====== */
 type Task = {
-  id: string; // uuid từ bảng tasks
-  name: string;
-  description: string;
-  reward_points: number;
-  completed: boolean;
-  reward_claimed: boolean;
-  completed_at?: string | null;
+  id: string;               // tasks.id (uuid)
+  code: string | null;      // tasks.code
+  title: string;            // tasks.title
+  description: string | null; // tasks.description
+  reward_coin: number;      // tasks.reward_coin (int4)
+  active: boolean;          // tasks.active
 };
+
+type UserTaskRow = {
+  id: string;
+  user_id: string;
+  task_id: string;
+  task_date: string;        // 'YYYY-MM-DD'
+  progress: number | null;
+  is_completed: boolean;
+  completed_at: string | null;
+  reward_claimed: boolean;
+  claimed_at: string | null;
+  updated_at: string | null;
+};
+
+type MergedTask = {
+  id: string;
+  title: string;
+  description: string | null;
+  reward_coin: number;
+  is_completed_today: boolean;
+  reward_claimed_today: boolean;
+};
+
+const isoDate = (d: Date) => d.toISOString().slice(0, 10);
+const TODAY = isoDate(new Date());
 
 export default function DailyTasks() {
   const [userId, setUserId] = useState<string | null>(null);
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [balance, setBalance] = useState<number>(0);
+  const [tasks, setTasks] = useState<MergedTask[]>([]);
   const [loading, setLoading] = useState(true);
+  const [acting, setActing] = useState<string | null>(null); // task_id đang xử lý
 
-  // 🧠 1️⃣ Lấy user hiện tại
+  /** 1) Lấy user hiện tại */
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) {
@@ -32,164 +58,210 @@ export default function DailyTasks() {
     });
   }, []);
 
-  // ⚙️ 2️⃣ Load balance + nhiệm vụ khi có userId
+  /** 2) Helper: đảm bảo có dòng user_balances cho user */
+  const ensureBalanceRow = async (uid: string) => {
+    // tạo nếu chưa có (balance = 0)
+    const { error } = await supabase
+      .from("user_balances")
+      .upsert(
+        { user_id: uid, balance: 0, updated_at: new Date().toISOString() },
+        { onConflict: "user_id" }
+      );
+    if (error) console.error("ensureBalanceRow error:", error);
+  };
+
+  /** 3) Tải balance + list task + trạng thái hôm nay */
   useEffect(() => {
     if (!userId) return;
+
     (async () => {
       setLoading(true);
 
-      // --- Fetch balance ---
-      const { data: balanceRow, error: balanceErr } = await supabase
+      // Đảm bảo có balance row
+      await ensureBalanceRow(userId);
+
+      // Balance
+      const { data: balRow, error: balErr } = await supabase
         .from("user_balances")
         .select("balance")
         .eq("user_id", userId)
         .maybeSingle();
+      if (!balErr && balRow) setBalance(balRow.balance || 0);
 
-      if (balanceErr) console.error("⚠️ Lỗi khi lấy ví:", balanceErr);
-      if (balanceRow) setBalance(balanceRow.balance);
-
-      // --- Fetch danh sách task gốc từ bảng tasks ---
+      // Tasks (chỉ lấy active)
       const { data: baseTasks, error: taskErr } = await supabase
         .from("tasks")
-        .select("id, name, description, reward_points");
-
+        .select("id, code, title, description, reward_coin, active")
+        .eq("active", true);
       if (taskErr) {
-        console.error("⚠️ Lỗi khi lấy tasks:", taskErr);
+        console.error("Fetch tasks error:", taskErr);
         setLoading(false);
         return;
       }
 
-      // --- Fetch user_tasks của user ---
-      const { data: userTasks, error: userTaskErr } = await supabase
+      // user_tasks hôm nay
+      const { data: todaysUT, error: utErr } = await supabase
         .from("user_tasks")
         .select("*")
-        .eq("user_id", userId);
+        .eq("user_id", userId)
+        .eq("task_date", TODAY);
+      if (utErr) console.error("Fetch user_tasks error:", utErr);
 
-      if (userTaskErr) console.error("⚠️ Lỗi khi lấy user_tasks:", userTaskErr);
+      // Tạo bản ghi user_tasks hôm nay nếu thiếu
+      const missing = (baseTasks || []).filter(
+        (t) => !(todaysUT || []).some((ut) => ut.task_id === t.id)
+      );
+      if (missing.length > 0) {
+        const inserts = missing.map((t) => ({
+          user_id: userId,
+          task_id: t.id,
+          task_date: TODAY,
+          is_completed: false,
+          reward_claimed: false,
+          progress: 0,
+        }));
+        const { error: insertErr } = await supabase.from("user_tasks").insert(inserts);
+        if (insertErr) console.error("Insert user_tasks error:", insertErr);
+      }
 
-      const today = new Date().toDateString();
+      // Lấy lại user_tasks hôm nay (đảm bảo đủ)
+      const { data: ut2 } = await supabase
+        .from("user_tasks")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("task_date", TODAY);
 
-      // Gộp 2 bảng lại (baseTasks + userTasks)
-      const merged: Task[] =
-        baseTasks?.map((t) => {
-          const ut = userTasks?.find((x) => x.task_id === t.id);
-          const completedToday =
-            ut?.completed_at &&
-            new Date(ut.completed_at).toDateString() === today;
-
-          return {
-            id: t.id,
-            name: t.name,
-            description: t.description,
-            reward_points: t.reward_points,
-            completed: completedToday,
-            reward_claimed: !!ut?.reward_claimed,
-            completed_at: ut?.completed_at ?? null,
-          };
-        }) ?? [];
+      // Merge để render
+      const merged: MergedTask[] = (baseTasks || []).map((t) => {
+        const ut = (ut2 || []).find((x: UserTaskRow) => x.task_id === t.id);
+        return {
+          id: t.id,
+          title: t.title,
+          description: t.description,
+          reward_coin: t.reward_coin,
+          is_completed_today: !!ut?.is_completed,
+          reward_claimed_today: !!ut?.reward_claimed,
+        };
+      });
 
       setTasks(merged);
       setLoading(false);
     })();
   }, [userId]);
 
-  // 💰 3️⃣ Cộng xu an toàn
-  async function addCoins(taskId: string, amount: number) {
+  /** 4) Cộng xu an toàn: đảm bảo chỉ cộng khi user_tasks hôm nay chuyển reward_claimed=false -> true */
+  const creditReward = async (task_id: string, amount: number) => {
     if (!userId) return;
 
-    const { data: balanceRow } = await supabase
+    // Đảm bảo có balance row trước khi cộng
+    await ensureBalanceRow(userId);
+
+    // Cộng xu: (simple) đọc rồi update. (Guard đã ở bước update user_tasks – xem dưới)
+    const { data: balRow, error: bErr } = await supabase
       .from("user_balances")
       .select("balance")
       .eq("user_id", userId)
       .maybeSingle();
+    if (bErr) {
+      console.error("Get balance error:", bErr);
+      return;
+    }
+    const current = balRow?.balance || 0;
+    const next = current + amount;
 
-    const currentBalance = balanceRow?.balance ?? 0;
-    const newBalance = currentBalance + amount;
-
-    const { error: balanceErr } = await supabase
+    const { error: uErr } = await supabase
       .from("user_balances")
-      .upsert(
-        { user_id: userId, balance: newBalance, updated_at: new Date().toISOString() },
-        { onConflict: "user_id" }
-      );
+      .update({ balance: next, updated_at: new Date().toISOString() })
+      .eq("user_id", userId);
+    if (uErr) {
+      console.error("Update balance error:", uErr);
+      return;
+    }
+    setBalance(next);
+  };
 
-    if (balanceErr) console.error("⚠️ Lỗi khi cập nhật balance:", balanceErr);
-
-    const { error: txErr } = await supabase.from("user_transactions").insert([
-      { user_id: userId, task_id: taskId, amount, type: "reward", note: "Thưởng nhiệm vụ hàng ngày" },
-    ]);
-
-    if (txErr) console.error("⚠️ Lỗi khi ghi user_transactions:", txErr);
-
-    setBalance(newBalance);
-  }
-
-  // 🎯 4️⃣ Xử lý khi user bấm “Điểm danh”
-  async function handleCheckIn(task: Task) {
+  /** 5) Handle “Điểm danh/Hoàn thành”  — chỉ 1 lần/ngày */
+  const handleComplete = async (task: MergedTask) => {
     if (!userId) return;
+    if (task.reward_claimed_today) {
+      alert("✅ Hôm nay bạn đã nhận thưởng nhiệm vụ này rồi!");
+      return;
+    }
+    setActing(task.id);
 
-    const today = new Date().toISOString().slice(0, 10);
-    console.log("✅ Check-in started for task:", task.id, "user:", userId);
-
-    // Kiểm tra xem user đã hoàn thành task này hôm nay chưa
-    const { data: existing, error: checkErr } = await supabase
+    // 5.1 Tìm bản ghi user_tasks hôm nay cho task này
+    const { data: ut, error: findErr } = await supabase
       .from("user_tasks")
-      .select("completed_at")
+      .select("*")
       .eq("user_id", userId)
       .eq("task_id", task.id)
+      .eq("task_date", TODAY)
       .maybeSingle();
 
-    if (checkErr) console.error("⚠️ Lỗi khi kiểm tra task:", checkErr);
-
-    if (existing?.completed_at && existing.completed_at.slice(0, 10) === today) {
-      alert("✅ Hôm nay bạn đã hoàn thành nhiệm vụ này rồi!");
+    if (findErr || !ut) {
+      console.error("Find user_task error:", findErr);
+      setActing(null);
       return;
     }
 
-    // ✅ Ghi task + cộng xu
-    const { error: upsertErr } = await supabase.from("user_tasks").upsert({
-      user_id: userId,
-      task_id: task.id,
-      completed: true,
-      reward_claimed: true,
-      completed_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    });
+    // 5.2 Update có điều kiện: chỉ update nếu reward_claimed = false (chặn double-click / reload)
+    const { data: updated, error: updErr } = await supabase
+      .from("user_tasks")
+      .update({
+        is_completed: true,
+        reward_claimed: true,
+        completed_at: new Date().toISOString(),
+        claimed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", ut.id)
+      .eq("task_date", TODAY)
+      .eq("reward_claimed", false)      // guard chính
+      .select();
 
-    if (upsertErr) {
-      console.error("❌ Lỗi upsert user_tasks:", upsertErr);
-      alert("Lỗi ghi nhiệm vụ, xem console!");
+    if (updErr) {
+      console.error("Update user_task error:", updErr);
+      setActing(null);
       return;
     }
 
-    await addCoins(task.id, task.reward_points);
+    // Nếu không có hàng nào được update -> đã nhận rồi
+    if (!updated || updated.length === 0) {
+      alert("✅ Hôm nay bạn đã nhận thưởng nhiệm vụ này rồi!");
+      setActing(null);
+      return;
+    }
 
+    // 5.3 Cộng xu vào ví
+    await creditReward(task.id, task.reward_coin);
+
+    // 5.4 Cập nhật UI
     setTasks((prev) =>
       prev.map((t) =>
-        t.id === task.id ? { ...t, completed: true, reward_claimed: true } : t
+        t.id === task.id
+          ? { ...t, is_completed_today: true, reward_claimed_today: true }
+          : t
       )
     );
 
-    alert(`🎉 Nhiệm vụ hoàn thành! +${task.reward_points} xu`);
-  }
+    setActing(null);
+    alert(`🎉 Nhận thành công +${task.reward_coin} xu`);
+  };
 
-  // 🕒 5️⃣ Loading state
+  /** 6) UI */
   if (loading) {
     return (
       <AuthorLayout>
-        <div className="text-center py-10 text-muted-foreground">
-          Đang tải nhiệm vụ...
-        </div>
+        <div className="text-center py-10 text-muted-foreground">Đang tải nhiệm vụ…</div>
       </AuthorLayout>
     );
   }
 
-  // 🎁 6️⃣ Render giao diện
   return (
     <AuthorLayout>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Gift className="w-5 h-5 text-primary" /> Nhiệm vụ hôm nay
+          <Gift className="w-5 h-5" /> Nhiệm vụ hôm nay
         </h1>
         <div className="text-base font-semibold text-amber-600">
           💰 Ví: {balance.toLocaleString("vi-VN")} xu
@@ -201,26 +273,28 @@ export default function DailyTasks() {
           <Card
             key={task.id}
             className={`transition border ${
-              task.reward_claimed ? "border-green-400 bg-green-50" : "border-gray-200"
+              task.reward_claimed_today ? "border-green-400 bg-green-50" : "border-gray-200"
             }`}
           >
             <CardHeader className="pb-2 flex justify-between items-center">
-              <CardTitle className="text-lg">{task.name}</CardTitle>
-              <span className="text-sm font-medium text-primary">
-                +{task.reward_points} xu
-              </span>
+              <CardTitle className="text-lg">{task.title}</CardTitle>
+              <span className="text-sm font-medium text-primary">+{task.reward_coin} xu</span>
             </CardHeader>
 
             <CardContent className="text-sm text-muted-foreground flex justify-between items-center">
-              <p>{task.description}</p>
+              <p className="pr-3">{task.description}</p>
 
-              {task.reward_claimed ? (
+              {task.reward_claimed_today ? (
                 <span className="text-green-600 flex items-center gap-1">
                   <CheckCircle className="w-4 h-4" /> Đã nhận
                 </span>
               ) : (
-                <Button size="sm" onClick={() => handleCheckIn(task)}>
-                  Hoàn thành
+                <Button
+                  size="sm"
+                  disabled={acting === task.id}
+                  onClick={() => handleComplete(task)}
+                >
+                  {acting === task.id ? "Đang xử lý…" : task.is_completed_today ? "Nhận thưởng" : "Hoàn thành"}
                 </Button>
               )}
             </CardContent>
