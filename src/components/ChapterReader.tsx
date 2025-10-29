@@ -143,6 +143,20 @@ export function ChapterReader() {
 
   const wordCount = (chapter.content ?? "").split(/\s+/).filter(Boolean).length;
 
+const handleFinishChapter = async () => {
+  // Ghi nhận hành động đọc xong chương (log view, update progress, ... của m)
+  // Ví dụ:
+  console.log("✅ Đã hoàn thành chương:", chapterSlug);
+
+  // 🪄 Nếu đây là chương đầu tiên thì hiển thị popup phần thưởng
+  if (chapterSlug === "chuong-1" || chapterSlug === "1") {
+    await afterFirstChapterTrigger();
+  }
+
+  // Có thể thêm logic chuyển sang chương tiếp theo
+};
+
+  
   return (
     <div className="min-h-screen bg-background">
       {/* Header nav */}
