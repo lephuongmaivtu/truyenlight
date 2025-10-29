@@ -1,5 +1,6 @@
 // components/ChapterReader.tsx
 
+import { afterFirstChapterTrigger } from "../components/rewards/RewardFlow";
 import { CommentSection } from "./CommentSection";
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
