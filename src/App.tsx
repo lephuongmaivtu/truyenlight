@@ -11,15 +11,18 @@ import { ProfilePage } from "./pages/ProfilePage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { usePageTracking } from "./hooks/usePageTracking";
-import  DailyTasks  from "./pages/author/DailyTasks";
-import  RewardShop from "./pages/author/RewardShop";
+import DailyTasks from "./pages/author/DailyTasks";
+import RewardShop from "./pages/author/RewardShop";
 
-
-// ✅ Đúng đường dẫn (sau khi tách ra thư mục author)
+// ✅ Khu vực tác giả
 import { AuthorDashboard } from "./pages/author/AuthorDashboard";
 import { UploadStoryPage } from "./pages/author/UploadStoryPage";
 import { UploadChapterPage } from "./pages/author/UploadChapterPage";
 import RevenuePage from "./pages/author/RevenuePage";
+
+// ✅ Thêm RewardFlow popup (quà tặng sau khi đọc xong chương đầu / điểm danh lần đầu)
+import RewardFlow from "./components/rewards/RewardFlow";
+
 function App() {
   return (
     <ReadingProvider>
@@ -31,11 +34,14 @@ function App() {
 }
 
 function AppContent() {
-  usePageTracking(); // ✅ theo dõi GA4 pageview
+  usePageTracking(); // ✅ GA4 pageview tracking
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
+
+      {/* ✅ Thêm RewardFlow vào cấp global — popup luôn sẵn nhưng không ảnh hưởng giao diện */}
+      <RewardFlow />
 
       <main className="flex-1">
         <Routes>
@@ -58,9 +64,9 @@ function AppContent() {
           <Route path="/author/upload-chapter" element={<UploadChapterPage />} />
           <Route path="/author/revenue" element={<RevenuePage />} />
 
-           {/* Khu vực nhiệm vụ */}
-           <Route path="/author/tasks" element={<DailyTasks />} />
-           <Route path="/shop" element={<RewardShop />} />
+          {/* Khu vực nhiệm vụ & cửa hàng */}
+          <Route path="/author/tasks" element={<DailyTasks />} />
+          <Route path="/shop" element={<RewardShop />} />
         </Routes>
       </main>
 
