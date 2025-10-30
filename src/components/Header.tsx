@@ -104,7 +104,7 @@ export function Header() {
               {isGenreOpen && (
                 <div
                   className="
-                    absolute left-0 mt-3 w-[520px]
+                    absolute left-0 mt-3 w-[720px]
                     grid grid-cols-1 md:grid-cols-2 gap-2
                     rounded-2xl border border-border bg-background shadow-2xl p-3
                     max-h-[70vh] overflow-y-auto z-50
