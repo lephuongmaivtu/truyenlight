@@ -136,8 +136,7 @@ export function Header() {
                             </Link>
                           ))}
                       </div>
-              </>
-                    <>
+            
                       {/* Cột 2 */}
                       <div className="space-y-1">
                         {genres
@@ -162,8 +161,7 @@ export function Header() {
                             </Link>
                           ))}
                       </div>
-              </>
-                    <>
+                    
                       {/* Cột 3 */}
                       <div className="space-y-1">
                         {genres
