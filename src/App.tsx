@@ -1,5 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
-import { ToastProvider } from "@/components/ui/use-toast"; // ✅ thêm dòng này
+import { ToastProvider } from "@/components/ui/use-toast";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { GenrePage } from "./pages/GenrePage";
@@ -15,7 +15,7 @@ import { RegisterPage } from "./pages/RegisterPage";
 import { usePageTracking } from "./hooks/usePageTracking";
 import DailyTasks from "./pages/author/DailyTasks";
 import RewardShop from "./pages/author/RewardShop";
-import RewardFlow from "./components/rewards/RewardFlow";
+import RewardFlow from "./components/rewards/RewardFlow"; // ✅ Quan trọng!
 
 // ✅ Khu vực tác giả
 import { AuthorDashboard } from "./pages/author/AuthorDashboard";
@@ -26,7 +26,8 @@ import RevenuePage from "./pages/author/RevenuePage";
 function App() {
   return (
     <ReadingProvider>
-      <ToastProvider> {/* ✅ Bọc toàn bộ app */}
+      <ToastProvider>
+        {/* ✅ Bọc toàn bộ app để toast hoạt động */}
         <Router>
           <AppContent />
         </Router>
@@ -41,7 +42,8 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <Toaster /> {/* ✅ Chỉ để render popup */}
+      <Toaster /> {/* ✅ hiển thị toast notification */}
+      
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Homepage />} />
@@ -59,6 +61,10 @@ function AppContent() {
           <Route path="/shop" element={<RewardShop />} />
         </Routes>
       </main>
+
+      {/* 🪄 Thêm dòng này để pop-up hoạt động */}
+      <RewardFlow />
+
       <Footer />
     </div>
   );
