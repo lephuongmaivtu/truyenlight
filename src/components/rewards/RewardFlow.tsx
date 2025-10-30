@@ -1,10 +1,11 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { supabase } from "../../supabaseClient";
 import { toast } from "../ui/use-toast";
-import { Dialog } from "../ui/dialog";
-import { DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
+import { RewardDialog } from "./RewardDialogWrapper"; // ✅ dùng wrapper để tránh lỗi build
 
 // 🎁 Danh sách 5 quà tặng có sẵn
 const GIFTS = [
@@ -39,7 +40,7 @@ export default function RewardFlow() {
   const [open, setOpen] = useState(false);
   const [selectedGift, setSelectedGift] = useState<any>(null);
 
-  // ✅ Khi user đọc xong chương đầu tiên
+  // ✅ Khi user đọc xong chương đầu tiên → hiển thị popup 1 lần duy nhất
   useEffect(() => {
     const shown = localStorage.getItem("tl_first_reward_shown");
     if (!shown) {
@@ -55,8 +56,6 @@ export default function RewardFlow() {
   // 🎉 Khi chọn quà
   const handleSelectGift = async (gift: any) => {
     setSelectedGift(gift);
-
-    // Confetti effect
     confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
 
     toast({
@@ -64,11 +63,12 @@ export default function RewardFlow() {
       description: "Hãy đăng nhập để lưu phần thưởng nhé!",
     });
 
-    // Nếu chưa đăng nhập → lưu local
+    // Lấy user Supabase
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
+    // Nếu chưa login → lưu local
     if (!user) {
       localStorage.setItem(
         "tl_reward_pending",
@@ -81,7 +81,7 @@ export default function RewardFlow() {
       return;
     }
 
-    // Nếu có user → lưu Supabase
+    // Nếu có user → lưu vào DB
     await supabase.from("user_rewards").insert([
       {
         user_id: user.id,
@@ -101,8 +101,8 @@ export default function RewardFlow() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-md text-center space-y-4">
+    <RewardDialog open={open} onOpenChange={setOpen}>
+      <div className="max-w-md text-center space-y-4">
         <h2 className="text-2xl font-bold text-primary">
           🎉 Chúc mừng bạn đã hoàn thành chương đầu tiên!
         </h2>
@@ -132,8 +132,8 @@ export default function RewardFlow() {
         <p className="text-xs text-gray-500 mt-2">
           Sau khi chọn quà, bạn hãy đăng nhập để hệ thống lưu phần thưởng nhé 💫
         </p>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </RewardDialog>
   );
 }
 
