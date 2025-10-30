@@ -23,15 +23,20 @@ import RevenuePage from "./pages/author/RevenuePage";
 // ✅ Thêm RewardFlow popup (quà tặng sau khi đọc xong chương đầu / điểm danh lần đầu)
 import RewardFlow from "./components/rewards/RewardFlow";
 
+import { ToastProvider } from "@/components/ui/use-toast";
+
 function App() {
   return (
     <ReadingProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <ToastProvider> {/* ✅ thêm dòng này */}
+        <Router>
+          <AppContent />
+        </Router>
+      </ToastProvider>
     </ReadingProvider>
   );
 }
+
 
 function AppContent() {
   usePageTracking(); // ✅ GA4 pageview tracking
