@@ -25,19 +25,15 @@ export function Header() {
   const [isGenreOpen, setIsGenreOpen] = useState(false);
   const navigate = useNavigate();
 
-  // 🧩 Fetch user state
+  // 🧩 User auth state
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) setUser(data.user);
     });
-
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
+    return () => listener.subscription.unsubscribe();
   }, []);
 
   // 🧠 Fetch genres
@@ -84,66 +80,55 @@ export function Header() {
             <span className="text-xl font-bold text-foreground">TruyenLight</span>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop nav */}
           <nav className="hidden md:flex items-center space-x-8 relative">
-            <Link
-              to="/"
-              className="text-foreground hover:text-primary transition-colors"
-            >
+            <Link to="/" className="text-foreground hover:text-primary transition-colors">
               Trang chủ
             </Link>
 
-          {/* Dropdown Thể loại (Mega Menu) */}
-         <div
-            className="relative"
-            onMouseEnter={() => setIsGenreOpen(true)}
-            onMouseLeave={() => setIsGenreOpen(false)}
-          >
-            <button className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors">
-              Thể Loại
-              <ChevronDown className="ml-1 h-4 w-4" />
-            </button>
-          
-            {isGenreOpen && (
-              <div
-                className="
-                  absolute left-0 mt-2
-                  bg-card border border-border rounded-lg shadow-md
-                  p-4 w-[640px] z-50
-                  grid grid-cols-4 gap-x-10 gap-y-2
-                  animate-fadeIn
-                "
+            {/* Dropdown Thể loại */}
+            <div
+              className="relative group"
+              onMouseEnter={() => setIsGenreOpen(true)}
+              onMouseLeave={() => setIsGenreOpen(false)}
+            >
+              <button
+                onClick={() => setIsGenreOpen(!isGenreOpen)}
+                className="flex items-center text-foreground hover:text-primary transition-colors"
               >
-                {genres.length > 0 ? (
-                  genres.map((genre) => (
-                    <Link
-                      key={genre.id}
-                      to={`/genres/${genre.slug}`}
-                      className="
-                        flex items-center text-[15px] text-foreground
-                        hover:text-primary transition-colors
-                        px-1 py-[3px] leading-tight
-                      "
-                    >
-                      <span className="mr-2 text-[14px] opacity-80">{genre.emoji || "»"}</span>
-                      <span className="whitespace-nowrap">{genre.name}</span>
-                    </Link>
-                  ))
-                ) : (
-                  <div className="col-span-full text-sm text-muted-foreground">
-                    Đang tải thể loại...
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+                Thể Loại
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </button>
 
-          
-
-
+              {isGenreOpen && (
+                <div
+                  className="
+                    absolute left-0 mt-2 w-56 rounded-xl border bg-popover shadow-lg
+                    max-h-[70vh] overflow-y-auto z-50
+                    grid grid-cols-1 sm:grid-cols-2
+                    animate-fadeIn
+                  "
+                >
+                  {genres.length > 0 ? (
+                    genres.map((genre) => (
+                      <Link
+                        key={genre.id}
+                        to={`/genres/${genre.slug}`}
+                        className="flex items-center px-3 py-2 text-sm text-foreground hover:text-primary transition-colors"
+                      >
+                        <span className="mr-2">{genre.emoji || "📘"}</span>
+                        {genre.name}
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="p-3 text-muted-foreground text-sm">Đang tải...</div>
+                  )}
+                </div>
+              )}
+            </div>
           </nav>
 
-          {/* Search Bar */}
+          {/* Search */}
           <div className="hidden md:block relative">
             <form onSubmit={handleSearchSubmit} className="relative">
               <Input
@@ -186,20 +171,18 @@ export function Header() {
             )}
           </div>
 
-          {/* Profile + Author */}
+          {/* Profile */}
           <div className="hidden md:flex items-center space-x-2">
             {user ? (
               <>
                 <Link to="/author">
                   <Button variant="outline" size="sm" className="flex items-center">
-                    <PenSquare className="h-4 w-4 mr-2" />
-                    Khu vực tác giả
+                    <PenSquare className="h-4 w-4 mr-2" /> Khu vực tác giả
                   </Button>
                 </Link>
                 <Link to="/profile">
                   <Button variant="ghost" size="sm">
-                    <User className="h-4 w-4 mr-2" />
-                    Hồ sơ
+                    <User className="h-4 w-4 mr-2" /> Hồ sơ
                   </Button>
                 </Link>
                 <Button
@@ -208,16 +191,14 @@ export function Header() {
                   onClick={handleLogout}
                   className="bg-white text-primary hover:bg-gray-100"
                 >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Thoát
+                  <LogOut className="h-4 w-4 mr-2" /> Thoát
                 </Button>
               </>
             ) : (
               <>
                 <Link to="/login">
                   <Button variant="ghost" size="sm">
-                    <User className="h-4 w-4 mr-2" />
-                    Đăng nhập
+                    <User className="h-4 w-4 mr-2" /> Đăng nhập
                   </Button>
                 </Link>
                 <Link to="/register">
@@ -227,7 +208,7 @@ export function Header() {
             )}
           </div>
 
-          {/* Mobile Menu */}
+          {/* Mobile Menu Toggle */}
           <Button
             variant="ghost"
             size="sm"
@@ -238,10 +219,10 @@ export function Header() {
           </Button>
         </div>
 
-        {/* Mobile Menu content */}
+        {/* Mobile Dropdown */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-border py-4">
-            <div className="space-y-2">
+            <div className="space-y-2 max-h-[70vh] overflow-y-auto">
               <Link
                 to="/"
                 className="block py-2 text-foreground hover:text-primary transition-colors"
@@ -249,6 +230,7 @@ export function Header() {
               >
                 Trang chủ
               </Link>
+
               {genres.map((g) => (
                 <Link
                   key={g.id}
