@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { supabase } from "../../supabaseClient";
-import { usetoast } from "../ui/use-toast";
+import { useToast } from "../ui/use-toast";
 
 
 // 🎁 Danh sách 5 quà tặng có sẵn
