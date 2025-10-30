@@ -15,6 +15,7 @@ import { RegisterPage } from "./pages/RegisterPage";
 import { usePageTracking } from "./hooks/usePageTracking";
 import DailyTasks from "./pages/author/DailyTasks";
 import RewardShop from "./pages/author/RewardShop";
+import RewardFlow from "./components/rewards/RewardFlow";
 
 // ✅ Khu vực tác giả
 import { AuthorDashboard } from "./pages/author/AuthorDashboard";
