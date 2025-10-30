@@ -11,16 +11,12 @@ export function GenrePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (slug) {
-      loadGenreAndStories();
-    }
+    if (slug) loadGenreAndStories();
   }, [slug]);
 
   async function loadGenreAndStories() {
     setLoading(true);
-
-    // 🧠 B1: Lấy tên thể loại thật (vd: "Mạt Thế") từ bảng genres
-    const { data: genre, error: genreErr } = await supabase
+    const { data: genre } = await supabase
       .from("genres")
       .select("name")
       .eq("slug", slug)
@@ -29,24 +25,21 @@ export function GenrePage() {
     const name = genre?.name || slug;
     setGenreName(name);
 
-    // 🧠 B2: Lọc theo mảng `genres[]` chứa TÊN hoặc SLUG
-    // Nếu genres trong DB chứa ["Ngôn Tình", "Mạt Thế"] → match theo name
-    // Nếu chứa ["ngon-tinh", "mat-the"] → match theo slug
-    const { data: stories, error: storyErr } = await supabase
+    const { data: stories, error } = await supabase
       .from("stories")
       .select("*")
-      .or(`genres.cs.{${name}},genres.cs.{${slug}}`) // ✅ lọc theo 2 kiểu luôn
+      .or(`genres.cs.{${name}},genres.cs.{${slug}}`)
       .order("created_at", { ascending: false });
 
-    if (storyErr) console.error("Fetch stories error:", storyErr);
+    if (error) console.error("Fetch stories error:", error);
     setStories(stories || []);
     setLoading(false);
   }
 
   if (loading)
     return (
-      <div className="container mx-auto px-4 py-8">
-        <p className="text-muted-foreground text-center">Đang tải truyện...</p>
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p className="text-muted-foreground">Đang tải truyện...</p>
       </div>
     );
 
