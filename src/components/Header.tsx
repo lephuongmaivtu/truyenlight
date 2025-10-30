@@ -9,6 +9,7 @@ import {
   LogOut,
   PenSquare,
   ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -17,22 +18,21 @@ import { supabase } from "../supabaseClient";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isGenreOpen, setIsGenreOpen] = useState(false);
+  const [isMobileGenreOpen, setIsMobileGenreOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [genres, setGenres] = useState<any[]>([]);
-  const [isGenreOpen, setIsGenreOpen] = useState(false);
   const navigate = useNavigate();
 
-  // 🧩 User auth state
+  // 🧩 Fetch user
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) setUser(data.user);
-    });
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
+    supabase.auth.getUser().then(({ data }) => setUser(data.user || null));
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) =>
+      setUser(session?.user ?? null)
+    );
     return () => listener.subscription.unsubscribe();
   }, []);
 
@@ -73,6 +73,7 @@ export function Header() {
   return (
     <header className="bg-card border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4">
+        {/* ================= HEADER TOP ================= */}
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
@@ -80,7 +81,7 @@ export function Header() {
             <span className="text-xl font-bold text-foreground">TruyenLight</span>
           </Link>
 
-          {/* Desktop nav */}
+          {/* ===== Desktop nav ===== */}
           <nav className="hidden md:flex items-center space-x-8 relative">
             <Link to="/" className="text-foreground hover:text-primary transition-colors">
               Trang chủ
@@ -102,12 +103,7 @@ export function Header() {
 
               {isGenreOpen && (
                 <div
-                  className="
-                    absolute left-0 mt-2 w-56 rounded-xl border bg-popover shadow-lg
-                    max-h-[70vh] overflow-y-auto z-50
-                    grid grid-cols-1 sm:grid-cols-2
-                    animate-fadeIn
-                  "
+                  className="absolute left-0 mt-2 w-56 rounded-xl border bg-popover shadow-lg max-h-[70vh] overflow-y-auto z-50 grid grid-cols-1 sm:grid-cols-2"
                 >
                   {genres.length > 0 ? (
                     genres.map((genre) => (
@@ -128,7 +124,7 @@ export function Header() {
             </div>
           </nav>
 
-          {/* Search */}
+          {/* ===== Desktop search ===== */}
           <div className="hidden md:block relative">
             <form onSubmit={handleSearchSubmit} className="relative">
               <Input
@@ -151,17 +147,7 @@ export function Header() {
                       className="block p-3 hover:bg-muted transition-colors border-b border-border last:border-b-0"
                       onClick={() => setShowSearchResults(false)}
                     >
-                      <div className="flex items-center space-x-3">
-                        <img
-                          src={story.coverImage}
-                          alt={story.title}
-                          className="w-10 h-10 object-cover rounded"
-                        />
-                        <div>
-                          <h4 className="font-medium text-foreground">{story.title}</h4>
-                          <p className="text-sm text-muted-foreground">{story.author}</p>
-                        </div>
-                      </div>
+                      {story.title}
                     </Link>
                   ))
                 ) : (
@@ -171,7 +157,7 @@ export function Header() {
             )}
           </div>
 
-          {/* Profile */}
+          {/* ===== Desktop profile ===== */}
           <div className="hidden md:flex items-center space-x-2">
             {user ? (
               <>
@@ -208,7 +194,7 @@ export function Header() {
             )}
           </div>
 
-          {/* Mobile Menu Toggle */}
+          {/* ===== Mobile menu toggle ===== */}
           <Button
             variant="ghost"
             size="sm"
@@ -219,28 +205,99 @@ export function Header() {
           </Button>
         </div>
 
-        {/* Mobile Dropdown */}
+        {/* ================= MOBILE MENU ================= */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-border py-4">
-            <div className="space-y-2 max-h-[70vh] overflow-y-auto">
+          <div className="md:hidden border-t border-border py-3">
+            <div className="space-y-2 max-h-[75vh] overflow-y-auto">
+              {/* Trang chủ */}
               <Link
                 to="/"
-                className="block py-2 text-foreground hover:text-primary transition-colors"
+                className="block py-2 px-2 text-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Trang chủ
               </Link>
 
-              {genres.map((g) => (
+              {/* Thể loại toggle */}
+              <button
+                onClick={() => setIsMobileGenreOpen(!isMobileGenreOpen)}
+                className="w-full flex justify-between items-center py-2 px-2 text-foreground hover:text-primary"
+              >
+                <span>Thể loại</span>
+                {isMobileGenreOpen ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </button>
+
+              {isMobileGenreOpen && (
+                <div className="pl-3 border-l border-border space-y-1 max-h-[60vh] overflow-y-auto">
+                  {genres.map((g) => (
+                    <Link
+                      key={g.id}
+                      to={`/genres/${g.slug}`}
+                      className="block py-1 text-foreground hover:text-primary"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        setIsMobileGenreOpen(false);
+                      }}
+                    >
+                      {g.emoji || "📘"} {g.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Khu vực tác giả */}
+              {user && (
                 <Link
-                  key={g.id}
-                  to={`/genres/${g.slug}`}
-                  className="block py-2 text-foreground hover:text-primary transition-colors"
+                  to="/author"
+                  className="block py-2 px-2 text-foreground hover:text-primary transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {g.emoji || "📘"} {g.name}
+                  ✍️ Khu vực tác giả
                 </Link>
-              ))}
+              )}
+
+              {/* Hồ sơ hoặc đăng nhập */}
+              {user ? (
+                <>
+                  <Link
+                    to="/profile"
+                    className="block py-2 px-2 text-foreground hover:text-primary"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    👤 Hồ sơ
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full text-left py-2 px-2 text-foreground hover:text-red-500"
+                  >
+                    🚪 Đăng xuất
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="block py-2 px-2 text-foreground hover:text-primary"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    🔑 Đăng nhập
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="block py-2 px-2 text-foreground hover:text-primary"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    📝 Đăng ký
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
