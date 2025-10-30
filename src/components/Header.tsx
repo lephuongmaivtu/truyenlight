@@ -87,7 +87,7 @@ export function Header() {
               Trang chủ
             </Link>
 
-         {/* Dropdown Thể loại (bản ban đầu) */}
+         {/* Dropdown Thể loại (3 cột, giữ nguyên style gốc) */}
           <div
             className="relative group"
             onMouseEnter={() => setIsGenreOpen(true)}
@@ -103,40 +103,95 @@ export function Header() {
           
             {isGenreOpen && (
               <div
-               className="
+                className="
                   absolute left-0 mt-2
                   bg-card border border-border rounded-lg shadow-md
-                  p-4 w-[560px] z-50
-                  grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)]
-                  gap-x-10 gap-y-1
+                  p-4 w-[700px] z-50
+                  grid grid-cols-3 gap-x-8
                   max-h-[70vh] overflow-y-auto
                   animate-fadeIn
                 "
               >
                 {genres.length > 0 ? (
-                  genres.map((genre) => (
-                    <Link
-                      key={genre.id}
-                      to={`/genres/${genre.slug}`}
-                      className="
-                        flex items-center px-3 py-2 text-sm text-foreground
-                        hover:text-primary transition-colors
-                      "
-                    >
-                      <span className="mr-2 text-[14px] opacity-80">
-                        {genre.emoji || "📘"}
-                      </span>
-                      <span className="whitespace-nowrap">{genre.name}</span>
-                    </Link>
-                  ))
+                  <>
+                    {/* Cột 1 */}
+                    <div className="space-y-1">
+                      {genres
+                        .slice(0, Math.ceil(genres.length / 3))
+                        .map((genre) => (
+                          <Link
+                            key={genre.id}
+                            to={`/genres/${genre.slug}`}
+                            className="
+                              flex items-center text-[15px] text-foreground
+                              hover:text-primary transition-colors
+                              px-1 py-[3px] leading-tight
+                            "
+                          >
+                            <span className="mr-2 text-[14px] opacity-80">
+                              {genre.emoji || "📘"}
+                            </span>
+                            <span className="whitespace-nowrap">{genre.name}</span>
+                          </Link>
+                        ))}
+                    </div>
+          
+                    {/* Cột 2 */}
+                    <div className="space-y-1">
+                      {genres
+                        .slice(
+                          Math.ceil(genres.length / 3),
+                          Math.ceil((genres.length * 2) / 3)
+                        )
+                        .map((genre) => (
+                          <Link
+                            key={genre.id}
+                            to={`/genres/${genre.slug}`}
+                            className="
+                              flex items-center text-[15px] text-foreground
+                              hover:text-primary transition-colors
+                              px-1 py-[3px] leading-tight
+                            "
+                          >
+                            <span className="mr-2 text-[14px] opacity-80">
+                              {genre.emoji || "📘"}
+                            </span>
+                            <span className="whitespace-nowrap">{genre.name}</span>
+                          </Link>
+                        ))}
+                    </div>
+          
+                    {/* Cột 3 */}
+                    <div className="space-y-1">
+                      {genres
+                        .slice(Math.ceil((genres.length * 2) / 3))
+                        .map((genre) => (
+                          <Link
+                            key={genre.id}
+                            to={`/genres/${genre.slug}`}
+                            className="
+                              flex items-center text-[15px] text-foreground
+                              hover:text-primary transition-colors
+                              px-1 py-[3px] leading-tight
+                            "
+                          >
+                            <span className="mr-2 text-[14px] opacity-80">
+                              {genre.emoji || "📘"}
+                            </span>
+                            <span className="whitespace-nowrap">{genre.name}</span>
+                          </Link>
+                        ))}
+                    </div>
+                  </>
                 ) : (
-                  <div className="p-3 text-muted-foreground text-sm">
+                  <div className="col-span-full text-sm text-muted-foreground">
                     Đang tải thể loại...
                   </div>
                 )}
               </div>
             )}
           </div>
+
           </nav>
 
           {/* ===== Desktop search ===== */}
