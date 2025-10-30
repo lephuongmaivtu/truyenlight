@@ -1,4 +1,4 @@
-
+"use client";
 import React, { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { supabase } from "../../supabaseClient";
