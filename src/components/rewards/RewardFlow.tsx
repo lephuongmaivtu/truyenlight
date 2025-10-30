@@ -11,27 +11,27 @@ const GIFTS = [
   {
     id: 1,
     name: "Tai nghe Bluetooth Pro4",
-    image_url: "https://i.ibb.co/gJQy5tz/Tai-nghe-Pro4.jpg",
+    image_url: "https://i.ibb.co/nNWtrB5W/t-i-xu-ng-63.jpg",
   },
   {
     id: 2,
     name: "Áo thun cổ tròn",
-    image_url: "https://i.ibb.co/0tJ7vD5/Ao-thun.jpg",
+    image_url: "https://i.ibb.co/nNWtrB5W/t-i-xu-ng-63.jpg",
   },
   {
     id: 3,
     name: "Ốp lưng điện thoại",
-    image_url: "https://i.ibb.co/dgKH3Zm/Op-lung.jpg",
+    image_url: "https://i.ibb.co/nNWtrB5W/t-i-xu-ng-63.jpg",
   },
   {
     id: 4,
     name: "Túi tote canvas",
-    image_url: "https://i.ibb.co/T2LQStK/Tui-tote.jpg",
+    image_url: "https://i.ibb.co/nNWtrB5W/t-i-xu-ng-63.jpg",
   },
   {
     id: 5,
     name: "Voucher 50% giảm giá",
-    image_url: "https://i.ibb.co/jw6dyLJ/Voucher.jpg",
+    image_url: "https://i.ibb.co/nNWtrB5W/t-i-xu-ng-63.jpg",
   },
 ];
 
