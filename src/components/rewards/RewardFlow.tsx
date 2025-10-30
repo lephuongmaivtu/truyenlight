@@ -7,7 +7,7 @@ import { usetoast } from "../ui/use-toast";
 
 
 // 🎁 Danh sách 5 quà tặng có sẵn
-const { toast } = useToast();
+
 const GIFTS = [
   {
     id: 1,
@@ -64,6 +64,7 @@ function CustomDialog({
 }
 
 export default function RewardFlow() {
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [selectedGift, setSelectedGift] = useState<any>(null);
 
