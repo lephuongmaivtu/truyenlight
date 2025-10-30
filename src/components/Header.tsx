@@ -87,53 +87,51 @@ export function Header() {
               Trang chủ
             </Link>
 
-          {/* Dropdown Thể loại */}
-            <div
-              className="relative"
-              onMouseEnter={() => setIsGenreOpen(true)}
-              onMouseLeave={() => setIsGenreOpen(false)}
+         {/* Dropdown Thể loại */}
+          <div
+            className="relative"
+            onMouseEnter={() => setIsGenreOpen(true)}
+            onMouseLeave={() => setIsGenreOpen(false)}
+          >
+            <button
+              onClick={() => setIsGenreOpen(!isGenreOpen)}
+              className="flex items-center text-foreground hover:text-primary transition-colors"
             >
-              <button
-                onClick={() => setIsGenreOpen(!isGenreOpen)}
-                className="flex items-center text-foreground hover:text-primary transition-colors"
+              Thể Loại
+              <ChevronDown className="ml-1 h-4 w-4" />
+            </button>
+          
+            {isGenreOpen && (
+              <div
+                className="
+                  absolute left-0 mt-3 w-[900px]
+                  grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-2
+                  rounded-2xl border border-border bg-background shadow-2xl p-6
+                  max-h-[70vh] overflow-y-auto z-50
+                  transition-all duration-200 ease-out
+                "
               >
-                Thể Loại
-                <ChevronDown className="ml-1 h-4 w-4" />
-              </button>
-            
-              {isGenreOpen && (
-                <div
-                  className="
-                    absolute left-0 mt-3 w-[500px]
-                    grid grid-cols-1 md:grid-cols-2 gap-2
-                    rounded-2xl border border-border bg-background shadow-2xl p-3
-                    max-h-[70vh] overflow-y-auto z-50
-                    transition-all duration-200 ease-out
-                  "
-                >
-                  {genres.length > 0 ? (
-                    genres.map((genre) => (
-                      <Link
-                        key={genre.id}
-                        to={`/genres/${genre.slug}`}
-                        className="
-                          w-full flex items-center gap-3 px-5 py-3 text-[16px] font-medium
-                          text-foreground hover:text-primary hover:bg-muted/40
-                          transition-colors rounded-xl
-                        "
-                      >
-                        <span className="text-[20px]">{genre.emoji || "📘"}</span>
-                        <span className="whitespace-nowrap">{genre.name}</span>
-                      </Link>
-                    ))
-                  ) : (
-                    <div className="p-3 text-muted-foreground text-sm col-span-full">
-                      Đang tải thể loại...
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+                {genres.length > 0 ? (
+                  genres.map((genre) => (
+                    <Link
+                      key={genre.id}
+                      to={`/genres/${genre.slug}`}
+                      className="
+                        block text-[15px] font-medium text-foreground
+                        hover:text-primary hover:underline transition-colors
+                      "
+                    >
+                      {genre.name}
+                    </Link>
+                  ))
+                ) : (
+                  <div className="p-3 text-muted-foreground text-sm col-span-full">
+                    Đang tải thể loại...
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           </nav>
 
           {/* ===== Desktop search ===== */}
