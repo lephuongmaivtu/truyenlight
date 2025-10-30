@@ -14,6 +14,8 @@ import {
   updateReadingProgress,
 } from "../lib/api";
 import { supabase } from "../supabaseClient";
+import { afterFirstChapterTrigger } from "@/components/rewards/RewardFlow";
+
 
 export function ChapterReader() {
   const { slug, chapterSlug } = useParams<{ slug: string; chapterSlug: string }>();
@@ -22,6 +24,12 @@ export function ChapterReader() {
   const [story, setStory] = useState<StoryWithChapters | null>(null);
   const [chapter, setChapter] = useState<ChapterRow | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+      if (chapterSlug === "chuong-1" || chapterSlug === "1") {
+        afterFirstChapterTrigger();
+      }
+    }, [chapterSlug]);
 
   // Load story + chapters
   useEffect(() => {
