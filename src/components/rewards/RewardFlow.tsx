@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
+import confetti from "canvas-confetti";
 import { supabase } from "../../supabaseClient";
 import { toast } from "../ui/use-toast";
-import confetti from "canvas-confetti";
-import { Dialog, DialogContent } from "../ui/dialog";
+import { Dialog } from "../ui/dialog";
+import { DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
 
 // 🎁 Danh sách 5 quà tặng có sẵn
