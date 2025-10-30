@@ -4,12 +4,6 @@ import confetti from "canvas-confetti";
 import { supabase } from "../../supabaseClient";
 import { useToast } from "../../components/ui/use-toast";
 
-useEffect(() => {
-  const handler = () => {
-    setOpen(true);
-    console.log("🎉 Pop-up hiện ngay lập tức sau khi bấm Sau!");
-  };
-
   window.addEventListener("openRewardPopup", handler);
   return () => window.removeEventListener("openRewardPopup", handler);
 }, []);
@@ -76,7 +70,12 @@ export default function RewardFlow() {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [selectedGift, setSelectedGift] = useState<any>(null);
-
+  
+useEffect(() => {
+  const handler = () => {
+    setOpen(true);
+    console.log("🎉 Pop-up hiện ngay lập tức sau khi bấm Sau!");
+  };
   // ✅ Khi user đọc xong chương đầu tiên
 useEffect(() => {
   const shown = localStorage.getItem("tl_first_reward_shown");
