@@ -1,30 +1,29 @@
-// src/components/rewards/RewardFlow.tsx
-import { supabase } from "@/supabaseClient";
+import { supabase } from "../../supabaseClient";
 import confetti from "canvas-confetti";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "../ui/use-toast";
 
-// ⚙️ Popup hiển thị khi hoàn thành chương đầu tiên
+// 🎉 Gọi popup khi user hoàn thành chương đầu tiên
 async function openRewardPopup() {
   confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
 
   toast({
     title: "🎉 Chúc mừng bạn!",
-    description: "Bạn vừa hoàn thành chương đầu tiên, hãy chọn 1 phần quà nhé 🎁",
+    description:
+      "Bạn vừa hoàn thành chương đầu tiên, hãy chọn 1 phần quà nhé 🎁",
   });
 }
 
-// ⚙️ Gọi hàm này khi user đọc xong chương 1
+// 🧩 Trigger khi user đọc xong chương 1
 export async function afterFirstChapterTrigger() {
-  // Kiểm tra xem đã hiện popup chưa
   const shown = localStorage.getItem("tl_first_reward_shown");
-  if (shown) return;
+  if (shown) return; // nếu đã hiện rồi → bỏ qua
 
-  // Lưu flag để không hiện lại
+  // Đánh dấu popup đã hiển thị
   localStorage.setItem("tl_first_reward_shown", "1");
 
   await openRewardPopup();
 
-  // Nếu user đã login → tạo record user_rewards tạm
+  // Nếu user đã login thì thêm record vào user_rewards
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -40,7 +39,7 @@ export async function afterFirstChapterTrigger() {
   }
 }
 
-// ⚙️ Khi user chọn quà (popup)
+// 🧩 Khi user chọn quà (ví dụ click 1 món)
 export async function handleSelectGift(item: any) {
   confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
 
@@ -75,7 +74,7 @@ export async function handleSelectGift(item: any) {
   ]);
 }
 
-// ⚙️ Khi user login xong → sync phần thưởng từ localStorage
+// 🧩 Khi user đăng nhập → đồng bộ phần thưởng
 export async function syncPendingReward() {
   const pending = localStorage.getItem("tl_reward_pending");
   if (!pending) return;
@@ -95,10 +94,12 @@ export async function syncPendingReward() {
         selected_at: reward.selected_at,
       },
     ]);
+
     toast({
       title: "🎉 Đã lưu phần thưởng thành công!",
       description: `Phần thưởng: ${reward.item_name}`,
     });
+
     localStorage.removeItem("tl_reward_pending");
   }
 }
