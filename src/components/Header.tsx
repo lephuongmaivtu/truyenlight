@@ -103,15 +103,15 @@ export function Header() {
           
             {isGenreOpen && (
               <div
-                className="
+               className="
                   absolute left-0 mt-2
                   bg-card border border-border rounded-lg shadow-md
-                  p-4 w-[500px] z-50
-                  grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1
+                  p-4 w-[560px] z-50
+                  grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)]
+                  gap-x-10 gap-y-1
                   max-h-[70vh] overflow-y-auto
                   animate-fadeIn
                 "
-
               >
                 {genres.length > 0 ? (
                   genres.map((genre) => (
