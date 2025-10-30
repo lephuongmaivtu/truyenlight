@@ -1,5 +1,4 @@
 // ⚠️ Đừng render JSX ngoài component — xóa <TestReact /> ở đầu nếu có
-// import TestReact from "./TestReact"; ❌ Không nên để ngoài function
 
 // ✅ React & Router
 import React from "react";
@@ -37,19 +36,62 @@ import RewardShop from "./pages/author/RewardShop";
 // ✅ Reward System
 import RewardFlow from "./components/rewards/RewardFlow";
 
+// ✅ Error Boundary
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error?: any }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: any, info: any) {
+    console.error("🧱 ErrorBoundary caught an error:", error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div
+          style={{
+            padding: "40px",
+            color: "red",
+            background: "#111",
+            minHeight: "100vh",
+            textAlign: "center",
+          }}
+        >
+          <h2>🚨 React app bị crash!</h2>
+          <p style={{ whiteSpace: "pre-wrap" }}>{String(this.state.error)}</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// ✅ App chính
 function App() {
   console.log("✅ App component render start");
   return (
-    <ReadingProvider>
-      <ToastProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </ToastProvider>
-    </ReadingProvider>
+    <ErrorBoundary>
+      <ReadingProvider>
+        <ToastProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </ToastProvider>
+      </ReadingProvider>
+    </ErrorBoundary>
   );
 }
 
+// ✅ Nội dung chính của App
 function AppContent() {
   console.log("✅ AppContent render start");
 
@@ -102,12 +144,12 @@ function AppContent() {
   );
 }
 
+// ✅ Bắt lỗi toàn cục (JS ngoài React)
 window.addEventListener("error", (e) => {
   console.error("❌ Global JS Error:", e.message, e.error);
 });
 window.addEventListener("unhandledrejection", (e) => {
   console.error("⚠️ Unhandled Promise:", e.reason);
 });
-
 
 export default App;
