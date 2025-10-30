@@ -68,17 +68,21 @@ export default function RewardFlow() {
   const [selectedGift, setSelectedGift] = useState<any>(null);
 
   // ✅ Khi user đọc xong chương đầu tiên
-  useEffect(() => {
-    const shown = localStorage.getItem("tl_first_reward_shown");
-    if (!shown) {
-      const trigger = localStorage.getItem("tl_trigger_reward_popup");
-      if (trigger === "1") {
-        setOpen(true);
-        localStorage.setItem("tl_first_reward_shown", "1");
-        localStorage.removeItem("tl_trigger_reward_popup");
-      }
-    }
-  }, []);
+useEffect(() => {
+  const shown = localStorage.getItem("tl_first_reward_shown");
+  const trigger = localStorage.getItem("tl_trigger_reward_popup");
+
+  if (!shown && trigger === "1") {
+    setTimeout(() => {
+      setOpen(true);
+      console.log("🎉 Pop-up phần thưởng mở!");
+    }, 600); // ⏱ trễ 0.6s cho smooth
+
+    // ❌ Đừng set tl_first_reward_shown ở đây
+    // 👉 Chỉ set sau khi user đã chọn quà
+  }
+}, []);
+
 
   // 🎉 Khi chọn quà
   const handleSelectGift = async (gift: any) => {
@@ -90,6 +94,7 @@ export default function RewardFlow() {
     toast({
       title: `🎁 Bạn đã chọn ${gift.name}`,
       description: "Hãy đăng nhập để lưu phần thưởng nhé!",
+      
     });
 
     // Nếu chưa đăng nhập → lưu local
@@ -126,6 +131,8 @@ export default function RewardFlow() {
     });
 
     setOpen(false);
+    localStorage.setItem("tl_first_reward_shown", "1");
+
   };
 
   return (
