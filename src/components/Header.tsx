@@ -105,7 +105,7 @@ export function Header() {
               <div
                 className="
                   absolute left-0 mt-2
-                  w-56 rounded-xl border bg-popover shadow-lg
+                  w-[500px] rounded-xl border bg-popover shadow-lg
                   max-h-[70vh] overflow-y-auto z-50
                   animate-fadeIn
                 "
