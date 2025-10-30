@@ -103,7 +103,13 @@ export function Header() {
 
               {isGenreOpen && (
                 <div
-                  className="absolute left-0 mt-2 w-56 rounded-xl border bg-popover shadow-lg max-h-[70vh] overflow-y-auto z-50 grid grid-cols-1 sm:grid-cols-2"
+                  className="
+                    absolute left-0 mt-2 w-[260px] rounded-2xl border border-border 
+                    bg-card/95 backdrop-blur-sm shadow-lg p-2 z-50
+                    max-h-[70vh] overflow-y-auto transition-all duration-200 ease-out
+                    animate-in fade-in slide-in-from-top-2
+                  "
+
                 >
                   {genres.length > 0 ? (
                     genres.map((genre) => (
@@ -237,7 +243,11 @@ export function Header() {
                     <Link
                       key={g.id}
                       to={`/genres/${g.slug}`}
-                      className="block py-1 text-foreground hover:text-primary"
+                      className="
+                        flex items-center gap-2 px-3 py-2 text-[15px] text-foreground 
+                        hover:text-primary hover:bg-muted/50 transition-colors rounded-lg
+                      "
+
                       onClick={() => {
                         setIsMenuOpen(false);
                         setIsMobileGenreOpen(false);
