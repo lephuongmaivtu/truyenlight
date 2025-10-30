@@ -105,10 +105,9 @@ export function Header() {
               <div
                 className="
                   absolute left-0 mt-3 w-[900px]
-                  grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-2
-                  rounded-2xl border border-border bg-background shadow-2xl p-6
+                  grid grid-cols-4 gap-x-8 gap-y-2
+                  rounded-xl border border-border bg-background shadow-2xl p-6
                   max-h-[70vh] overflow-y-auto z-50
-                  transition-all duration-200 ease-out
                 "
               >
                 {genres.length > 0 ? (
@@ -117,8 +116,8 @@ export function Header() {
                       key={genre.id}
                       to={`/genres/${genre.slug}`}
                       className="
-                        block text-[15px] font-medium text-foreground
-                        hover:text-primary hover:underline transition-colors
+                        block text-[15px] text-foreground font-medium
+                        hover:text-primary transition-colors
                       "
                     >
                       {genre.name}
@@ -132,6 +131,7 @@ export function Header() {
               </div>
             )}
           </div>
+
           </nav>
 
           {/* ===== Desktop search ===== */}
