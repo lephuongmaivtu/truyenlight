@@ -104,7 +104,7 @@ export function Header() {
               {isGenreOpen && (
                 <div
                   className="
-                    absolute left-0 mt-3 w-[720px]
+                    absolute left-0 mt-3 w-[500px]
                     grid grid-cols-1 md:grid-cols-2 gap-2
                     rounded-2xl border border-border bg-background shadow-2xl p-3
                     max-h-[70vh] overflow-y-auto z-50
@@ -117,7 +117,7 @@ export function Header() {
                         key={genre.id}
                         to={`/genres/${genre.slug}`}
                         className="
-                          flex items-center gap-3 px-4 py-3 text-[16px] font-medium
+                          w-full flex items-center gap-3 px-5 py-3 text-[16px] font-medium
                           text-foreground hover:text-primary hover:bg-muted/40
                           transition-colors rounded-xl
                         "
