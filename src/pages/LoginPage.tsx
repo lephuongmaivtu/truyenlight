@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { Button } from "../components/ui/button";
+import { syncPendingReward } from "../components/rewards/RewardFlow"; // ✅ thêm import này
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -21,7 +22,11 @@ export function LoginPage() {
     if (error) {
       setErrorMsg(error.message);
     } else {
-      navigate("/profile"); // login thành công → về trang profile
+      // ✅ Gọi hàm đồng bộ phần thưởng nếu có
+      await syncPendingReward();
+
+      // Điều hướng về trang profile
+      navigate("/profile");
     }
   };
 
@@ -30,7 +35,10 @@ export function LoginPage() {
       <div className="w-full max-w-md border border-gray-200 bg-white rounded-lg shadow p-6">
         <h1 className="text-2xl font-bold mb-6 text-center">Đăng nhập</h1>
 
-        <form onSubmit={handleLogin} className="space-y-4 flex flex-col items-center">
+        <form
+          onSubmit={handleLogin}
+          className="space-y-4 flex flex-col items-center"
+        >
           <input
             type="email"
             placeholder="Email"
