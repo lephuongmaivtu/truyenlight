@@ -1,5 +1,5 @@
-import { ToastProvider } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { ToastProvider } from "@/components/ui/use-toast"; // ✅ thêm dòng này
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { GenrePage } from "./pages/GenrePage";
@@ -25,9 +25,11 @@ import RevenuePage from "./pages/author/RevenuePage";
 function App() {
   return (
     <ReadingProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <ToastProvider> {/* ✅ Bọc toàn bộ app */}
+        <Router>
+          <AppContent />
+        </Router>
+      </ToastProvider>
     </ReadingProvider>
   );
 }
@@ -38,7 +40,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <Toaster /> {/* ✅ để hiện thông báo popup */}
+      <Toaster /> {/* ✅ Chỉ để render popup */}
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Homepage />} />
