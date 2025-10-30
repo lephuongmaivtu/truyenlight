@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { Button } from "../components/ui/button";
-import { toast } from "../components/ui/use-toast";
+import { usetoast } from "../components/ui/use-toast";
 
 // ---------------- API call ----------------
 async function getBookmarks(userId: string) {
