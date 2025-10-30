@@ -102,16 +102,17 @@ export function Header() {
             </button>
           
             {isGenreOpen && (
-              <div
-                className="
-                  absolute left-0 mt-2
-                  bg-card border border-border rounded-lg shadow-md
-                  p-4 w-[700px] z-50
-                  grid grid-cols-3 gap-x-8
-                  max-h-[70vh] overflow-y-auto
-                  animate-fadeIn
-                "
-              >
+             <div
+              className="
+                absolute left-0 mt-2
+                bg-card border border-border rounded-lg shadow-md
+                p-2 w-[220px] z-50
+                flex flex-col gap-1
+                max-h-[70vh] overflow-y-auto
+                animate-fadeIn
+              "
+            >
+
                 {genres.length > 0 ? (
                   <>
                     {/* Cột 1 */}
