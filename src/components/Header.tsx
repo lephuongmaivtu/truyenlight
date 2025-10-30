@@ -87,47 +87,54 @@ export function Header() {
               Trang chủ
             </Link>
 
-            {/* Dropdown Thể loại */}
-            <div
-              className="relative group"
-              onMouseEnter={() => setIsGenreOpen(true)}
-              onMouseLeave={() => setIsGenreOpen(false)}
+           {/* Dropdown Thể loại */}
+          <div
+            className="relative group"
+            onMouseEnter={() => setIsGenreOpen(true)}
+            onMouseLeave={() => setIsGenreOpen(false)}
+          >
+            <button
+              onClick={() => setIsGenreOpen(!isGenreOpen)}
+              className="flex items-center text-foreground hover:text-primary transition-colors"
             >
-              <button
-                onClick={() => setIsGenreOpen(!isGenreOpen)}
-                className="flex items-center text-foreground hover:text-primary transition-colors"
+              Thể Loại
+              <ChevronDown className="ml-1 h-4 w-4" />
+            </button>
+          
+            {isGenreOpen && (
+              <div
+                className="
+                  absolute left-0 mt-2 w-[480px]
+                  grid grid-cols-1 sm:grid-cols-2 gap-1
+                  rounded-2xl border border-border 
+                  bg-card/95 backdrop-blur-sm shadow-xl p-3 z-50
+                  max-h-[70vh] overflow-y-auto transition-all duration-200 ease-out
+                  animate-in fade-in slide-in-from-top-2
+                "
               >
-                Thể Loại
-                <ChevronDown className="ml-1 h-4 w-4" />
-              </button>
-
-              {isGenreOpen && (
-                <div
-                  className="
-                    absolute left-0 mt-2 w-[260px] rounded-2xl border border-border 
-                    bg-card/95 backdrop-blur-sm shadow-lg p-2 z-50
-                    max-h-[70vh] overflow-y-auto transition-all duration-200 ease-out
-                    animate-in fade-in slide-in-from-top-2
-                  "
-
-                >
-                  {genres.length > 0 ? (
-                    genres.map((genre) => (
-                      <Link
-                        key={genre.id}
-                        to={`/genres/${genre.slug}`}
-                        className="flex items-center px-3 py-2 text-sm text-foreground hover:text-primary transition-colors"
-                      >
-                        <span className="mr-2">{genre.emoji || "📘"}</span>
-                        {genre.name}
-                      </Link>
-                    ))
-                  ) : (
-                    <div className="p-3 text-muted-foreground text-sm">Đang tải...</div>
-                  )}
-                </div>
-              )}
-            </div>
+                {genres.length > 0 ? (
+                  genres.map((genre) => (
+                    <Link
+                      key={genre.id}
+                      to={`/genres/${genre.slug}`}
+                      className="
+                        flex items-center gap-3 px-4 py-3 text-[16px] font-medium
+                        text-foreground hover:text-primary hover:bg-muted/40
+                        transition-colors rounded-xl
+                      "
+                    >
+                      <span className="text-[18px]">{genre.emoji || "📘"}</span>
+                      <span className="whitespace-nowrap">{genre.name}</span>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="p-3 text-muted-foreground text-sm col-span-full">
+                    Đang tải thể loại...
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           </nav>
 
           {/* ===== Desktop search ===== */}
