@@ -138,12 +138,18 @@ export function ChapterReader() {
 
   // ✅ Khi user đọc xong chương
   const handleFinishChapter = async () => {
-    console.log("✅ Đã hoàn thành chương:", chapterSlug);
+  console.log("✅ Đã hoàn thành chương:", chapterSlug);
 
-    if (chapterSlug === "chuong-1" || chapterSlug === "1") {
-      await afterFirstChapterTrigger();
-    }
-  };
+  if (chapterSlug === "chuong-1" || chapterSlug === "1") {
+    await afterFirstChapterTrigger();
+
+    // 🚀 Gửi tín hiệu cho RewardFlow mở pop-up ngay
+    setTimeout(() => {
+      window.dispatchEvent(new Event("openRewardPopup"));
+    }, 400); // delay 0.4s cho smooth
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-background">
