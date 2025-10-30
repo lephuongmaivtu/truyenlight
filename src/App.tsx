@@ -102,4 +102,12 @@ function AppContent() {
   );
 }
 
+window.addEventListener("error", (e) => {
+  console.error("❌ Global JS Error:", e.message, e.error);
+});
+window.addEventListener("unhandledrejection", (e) => {
+  console.error("⚠️ Unhandled Promise:", e.reason);
+});
+
+
 export default App;
