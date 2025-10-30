@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { supabase } from "../../supabaseClient";
 import { toast } from "../ui/use-toast";
-import { Button } from "../ui/button";
+
 
 // 🎁 Danh sách 5 quà tặng có sẵn
 const GIFTS = [
