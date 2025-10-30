@@ -87,15 +87,15 @@ export function Header() {
               Trang chủ
             </Link>
 
-         {/* Dropdown Thể loại */}
+         {/* Dropdown Thể loại (bản ban đầu) */}
           <div
-            className="relative"
+            className="relative group"
             onMouseEnter={() => setIsGenreOpen(true)}
             onMouseLeave={() => setIsGenreOpen(false)}
           >
             <button
               onClick={() => setIsGenreOpen(!isGenreOpen)}
-              className="flex items-center text-foreground hover:text-primary transition-colors"
+              className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors"
             >
               Thể Loại
               <ChevronDown className="ml-1 h-4 w-4" />
@@ -104,10 +104,10 @@ export function Header() {
             {isGenreOpen && (
               <div
                 className="
-                  absolute left-0 mt-3 w-[900px]
-                  grid grid-cols-4 gap-x-8 gap-y-2
-                  rounded-xl border border-border bg-background shadow-2xl p-6
+                  absolute left-0 mt-2
+                  w-56 rounded-xl border bg-popover shadow-lg
                   max-h-[70vh] overflow-y-auto z-50
+                  animate-fadeIn
                 "
               >
                 {genres.length > 0 ? (
@@ -116,22 +116,24 @@ export function Header() {
                       key={genre.id}
                       to={`/genres/${genre.slug}`}
                       className="
-                        block text-[15px] text-foreground font-medium
+                        flex items-center px-3 py-2 text-sm text-foreground
                         hover:text-primary transition-colors
                       "
                     >
-                      {genre.name}
+                      <span className="mr-2 text-[14px] opacity-80">
+                        {genre.emoji || "📘"}
+                      </span>
+                      <span className="whitespace-nowrap">{genre.name}</span>
                     </Link>
                   ))
                 ) : (
-                  <div className="p-3 text-muted-foreground text-sm col-span-full">
+                  <div className="p-3 text-muted-foreground text-sm">
                     Đang tải thể loại...
                   </div>
                 )}
               </div>
             )}
           </div>
-
           </nav>
 
           {/* ===== Desktop search ===== */}
