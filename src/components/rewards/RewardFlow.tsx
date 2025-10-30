@@ -5,7 +5,6 @@ import confetti from "canvas-confetti";
 import { supabase } from "../../supabaseClient";
 import { toast } from "../ui/use-toast";
 import { Button } from "../ui/button";
-import { RewardDialog } from "./RewardDialogWrapper"; // ✅ dùng wrapper để tránh lỗi build
 
 // 🎁 Danh sách 5 quà tặng có sẵn
 const GIFTS = [
@@ -36,11 +35,38 @@ const GIFTS = [
   },
 ];
 
+// 🧱 Custom dialog không dùng Radix (Vercel-friendly)
+function CustomDialog({
+  open,
+  onClose,
+  children,
+}: {
+  open: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg p-6 w-[90%] max-w-md relative animate-in fade-in-0 zoom-in-95">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function RewardFlow() {
   const [open, setOpen] = useState(false);
   const [selectedGift, setSelectedGift] = useState<any>(null);
 
-  // ✅ Khi user đọc xong chương đầu tiên → hiển thị popup 1 lần duy nhất
+  // ✅ Khi user đọc xong chương đầu tiên
   useEffect(() => {
     const shown = localStorage.getItem("tl_first_reward_shown");
     if (!shown) {
@@ -56,6 +82,8 @@ export default function RewardFlow() {
   // 🎉 Khi chọn quà
   const handleSelectGift = async (gift: any) => {
     setSelectedGift(gift);
+
+    // Confetti effect
     confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
 
     toast({
@@ -63,12 +91,11 @@ export default function RewardFlow() {
       description: "Hãy đăng nhập để lưu phần thưởng nhé!",
     });
 
-    // Lấy user Supabase
+    // Nếu chưa đăng nhập → lưu local
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    // Nếu chưa login → lưu local
     if (!user) {
       localStorage.setItem(
         "tl_reward_pending",
@@ -81,7 +108,7 @@ export default function RewardFlow() {
       return;
     }
 
-    // Nếu có user → lưu vào DB
+    // Nếu có user → lưu Supabase
     await supabase.from("user_rewards").insert([
       {
         user_id: user.id,
@@ -101,7 +128,7 @@ export default function RewardFlow() {
   };
 
   return (
-    <RewardDialog open={open} onOpenChange={setOpen}>
+    <CustomDialog open={open} onClose={() => setOpen(false)}>
       <div className="max-w-md text-center space-y-4">
         <h2 className="text-2xl font-bold text-primary">
           🎉 Chúc mừng bạn đã hoàn thành chương đầu tiên!
@@ -133,7 +160,7 @@ export default function RewardFlow() {
           Sau khi chọn quà, bạn hãy đăng nhập để hệ thống lưu phần thưởng nhé 💫
         </p>
       </div>
-    </RewardDialog>
+    </CustomDialog>
   );
 }
 
