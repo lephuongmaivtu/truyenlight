@@ -3,7 +3,6 @@ declare global {
     FB: any;
   }
 }
-import SidebarGenres from "../components/SidebarGenres";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
@@ -584,11 +583,6 @@ return (
 
         {/* 🔸 CỘT PHẢI giữ nguyên */}
         <div className="space-y-6">
-          {/* 🗂️ Thể loại */}
-    <section className="border bg-card rounded-lg shadow-sm p-3">
-      <SidebarGenres />
-    </section>
-
     {/* Theo dõi fanpage */}
    <section className="w-full">
     <div className="border bg-card shadow-md overflow-hidden">
@@ -631,4 +625,3 @@ return (
 
 
 }
-
