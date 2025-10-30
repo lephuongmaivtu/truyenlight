@@ -113,7 +113,7 @@ export function Header() {
                 "
               >
                 {genres.length > 0 ? (
-                  <>
+      
                     {/* Cột 1 */}
                     <div className="space-y-1">
                       {genres
@@ -182,7 +182,7 @@ export function Header() {
                           </Link>
                         ))}
                     </div>
-                  </>
+                
                 ) : (
                   <div className="col-span-full text-sm text-muted-foreground">
                     Đang tải thể loại...
