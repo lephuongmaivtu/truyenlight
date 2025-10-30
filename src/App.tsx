@@ -21,62 +21,40 @@ import { UploadStoryPage } from "./pages/author/UploadStoryPage";
 import { UploadChapterPage } from "./pages/author/UploadChapterPage";
 import RevenuePage from "./pages/author/RevenuePage";
 
-// ✅ Thêm RewardFlow popup (quà tặng sau khi đọc xong chương đầu / điểm danh lần đầu)
-import RewardFlow from "./components/rewards/RewardFlow";
-
-import { ToastProvider } from "@/components/ui/use-toast";
-
 function App() {
   return (
     <ReadingProvider>
-      <ToastProvider> {/* ✅ thêm dòng này */}
-        <Router>
-          <AppContent />
-        </Router>
-      </ToastProvider>
+      <Router>
+        <AppContent />
+      </Router>
     </ReadingProvider>
   );
 }
 
-
 function AppContent() {
-  usePageTracking(); // ✅ GA4 pageview tracking
+  usePageTracking();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-       <Toaster />
-
-      {/* ✅ Thêm RewardFlow vào cấp global — popup luôn sẵn nhưng không ảnh hưởng giao diện */}
-      <RewardFlow />
-
+      <Toaster /> {/* ✅ để hiện thông báo popup */}
       <main className="flex-1">
         <Routes>
-          {/* Trang chính */}
           <Route path="/" element={<Homepage />} />
-
-          {/* Truyện & Chương */}
           <Route path="/story/:slug" element={<StoryDetail />} />
           <Route path="/story/:slug/:chapterSlug" element={<ChapterReader />} />
           <Route path="/genres/:slug" element={<GenrePage />} />
-
-          {/* Tài khoản */}
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-
-          {/* Khu vực tác giả */}
           <Route path="/author" element={<AuthorDashboard />} />
           <Route path="/author/upload-story" element={<UploadStoryPage />} />
           <Route path="/author/upload-chapter" element={<UploadChapterPage />} />
           <Route path="/author/revenue" element={<RevenuePage />} />
-
-          {/* Khu vực nhiệm vụ & cửa hàng */}
           <Route path="/author/tasks" element={<DailyTasks />} />
           <Route path="/shop" element={<RewardShop />} />
         </Routes>
       </main>
-
       <Footer />
     </div>
   );
