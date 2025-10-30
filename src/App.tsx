@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/toaster";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { GenrePage } from "./pages/GenrePage";
@@ -44,6 +45,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
+       <Toaster />
 
       {/* ✅ Thêm RewardFlow vào cấp global — popup luôn sẵn nhưng không ảnh hưởng giao diện */}
       <RewardFlow />
