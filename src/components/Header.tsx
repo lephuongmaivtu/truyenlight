@@ -87,8 +87,7 @@ export function Header() {
               Trang chủ
             </Link>
 
-         {/* Dropdown Thể loại (3 cột, giữ nguyên style gốc) */}
-      {/* Dropdown Thể loại (3 cột, giữ nguyên style gốc) */}
+    {/* Dropdown Thể loại (3 cột, giữ nguyên style gốc) */}
           <div
             className="relative group"
             onMouseEnter={() => setIsGenreOpen(true)}
@@ -192,7 +191,6 @@ export function Header() {
               </div>
             )}
           </div>
-
 
           </nav>
 
