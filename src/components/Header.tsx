@@ -108,8 +108,8 @@ export function Header() {
                 absolute top-full left-0 mt-2
                 bg-card border border-border rounded-xl shadow-lg
                 z-[9999]
-                grid grid-cols-4 gap-x-6 gap-y-2
-                p-4 min-w-[720px] max-w-[90vw]
+                grid grid-cols-4 gap-x-8 gap-y-3
+                p-4 min-w-[900px] max-w-[95vw] max-w-[90vw]
                 max-h-[70vh] overflow-y-auto
                 animate-fadeIn
                 scrollbar-thin scrollbar-thumb-rounded-md
@@ -119,7 +119,7 @@ export function Header() {
                 WebkitOverflowScrolling: "touch",
                 scrollbarGutter: "stable",
                 display: "grid", // ✅ bắt buộc để ép layout grid
-                gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+                gridTemplateColumns: "repeat(4, minmax(160px, 1fr))",
               }}
             >
               {genres.length > 0 ? (
