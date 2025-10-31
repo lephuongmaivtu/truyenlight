@@ -231,14 +231,4 @@ body {
   z-index: 99999 !important;
 }
 
-/* ⚙️ Force dropdown thể loại scroll được trong mọi layout */
-header,
-header .container {
-  overflow: visible !important;
-  contain: none !important;
-  isolation: isolate !important;
-  position: relative !important;
-  z-index: 100 !important;
-}
-
 
