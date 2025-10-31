@@ -105,7 +105,6 @@ export function Header() {
             {isGenreOpen && (
               <div
                 className="
-                 grid grid-cols-4 md:grid-cols-3 sm:grid-cols-2
                   absolute top-full left-0 mt-2
                   bg-card border border-border rounded-xl shadow-lg
                   w-[700px] z-[9999]
