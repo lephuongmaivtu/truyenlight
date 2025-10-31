@@ -71,7 +71,7 @@ export function Header() {
   };
 
   return (
-    <header className="bg-card border-b border-border sticky top-0 z-[100] overflow-visible">
+    <header className="bg-card border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4">
         {/* ================= HEADER TOP ================= */}
         <div className="flex items-center justify-between h-16">
