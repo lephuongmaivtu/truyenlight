@@ -186,4 +186,25 @@
 
 html {
   font-size: var(--font-size);
+  /* ====================== */
+/*  🎨 Thanh cuộn sáng hơn */
+/* ====================== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Nền trong suốt */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(180, 180, 180, 0.4); /* màu sáng hơn */
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(180, 180, 180, 0.7); /* sáng hơn khi hover */
+}
+
 }
