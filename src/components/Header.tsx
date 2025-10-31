@@ -103,49 +103,50 @@ export function Header() {
               </button>
             
             {isGenreOpen && (
-             <div
-                className="
-                  absolute top-full left-0 mt-2
-                  bg-card border border-border rounded-xl shadow-lg
-                  z-[9999]
-                  grid grid-cols-4 gap-x-6 gap-y-2
-                  p-4 min-w-[720px] max-w-[90vw]
-                  max-h-[70vh] overflow-y-auto
-                  animate-fadeIn
-                  scrollbar-thin scrollbar-thumb-rounded-md
-                  scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
-                "
-                style={{
-                  WebkitOverflowScrolling: "touch",
-                  scrollbarGutter: "stable",
-                }}
-              >
+            <div
+              className="
+                absolute top-full left-0 mt-2
+                bg-card border border-border rounded-xl shadow-lg
+                z-[9999]
+                grid grid-cols-4 gap-x-6 gap-y-2
+                p-4 min-w-[720px] max-w-[90vw]
+                max-h-[70vh] overflow-y-auto
+                animate-fadeIn
+                scrollbar-thin scrollbar-thumb-rounded-md
+                scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
+              "
+              style={{
+                WebkitOverflowScrolling: "touch",
+                scrollbarGutter: "stable",
+                display: "grid", // ✅ bắt buộc để ép layout grid
+                gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+              }}
+            >
+              {genres.length > 0 ? (
+                genres.map((genre) => (
+                  <Link
+                    key={genre.id}
+                    to={`/genres/${genre.slug}`}
+                    className="
+                      flex items-center gap-2
+                      px-3 py-2 text-[15px] text-foreground
+                      hover:text-primary hover:bg-muted/40
+                      rounded-lg transition-colors
+                    "
+                    onClick={() => setIsGenreOpen(false)}
+                  >
+                    <span className="text-[16px]">{genre.emoji || "📘"}</span>
+                    <span className="whitespace-nowrap">{genre.name}</span>
+                  </Link>
+                ))
+              ) : (
+                <div className="text-sm text-muted-foreground px-3 py-2">
+                  Đang tải thể loại...
+                </div>
+              )}
+            </div>
+          )}
 
-                {genres.length > 0 ? (
-                  genres.map((genre) => (
-                    <Link
-                      key={genre.id}
-                      to={`/genres/${genre.slug}`}
-                      className="
-                        flex items-center gap-2
-                        text-[15px] text-foreground
-                        hover:text-primary hover:bg-muted/40
-                        rounded-lg transition-colors
-                        px-2 py-1
-                      "
-                      onClick={() => setIsGenreOpen(false)}
-                    >
-                      <span className="text-[16px]">{genre.emoji || "📘"}</span>
-                      <span className="truncate">{genre.name}</span>
-                    </Link>
-                  ))
-                ) : (
-                  <div className="text-sm text-muted-foreground col-span-4 px-3 py-2">
-                    Đang tải thể loại...
-                  </div>
-                )}
-              </div>
-            )}
            </div>
           </nav>
 
