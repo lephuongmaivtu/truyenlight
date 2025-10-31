@@ -208,3 +208,25 @@ html {
 }
 
 }
+/* ✅ FIX dropdown thể loại bị cắt / không scroll */
+header,
+header .container {
+  overflow: visible !important;
+  isolation: isolate !important; /* tạo layer riêng, không bị sticky clip */
+  position: relative !important;
+}
+
+html,
+body {
+  overflow-x: visible !important;
+  overscroll-behavior: contain;
+}
+
+/* ✅ Đảm bảo dropdown có thể cuộn độc lập */
+.absolute[class*="bg-card"] {
+  max-height: 70vh !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+  z-index: 99999 !important;
+}
