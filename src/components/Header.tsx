@@ -103,24 +103,24 @@ export function Header() {
               </button>
             
             {isGenreOpen && (
-              <div
+             <div
                 className="
                   absolute top-full left-0 mt-2
                   bg-card border border-border rounded-xl shadow-lg
-                  w-[700px] z-[9999]
+                  z-[9999]
                   grid grid-cols-4 gap-x-6 gap-y-2
-                  p-4
-                  max-h-[70vh]
-                  overflow-y-auto
-                  overscroll-contain
-                  scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
+                  p-4 min-w-[720px] max-w-[90vw]
+                  max-h-[70vh] overflow-y-auto
                   animate-fadeIn
+                  scrollbar-thin scrollbar-thumb-rounded-md
+                  scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
                 "
                 style={{
                   WebkitOverflowScrolling: "touch",
                   scrollbarGutter: "stable",
                 }}
               >
+
                 {genres.length > 0 ? (
                   genres.map((genre) => (
                     <Link
