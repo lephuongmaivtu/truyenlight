@@ -140,7 +140,7 @@ export function Header() {
                   </Link>
                 ))
               ) : (
-                <div className="text-sm text-muted-foreground px-3 py-2">
+                <div className="text-sm text-muted-foreground px-3 py-1.25">
                   Đang tải thể loại...
                 </div>
               )}
@@ -274,11 +274,12 @@ export function Header() {
                   >
                     {genres.map((g) => (
                       <Link
+                        w-full
                         key={g.id}
                         to={`/genres/${g.slug}`}
                         className="
                           flex items-center gap-2 px-3 py-2 text-[15px] text-foreground 
-                          hover:text-primary hover:bg-muted/40 transition-colors rounded-lg
+                          hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/30 hover:ring-1 hover:ring-primary/20 transition-colors rounded-lg
                         "
                         onClick={() => {
                           setIsMenuOpen(false);
