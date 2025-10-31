@@ -82,67 +82,66 @@ export function Header() {
           </Link>
 
           {/* ===== Desktop nav ===== */}
-          <nav className="hidden md:flex items-center space-x-8 relative">
+          <nav className="hidden md:flex items-center space-x-8 relative overflow-visible">
             <Link to="/" className="text-foreground hover:text-primary transition-colors">
               Trang chủ
             </Link>
 
-  {/* Dropdown Thể loại (1 cột dọc như hình) */}
-        <div
-          className="relative group"
-          onMouseEnter={() => setIsGenreOpen(true)}
-          onMouseLeave={() => setIsGenreOpen(false)}
-        >
-          <button
-            onClick={() => setIsGenreOpen(!isGenreOpen)}
-            className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors"
-          >
-            Thể Loại
-            <ChevronDown className="ml-1 h-4 w-4" />
-          </button>
-        
-          {isGenreOpen && (
+             {/* Dropdown Thể loại (scroll được) */}
             <div
-              className="
-                absolute left-0 mt-2
-                bg-card border border-border rounded-xl shadow-lg
-                w-[200px] z-50
-                flex flex-col gap-[2px]
-                max-h-[70vh] overflow-y-auto
-                overscroll-contain
-                scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
-                animate-fadeIn
-              "
-              style={{
-                scrollbarGutter: "stable",
-                WebkitOverflowScrolling: "touch", // giúp scroll mượt trên mobile
-              }}
+              className="relative group"
+              onMouseEnter={() => setIsGenreOpen(true)}
+              onMouseLeave={() => setIsGenreOpen(false)}
             >
-
-              {genres.length > 0 ? (
-                genres.map((genre) => (
-                  <Link
-                    key={genre.id}
-                    to={`/genres/${genre.slug}`}
-                    className="
-                      flex items-center gap-2
-                      px-3 py-2 text-[15px] text-foreground
-                      hover:text-primary hover:bg-muted/40
-                      rounded-lg transition-colors
-                    "
-                  >
-                    <span className="text-[16px]">{genre.emoji || "📘"}</span>
-                    <span className="whitespace-nowrap">{genre.name}</span>
-                  </Link>
-                ))
-              ) : (
-                <div className="text-sm text-muted-foreground px-3 py-2">
-                  Đang tải thể loại...
+              <button
+                onClick={() => setIsGenreOpen(!isGenreOpen)}
+                className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors"
+              >
+                Thể Loại
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </button>
+            
+              {isGenreOpen && (
+                <div
+                  className="
+                    absolute top-full left-0 mt-2
+                    bg-card border border-border rounded-xl shadow-lg
+                    w-[220px] z-[9999]
+                    flex flex-col gap-[2px]
+                    max-h-[70vh] overflow-y-auto overscroll-contain
+                    scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
+                    animate-fadeIn
+                  "
+                  style={{
+                    WebkitOverflowScrolling: "touch",
+                    scrollbarGutter: "stable",
+                  }}
+                >
+                  {genres.length > 0 ? (
+                    genres.map((genre) => (
+                      <Link
+                        key={genre.id}
+                        to={`/genres/${genre.slug}`}
+                        className="
+                          flex items-center gap-2
+                          px-3 py-2 text-[15px] text-foreground
+                          hover:text-primary hover:bg-muted/40
+                          rounded-lg transition-colors
+                        "
+                      >
+                        <span className="text-[16px]">{genre.emoji || "📘"}</span>
+                        <span className="whitespace-nowrap">{genre.name}</span>
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="text-sm text-muted-foreground px-3 py-2">
+                      Đang tải thể loại...
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          )}
-        </div>
+
 
 
           </nav>
