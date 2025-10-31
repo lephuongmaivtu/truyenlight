@@ -102,56 +102,52 @@ export function Header() {
                 )}
               </button>
             
-             {isGenreOpen && (
+            {isGenreOpen && (
               <div
                 className="
+                 grid grid-cols-4 md:grid-cols-3 sm:grid-cols-2
                   absolute top-full left-0 mt-2
                   bg-card border border-border rounded-xl shadow-lg
-                  w-[220px] z-[9999]
-                  flex flex-col gap-[2px]
+                  w-[700px] z-[9999]
+                  grid grid-cols-4 gap-x-6 gap-y-2
+                  p-4
                   max-h-[70vh]
-                  overflow-y-auto overflow-x-hidden
+                  overflow-y-auto
                   overscroll-contain
                   scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
                   animate-fadeIn
                 "
                 style={{
-                  WebkitOverflowScrolling: "touch", // cuộn mượt trên mobile
+                  WebkitOverflowScrolling: "touch",
                   scrollbarGutter: "stable",
-                  overscrollBehavior: "contain",
-                  position: "absolute",
-                  top: "100%",
-                  left: 0,
-                  right: "auto",
-                  zIndex: 99999,
                 }}
               >
+                {genres.length > 0 ? (
+                  genres.map((genre) => (
+                    <Link
+                      key={genre.id}
+                      to={`/genres/${genre.slug}`}
+                      className="
+                        flex items-center gap-2
+                        text-[15px] text-foreground
+                        hover:text-primary hover:bg-muted/40
+                        rounded-lg transition-colors
+                        px-2 py-1
+                      "
+                      onClick={() => setIsGenreOpen(false)}
+                    >
+                      <span className="text-[16px]">{genre.emoji || "📘"}</span>
+                      <span className="truncate">{genre.name}</span>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="text-sm text-muted-foreground col-span-4 px-3 py-2">
+                    Đang tải thể loại...
+                  </div>
+                )}
+              </div>
+            )}
 
-                  {genres.length > 0 ? (
-                    genres.map((genre) => (
-                      <Link
-                        key={genre.id}
-                        to={`/genres/${genre.slug}`}
-                        className="
-                          flex items-center gap-2
-                          px-3 py-2 text-[15px] text-foreground
-                          hover:text-primary hover:bg-muted/40
-                          rounded-lg transition-colors
-                        "
-                        onClick={() => setIsGenreOpen(false)} // ẩn dropdown khi chọn thể loại
-                      >
-                        <span className="text-[16px]">{genre.emoji || "📘"}</span>
-                        <span className="whitespace-nowrap">{genre.name}</span>
-                      </Link>
-                    ))
-                  ) : (
-                    <div className="text-sm text-muted-foreground px-3 py-2">
-                      Đang tải thể loại...
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
           </nav>
 
           {/* ===== Desktop search ===== */}
