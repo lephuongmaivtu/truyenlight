@@ -230,7 +230,7 @@ export function Header() {
         {/* ================= MOBILE MENU ================= */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-border py-3">
-            <div className="space-y-2 max-h-[75vh] overflow-y-auto">
+           <div className="space-y-2 max-h-[75vh] overflow-y-auto overflow-visible">
               {/* Trang chủ */}
               <Link
                 to="/"
