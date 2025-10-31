@@ -88,17 +88,18 @@ export function Header() {
             </Link>
 
              {/* Dropdown Thể loại (scroll được) */}
-            <div
-              className="relative group"
-              onMouseEnter={() => setIsGenreOpen(true)}
-              onMouseLeave={() => setIsGenreOpen(false)}
-            >
+                       {/* Dropdown Thể Loại (click để mở, có scroll) */}
+            <div className="relative">
               <button
                 onClick={() => setIsGenreOpen(!isGenreOpen)}
-                className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors"
+                className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors select-none"
               >
                 Thể Loại
-                <ChevronDown className="ml-1 h-4 w-4" />
+                {isGenreOpen ? (
+                  <ChevronUp className="ml-1 h-4 w-4" />
+                ) : (
+                  <ChevronDown className="ml-1 h-4 w-4" />
+                )}
               </button>
             
               {isGenreOpen && (
@@ -128,6 +129,7 @@ export function Header() {
                           hover:text-primary hover:bg-muted/40
                           rounded-lg transition-colors
                         "
+                        onClick={() => setIsGenreOpen(false)} // ẩn dropdown khi chọn thể loại
                       >
                         <span className="text-[16px]">{genre.emoji || "📘"}</span>
                         <span className="whitespace-nowrap">{genre.name}</span>
@@ -141,9 +143,6 @@ export function Header() {
                 </div>
               )}
             </div>
-
-
-
           </nav>
 
           {/* ===== Desktop search ===== */}
