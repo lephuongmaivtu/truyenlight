@@ -106,12 +106,19 @@ export function Header() {
               className="
                 absolute left-0 mt-2
                 bg-card border border-border rounded-xl shadow-lg
-                p-2 w-[180px] z-50
+                w-[200px] z-50
                 flex flex-col gap-[2px]
-                max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
+                max-h-[70vh] overflow-y-auto
+                overscroll-contain
+                scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
                 animate-fadeIn
               "
+              style={{
+                scrollbarGutter: "stable",
+                WebkitOverflowScrolling: "touch", // giúp scroll mượt trên mobile
+              }}
             >
+
               {genres.length > 0 ? (
                 genres.map((genre) => (
                   <Link
@@ -247,16 +254,21 @@ export function Header() {
                 )}
               </button>
 
-              {isMobileGenreOpen && (
-                <div
-                  className="
-                    pl-3 border-l border-border
-                    space-y-1
-                    max-h-[60vh] overflow-y-auto
-                    scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
-                    pr-1
-                  "
-                >
+             {isMobileGenreOpen && (
+              <div
+                className="
+                  pl-3 border-l border-border
+                  space-y-1
+                  max-h-[60vh] overflow-y-auto overscroll-contain
+                  scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
+                  pr-1
+                "
+                style={{
+                  WebkitOverflowScrolling: "touch", // cuộn mượt trên iOS & mobile
+                  scrollbarGutter: "stable",        // tránh layout nhảy khi cuộn
+                }}
+              >
+
                   {genres.map((g) => (
                     <Link
                       key={g.id}
