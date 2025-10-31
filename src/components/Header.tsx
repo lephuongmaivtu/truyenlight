@@ -108,7 +108,7 @@ export function Header() {
                 bg-card border border-border rounded-xl shadow-lg
                 p-2 w-[180px] z-50
                 flex flex-col gap-[2px]
-                max-h-[70vh] overflow-y-auto
+                max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
                 animate-fadeIn
               "
             >
@@ -248,26 +248,35 @@ export function Header() {
               </button>
 
               {isMobileGenreOpen && (
-                <div className="pl-3 border-l border-border space-y-1 max-h-[60vh] overflow-y-auto">
+                <div
+                  className="
+                    pl-3 border-l border-border
+                    space-y-1
+                    max-h-[60vh] overflow-y-auto
+                    scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
+                    pr-1
+                  "
+                >
                   {genres.map((g) => (
                     <Link
                       key={g.id}
                       to={`/genres/${g.slug}`}
                       className="
                         flex items-center gap-2 px-3 py-2 text-[15px] text-foreground 
-                        hover:text-primary hover:bg-muted/50 transition-colors rounded-lg
+                        hover:text-primary hover:bg-muted/40 transition-colors rounded-lg
                       "
-
                       onClick={() => {
                         setIsMenuOpen(false);
                         setIsMobileGenreOpen(false);
                       }}
                     >
-                      {g.emoji || "📘"} {g.name}
+                      <span className="text-[16px]">{g.emoji || "📘"}</span>
+                      <span className="whitespace-nowrap">{g.name}</span>
                     </Link>
                   ))}
                 </div>
               )}
+
 
               {/* Khu vực tác giả */}
               {user && (
