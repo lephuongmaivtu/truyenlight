@@ -255,39 +255,41 @@ export function Header() {
               </button>
 
              {isMobileGenreOpen && (
-              <div
-                className="
-                  pl-3 border-l border-border
-                  space-y-1
-                  max-h-[60vh] overflow-y-auto overscroll-contain
-                  scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
-                  pr-1
-                "
-                style={{
-                  WebkitOverflowScrolling: "touch", // cuộn mượt trên iOS & mobile
-                  scrollbarGutter: "stable",        // tránh layout nhảy khi cuộn
-                }}
-              >
-
-                  {genres.map((g) => (
-                    <Link
-                      key={g.id}
-                      to={`/genres/${g.slug}`}
-                      className="
-                        flex items-center gap-2 px-3 py-2 text-[15px] text-foreground 
-                        hover:text-primary hover:bg-muted/40 transition-colors rounded-lg
-                      "
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        setIsMobileGenreOpen(false);
-                      }}
-                    >
-                      <span className="text-[16px]">{g.emoji || "📘"}</span>
-                      <span className="whitespace-nowrap">{g.name}</span>
-                    </Link>
-                  ))}
+                <div className="relative">
+                  <div
+                    className="
+                      pl-3 border-l border-border
+                      space-y-1
+                      max-h-[60vh] overflow-y-auto overscroll-contain
+                      scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
+                      pr-1 bg-card rounded-lg shadow-inner
+                    "
+                    style={{
+                      WebkitOverflowScrolling: "touch",
+                      scrollbarGutter: "stable",
+                    }}
+                  >
+                    {genres.map((g) => (
+                      <Link
+                        key={g.id}
+                        to={`/genres/${g.slug}`}
+                        className="
+                          flex items-center gap-2 px-3 py-2 text-[15px] text-foreground 
+                          hover:text-primary hover:bg-muted/40 transition-colors rounded-lg
+                        "
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          setIsMobileGenreOpen(false);
+                        }}
+                      >
+                        <span className="text-[16px]">{g.emoji || "📘"}</span>
+                        <span className="whitespace-nowrap">{g.name}</span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
+
 
 
               {/* Khu vực tác giả */}
