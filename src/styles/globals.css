@@ -241,26 +241,4 @@ header .container {
   z-index: 100 !important;
 }
 
-/* Cho toàn trang không cắt dropdown */
-html,
-body,
-#root {
-  overflow-x: visible !important;
-  overflow-y: visible !important;
-  overscroll-behavior: contain;
-  contain: none !important;
-}
 
-/* ⚙️ Nhắm chính xác vào dropdown Thể Loại */
-header div[class*="absolute"][class*="bg-card"] {
-  max-height: 70vh !important;
-  overflow-y: auto !important;
-  overflow-x: visible !important;
-  -webkit-overflow-scrolling: touch;
-  z-index: 999999 !important;
-  position: absolute !important;
-  top: 100% !important;
-  left: 0 !important;
-  right: auto !important;
-  contain: content !important;
-}
