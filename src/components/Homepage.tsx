@@ -32,19 +32,17 @@ export function Homepage() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const loadMoreStories = () => {
-    const nextPage = page + 1;
-    const start = (nextPage - 1) * 6;
-    const end = start + 6;
-  
+  const nextPage = page + 1;
+  const start = (nextPage - 1) * 9;
+  const end = start + 9;
 
-  
-  
-    const newStories = stories.slice(start, end);
-    if (newStories.length > 0) {
-      setVisibleStories((prev) => [...prev, ...newStories]);
-      setPage(nextPage);
-    }
-  };
+  const newStories = stories.slice(start, end);
+  if (newStories.length > 0) {
+    setVisibleStories((prev) => [...prev, ...newStories]);
+    setPage(nextPage);
+  }
+};
+
   
   // Fetch tất cả stories
     useEffect(() => {
@@ -84,7 +82,7 @@ export function Homepage() {
           ratingCount: story.story_rating_stats?.rating_count ?? 0,
         }));
         setStories(mapped);
-        setVisibleStories(mapped.slice(0, 6));
+        setVisibleStories(mapped.slice(0, 9));
       }
       
        
@@ -137,18 +135,7 @@ export function Homepage() {
     fetchData();
   }, []);
   
-useEffect(() => {
-  const handleScroll = () => {
-    if (
-      window.innerHeight + window.scrollY >= document.body.offsetHeight - 100
-    ) {
-      loadMoreStories();
-    }
-  };
 
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, [page, stories]);
   
   const getTopStoriesByViews = async () => {
     const { data, error } = await supabase
@@ -578,6 +565,18 @@ return (
                 <StoryCard key={story.id} story={story} />
               ))}
             </div>
+            <div className="text-center mt-6">
+              {visibleStories.length < stories.length && (
+                <Button
+                  variant="outline"
+                  onClick={loadMoreStories}
+                  className="px-6 py-2 text-sm"
+                >
+                  Tải thêm truyện
+                </Button>
+              )}
+            </div>
+
           </section>
         </div>
 
