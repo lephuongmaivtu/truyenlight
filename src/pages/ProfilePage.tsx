@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { Button } from "../components/ui/button";
-import { usetoast } from "../components/ui/use-toast";
+import { useToast } from "../components/ui/use-toast";
 import RewardClaimModal from "../components/RewardClaimModal";
 
 
@@ -80,57 +80,7 @@ async function getUserRewards(userId: string) {
 }
 
 // ✅ Cập nhật trạng thái đã nhận
-async function claimReward(rewardId: string) {
-  // 1. Lấy voucher chưa được claim
-  const { data: availableVoucher } = await supabase
-    .from("reward_vouchers")
-    .select("id, voucher_code, product_url")
-    .eq("is_claimed", false)
-    .limit(1)
-    .single();
 
-  if (!availableVoucher) {
-    alert("😢 Hiện tại đã hết voucher, vui lòng quay lại sau!");
-    return;
-  }
-
-  // 2. Cập nhật voucher thành đã claim
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData?.user;
-
-  await supabase
-    .from("reward_vouchers")
-    .update({
-      is_claimed: true,
-      claimed_by: user.id,
-      claimed_at: new Date().toISOString(),
-    })
-    .eq("id", availableVoucher.id);
-
-  // 3. Gán voucher_code vào user_rewards
-  const { error } = await supabase
-    .from("user_rewards")
-    .update({
-      claimed: true,
-      status: "claimed",
-      voucher_code: availableVoucher.voucher_code,
-      voucher_url: availableVoucher.product_url,
-    })
-    .eq("id", rewardId);
-
-  if (error) {
-    alert("❌ Lỗi khi nhận quà!");
-    return;
-  }
-
-  // 4. Hiển thị modal voucher
-  const fullReward = {
-    voucher_code: availableVoucher.voucher_code,
-    product_url: availableVoucher.product_url,
-  };
-  setSelectedReward(fullReward);
-  setShowModal(true);
-}
 
 
 // ---------------- Component ----------------
@@ -142,6 +92,60 @@ export function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [selectedReward, setSelectedReward] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
+
+    // ✅ Hàm nhận thưởng (di chuyển vào trong component)
+  const claimReward = async (rewardId: string) => {
+    // 1. Lấy voucher chưa được claim
+    const { data: availableVoucher } = await supabase
+      .from("reward_vouchers")
+      .select("id, voucher_code, product_url")
+      .eq("is_claimed", false)
+      .limit(1)
+      .single();
+
+    if (!availableVoucher) {
+      alert("😢 Hiện tại đã hết voucher, vui lòng quay lại sau!");
+      return;
+    }
+
+    // 2. Lấy user hiện tại
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData?.user;
+
+    // 3. Update voucher thành đã claim
+    await supabase
+      .from("reward_vouchers")
+      .update({
+        is_claimed: true,
+        claimed_by: user.id,
+        claimed_at: new Date().toISOString(),
+      })
+      .eq("id", availableVoucher.id);
+
+    // 4. Gán voucher_code vào user_rewards
+    const { error } = await supabase
+      .from("user_rewards")
+      .update({
+        claimed: true,
+        status: "claimed",
+        voucher_code: availableVoucher.voucher_code,
+        voucher_url: availableVoucher.product_url,
+      })
+      .eq("id", rewardId);
+
+    if (error) {
+      alert("❌ Lỗi khi nhận quà!");
+      return;
+    }
+
+    // 5. Hiển thị modal voucher
+    const fullReward = {
+      voucher_code: availableVoucher.voucher_code,
+      product_url: availableVoucher.product_url,
+    };
+    setSelectedReward(fullReward);
+    setShowModal(true);
+  };
 
 
   useEffect(() => {
