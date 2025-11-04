@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // ✅ UI Components
 import { Toaster } from "@/components/ui/toaster";
-import { useToast } from "../components/ui/use-toast";
+import { ToastProvider } from "@/components/ui/use-toast";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 
