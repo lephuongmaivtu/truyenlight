@@ -298,16 +298,17 @@ export function ProfilePage() {
                     Nhận quà
                   </Button>            
                 )}
-                {showModal && selectedReward && (
+              </div>
+            ))}
+          </div>
+        )}
+
+                 {showModal && selectedReward && (
                     <RewardClaimModal
                       reward={selectedReward}
                       onClose={() => setShowModal(false)}
                     />
                  )}
-              </div>
-            ))}
-          </div>
-        )}
       </section>
     </div>
   );
