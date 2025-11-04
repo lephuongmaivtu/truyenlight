@@ -83,13 +83,19 @@ export default function RewardFlow() {
       return;
     }
 
-    await supabase.from("user_rewards").insert([{
-      user_id: user.id,
+   await supabase.from("user_rewards").insert([
+  {
+    user_id: user.id,
+    status: "available",
+    claimed: false,
+    payload: {
       item_name: gift.name,
       image_url: gift.image_url,
-      claimed: false,
       selected_at: new Date().toISOString(),
-    }]);
+    },
+  },
+]);
+
 
     localStorage.setItem("tl_first_reward_shown", "1");
     localStorage.removeItem("tl_reward_pending");
