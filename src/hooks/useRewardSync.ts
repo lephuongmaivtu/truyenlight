@@ -12,7 +12,15 @@ export function useRewardSync() {
       if (!pending) return;
 
       const reward = JSON.parse(pending);
-      const { data: { user } } = await supabase.auth.getUser();
+
+      // Lấy user hiện tại
+      let { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.warn("⏳ User chưa sẵn sàng, thử lại sau 1s...");
+        await new Promise((r) => setTimeout(r, 1000));
+        ({ data: { user } } = await supabase.auth.getUser());
+      }
+
       if (!user) return;
 
       // ✅ Chuẩn hóa JSONB
@@ -22,19 +30,18 @@ export function useRewardSync() {
         selected_at: reward.selected_at,
       };
 
-      const { error } = await supabase
-        .from("user_rewards")
-        .insert([
-          {
-            user_id: user.id,
-            status: "pending",
-            claimed: false,
-            payload: payloadData, // jsonb
-          },
-        ]);
+      const { error } = await supabase.from("user_rewards").insert([
+        {
+          user_id: user.id,
+          status: "pending",
+          claimed: false,
+          source: "popup",
+          payload: payloadData, // jsonb
+        },
+      ]);
 
       if (error) {
-        console.error("❌ Lỗi khi lưu phần thưởng:", JSON.stringify(error));
+        console.error("❌ Lỗi khi lưu phần thưởng:", error);
         toast({
           title: "⚠️ Không thể lưu phần thưởng",
           description: "Vui lòng thử lại sau.",
@@ -51,12 +58,15 @@ export function useRewardSync() {
       localStorage.setItem("tl_first_reward_shown", "1");
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: subscription } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") {
+        console.log("✅ Đã đăng nhập, bắt đầu đồng bộ phần thưởng...");
         syncPendingReward();
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription?.subscription?.unsubscribe?.();
+    };
   }, [toast]);
 }
