@@ -27,7 +27,7 @@ export function useRewardSync() {
         .insert([
           {
             user_id: user.id,
-            status: "available",
+            status: "pending",
             claimed: false,
             payload: payloadData, // jsonb
           },
