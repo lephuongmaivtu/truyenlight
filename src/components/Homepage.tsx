@@ -345,16 +345,12 @@ return (
             });
 
             // Nếu đủ 21 ngày → cập nhật quà khả dụng
-            if (currentDay === 21) {
-              await supabase
-                .from("user_rewards")
-                .update({ status: "available" })
-                .eq("user_id", user.id)
-                .eq("source", "popup");
-              alert("🎉 Bạn đã điểm danh đủ 21 ngày! Hãy mở hộp quà trong Hồ sơ nhé!");
+           if (currentDay === 21) {
+              alert("🎉 Bạn đã điểm danh đủ 21 ngày! Hãy vào Hồ sơ để xem phần thưởng!");
             } else {
               alert("✅ Điểm danh thành công! +10 xu vào tài khoản.");
             }
+
           } catch (err) {
             console.error(err);
             alert("Có lỗi xảy ra khi điểm danh.");
