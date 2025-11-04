@@ -12,7 +12,6 @@ import {
   updateReadingProgress,
 } from "../lib/api";
 import { supabase } from "../supabaseClient";
-import { afterFirstChapterTrigger } from "../components/rewards/RewardFlow"; // ✅ chỉ import 1 lần, đúng đường dẫn
 
 export function ChapterReader() {
   const { slug, chapterSlug } = useParams<{ slug: string; chapterSlug: string }>();
@@ -33,9 +32,7 @@ export function ChapterReader() {
       if (!alive || !s) return;
 
       setStory(s);
-      const chap = s.chapters.find(
-        (c) => c.slug === chapterSlug || c.id === chapterSlug
-      );
+      const chap = s.chapters.find((c) => c.slug === chapterSlug || c.id === chapterSlug);
       setChapter(chap ?? null);
       setLoading(false);
     }
@@ -79,13 +76,7 @@ export function ChapterReader() {
     };
   }, [story?.id, chapter?.id]);
 
-  // ====== LOCAL BOOKMARK ======
-  const isBookmarked = useMemo(() => {
-    if (!slug || !chapterSlug) return false;
-    const bm = getBookmark(slug);
-    return bm?.chapterSlug === chapterSlug;
-  }, [slug, chapterSlug, getBookmark]);
-
+  // ====== BOOKMARK ======
   useEffect(() => {
     if (!slug || !chapterSlug) return;
     const timer = setInterval(() => {
@@ -102,58 +93,34 @@ export function ChapterReader() {
     }
   }, [slug, chapterSlug, getBookmark]);
 
-  // ====== CHAPTER NAVIGATION ======
+  // ====== NAVIGATION ======
   const chapters = story?.chapters ?? [];
-  const currentIndex = useMemo(
-    () => chapters.findIndex((c) => c.id === chapter?.id),
-    [chapters, chapter]
-  );
+  const currentIndex = useMemo(() => chapters.findIndex((c) => c.id === chapter?.id), [chapters, chapter]);
   const previousChapter = currentIndex > 0 ? chapters[currentIndex - 1] : null;
-  const nextChapter =
-    currentIndex >= 0 && currentIndex < chapters.length - 1
-      ? chapters[currentIndex + 1]
-      : null;
+  const nextChapter = currentIndex >= 0 && currentIndex < chapters.length - 1 ? chapters[currentIndex + 1] : null;
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <p>Loading chapter…</p>
-      </div>
-    );
-  }
-
-  if (!story || !chapter) {
+  if (loading) return <div className="container mx-auto px-4 py-8"><p>Loading chapter…</p></div>;
+  if (!story || !chapter)
     return (
       <div className="container mx-auto px-4 py-8 text-center">
         <h1 className="text-2xl font-bold mb-4">Chapter Not Found</h1>
-        <Link to="/">
-          <Button>Back to Home</Button>
-        </Link>
+        <Link to="/"><Button>Back to Home</Button></Link>
       </div>
     );
-  }
 
-  // ====== MAIN CONTENT ======
   const wordCount = (chapter.content ?? "").split(/\s+/).filter(Boolean).length;
 
-  // ✅ Khi user đọc xong chương
-  const handleFinishChapter = async () => {
-  console.log("✅ Đã hoàn thành chương:", chapterSlug);
-
-  if (chapterSlug === "chuong-1" || chapterSlug === "1") {
-    await afterFirstChapterTrigger();
-
-    // 🚀 Gửi tín hiệu cho RewardFlow mở pop-up ngay
+  // ====== TRIGGER POP-UP ======
+  const handleFinishChapter = () => {
+    console.log("✅ Đã hoàn thành chương:", chapterSlug);
+    // Dispatch event — RewardFlow sẽ tự kiểm tra có nên mở hay không
     setTimeout(() => {
-      window.dispatchEvent(new Event("openRewardPopup"));
-    }, 400); // delay 0.4s cho smooth
-  }
-};
-
+      window.dispatchEvent(new Event("tryOpenRewardPopup"));
+    }, 400);
+  };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header nav */}
       <div className="bg-muted/30 border-b border-border">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           {previousChapter ? (
@@ -176,11 +143,7 @@ export function ChapterReader() {
 
           {nextChapter ? (
             <Link to={`/story/${slug}/${nextChapter.slug || nextChapter.id}`}>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleFinishChapter} // ✅ thêm trigger ở đây
-              >
+              <Button variant="outline" size="sm" onClick={handleFinishChapter}>
                 Sau <ChevronRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -192,17 +155,13 @@ export function ChapterReader() {
         </div>
       </div>
 
-      {/* Chapter content */}
       <div className="container max-w-[900px] py-10 leading-relaxed">
         <h1 className="text-2xl font-bold mb-4">{chapter.title}</h1>
         <p className="text-sm text-muted-foreground mb-6">{wordCount} words</p>
-
         <div className="space-y-4 text-lg">
-          {(chapter.content ?? "")
-            .split("\n")
-            .map((line, idx) =>
-              line.trim() ? <p key={idx}>{line}</p> : <br key={idx} />
-            )}
+          {(chapter.content ?? "").split("\n").map((line, idx) =>
+            line.trim() ? <p key={idx}>{line}</p> : <br key={idx} />
+          )}
         </div>
       </div>
 
