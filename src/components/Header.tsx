@@ -10,6 +10,7 @@ import {
   PenSquare,
   ChevronDown,
   ChevronUp,
+  Gift,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -27,7 +28,6 @@ export function Header() {
   const [genres, setGenres] = useState<any[]>([]);
   const navigate = useNavigate();
 
-  // 🧩 Fetch user
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user || null));
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) =>
@@ -36,7 +36,6 @@ export function Header() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // 🧠 Fetch genres
   useEffect(() => {
     async function fetchGenres() {
       const { data, error } = await supabase
@@ -73,7 +72,6 @@ export function Header() {
   return (
     <header className="bg-card border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4">
-        {/* ================= HEADER TOP ================= */}
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
@@ -81,76 +79,72 @@ export function Header() {
             <span className="text-xl font-bold text-foreground">TruyenLight</span>
           </Link>
 
-          {/* ===== Desktop nav ===== */}
+          {/* Desktop nav */}
           <nav className="hidden md:flex items-center space-x-8 relative overflow-visible">
             <Link to="/" className="text-foreground hover:text-primary transition-colors">
               Trang chủ
             </Link>
 
-             {/* Dropdown Thể loại (scroll được) */}
-                       {/* Dropdown Thể Loại (click để mở, có scroll) */}
+            {/* Dropdown Thể loại */}
             <div className="relative">
               <button
                 onClick={() => setIsGenreOpen(!isGenreOpen)}
                 className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors select-none"
               >
                 Thể Loại
-                {isGenreOpen ? (
-                  <ChevronUp className="ml-1 h-4 w-4" />
-                ) : (
-                  <ChevronDown className="ml-1 h-4 w-4" />
-                )}
+                {isGenreOpen ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
               </button>
-            
-            {isGenreOpen && (
-            <div
-              className="
-                absolute top-full left-0 mt-2
-                bg-card border border-border rounded-xl shadow-lg
-                z-[9999]
-                grid grid-cols-4 gap-x-8 gap-y-3
-                p-4 min-w-[900px] max-w-[95vw] max-w-[90vw]
-                max-h-[70vh] overflow-y-auto
-                animate-fadeIn
-                scrollbar-thin scrollbar-thumb-rounded-md
-                scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
-              "
-              style={{
-                WebkitOverflowScrolling: "touch",
-                scrollbarGutter: "stable",
-                display: "grid", // ✅ bắt buộc để ép layout grid
-                gridTemplateColumns: "repeat(4, minmax(160px, 1fr))",
-              }}
-            >
-              {genres.length > 0 ? (
-                genres.map((genre) => (
-                  <Link
-                    key={genre.id}
-                    to={`/genres/${genre.slug}`}
-                    className="
-                      flex items-center gap-2
-                      px-3 py-2 text-[15px] text-foreground
-                      hover:text-primary hover:bg-muted/40
-                      rounded-lg transition-colors
-                    "
-                    onClick={() => setIsGenreOpen(false)}
-                  >
-                    <span className="text-[16px]">{genre.emoji || "📘"}</span>
-                    <span className="whitespace-nowrap">{genre.name}</span>
-                  </Link>
-                ))
-              ) : (
-                <div className="text-sm text-muted-foreground px-3 py-1.25">
-                  Đang tải thể loại...
+
+              {isGenreOpen && (
+                <div
+                  className="
+                    absolute top-full left-0 mt-2 bg-card border border-border rounded-xl shadow-lg z-[9999]
+                    grid grid-cols-4 gap-x-8 gap-y-3 p-4 min-w-[900px] max-w-[95vw] max-h-[70vh]
+                    overflow-y-auto animate-fadeIn
+                    scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
+                  "
+                  style={{
+                    WebkitOverflowScrolling: "touch",
+                    scrollbarGutter: "stable",
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, minmax(160px, 1fr))",
+                  }}
+                >
+                  {genres.length > 0 ? (
+                    genres.map((genre) => (
+                      <Link
+                        key={genre.id}
+                        to={`/genres/${genre.slug}`}
+                        className="
+                          flex items-center gap-2 px-3 py-2 text-[15px] text-foreground
+                          hover:text-primary hover:bg-muted/40 rounded-lg transition-colors
+                        "
+                        onClick={() => setIsGenreOpen(false)}
+                      >
+                        <span className="text-[16px]">{genre.emoji || "📘"}</span>
+                        <span className="whitespace-nowrap">{genre.name}</span>
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="text-sm text-muted-foreground px-3 py-1.25">
+                      Đang tải thể loại...
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          )}
 
-           </div>
+            {/* Reward Shop */}
+            <Link
+              to="/shop"
+              className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors"
+            >
+              <Gift className="h-4 w-4 mr-1" />
+              Reward Shop
+            </Link>
           </nav>
 
-          {/* ===== Desktop search ===== */}
+          {/* Desktop search */}
           <div className="hidden md:block relative">
             <form onSubmit={handleSearchSubmit} className="relative">
               <Input
@@ -162,7 +156,6 @@ export function Header() {
               />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </form>
-
             {showSearchResults && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-md shadow-lg max-h-96 overflow-y-auto z-50">
                 {searchResults.length > 0 ? (
@@ -183,7 +176,7 @@ export function Header() {
             )}
           </div>
 
-          {/* ===== Desktop profile ===== */}
+          {/* Profile section */}
           <div className="hidden md:flex items-center space-x-2">
             {user ? (
               <>
@@ -197,12 +190,7 @@ export function Header() {
                     <User className="h-4 w-4 mr-2" /> Hồ sơ
                   </Button>
                 </Link>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="bg-white text-primary hover:bg-gray-100"
-                >
+                <Button variant="outline" size="sm" onClick={handleLogout} className="bg-white text-primary hover:bg-gray-100">
                   <LogOut className="h-4 w-4 mr-2" /> Thoát
                 </Button>
               </>
@@ -220,134 +208,40 @@ export function Header() {
             )}
           </div>
 
-          {/* ===== Mobile menu toggle ===== */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
+          {/* Mobile menu toggle */}
+          <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
 
-        {/* ================= MOBILE MENU ================= */}
+        {/* Mobile menu */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-border py-3">
-           <div className="space-y-2 max-h-[75vh] overflow-y-auto overflow-visible">
-              {/* Trang chủ */}
-              <Link
-                to="/"
-                className="block py-2 px-2 text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
+            <div className="space-y-2 max-h-[75vh] overflow-y-auto">
+              <Link to="/" className="block py-2 px-2 text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                 Trang chủ
               </Link>
-
-              {/* Thể loại toggle */}
-              <button
-                onClick={() => setIsMobileGenreOpen(!isMobileGenreOpen)}
-                className="w-full flex justify-between items-center py-2 px-2 text-foreground hover:text-primary"
-              >
-                <span>Thể loại</span>
-                {isMobileGenreOpen ? (
-                  <ChevronUp className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
-              </button>
-
-             {isMobileGenreOpen && (
-                <div className="relative">
-                  <div
-                    className="
-                      pl-3 border-l border-border
-                      space-y-1
-                      max-h-[60vh] overflow-y-auto overscroll-contain
-                      scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-muted/60 hover:scrollbar-thumb-muted/80
-                      pr-1 bg-card rounded-lg shadow-inner
-                    "
-                    style={{
-                      WebkitOverflowScrolling: "touch",
-                      scrollbarGutter: "stable",
-                    }}
-                  >
-                    {genres.map((g) => (
-                      <Link
-                        w-full
-                        key={g.id}
-                        to={`/genres/${g.slug}`}
-                        className="
-                          flex items-center gap-2 px-3 py-2 text-[15px] text-foreground 
-                          hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/30 hover:ring-1 hover:ring-primary/20 transition-colors rounded-lg
-                        "
-                        onClick={() => {
-                          setIsMenuOpen(false);
-                          setIsMobileGenreOpen(false);
-                        }}
-                      >
-                        <span className="text-[16px]">{g.emoji || "📘"}</span>
-                        <span className="whitespace-nowrap">{g.name}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-
-
-              {/* Khu vực tác giả */}
-             
-              {user && (
-                <Link
-                  to="/author"
-                  className="block py-2 px-2 text-foreground hover:text-primary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  ✍️ Khu vực tác giả
-                </Link>
-              )}
-
-              {/* Hồ sơ hoặc đăng nhập */}
+              <Link to="/shop" className="block py-2 px-2 text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+                🎁 Reward Shop
+              </Link>
               {user ? (
                 <>
-                  <Link
-                    to="/profile"
-                    className="block py-2 px-2 text-foreground hover:text-primary"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                  <Link to="/profile" className="block py-2 px-2 text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                     👤 Hồ sơ
                   </Link>
-                  <Link
-                    to="/shop"
-                    className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors"
-                  >
-                    🎁 Reward Shop
+                  <Link to="/author" className="block py-2 px-2 text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+                    ✍️ Khu vực tác giả
                   </Link>
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="block w-full text-left py-2 px-2 text-foreground hover:text-red-500"
-                  >
+                  <button onClick={handleLogout} className="block w-full text-left py-2 px-2 text-foreground hover:text-red-500">
                     🚪 Đăng xuất
                   </button>
                 </>
               ) : (
                 <>
-                  <Link
-                    to="/login"
-                    className="block py-2 px-2 text-foreground hover:text-primary"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                  <Link to="/login" className="block py-2 px-2 text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                     🔑 Đăng nhập
                   </Link>
-                  <Link
-                    to="/register"
-                    className="block py-2 px-2 text-foreground hover:text-primary"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                  <Link to="/register" className="block py-2 px-2 text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                     📝 Đăng ký
                   </Link>
                 </>
