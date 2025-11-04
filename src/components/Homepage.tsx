@@ -294,7 +294,80 @@ return (
         </div>
       </section>
     )}
+{/* ✅ DAILY CHECK-IN PANEL */}
+<section className="py-6">
+  <div className="container mx-auto px-4">
+    <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-md p-6 flex flex-col items-center text-center">
+      <h2 className="text-xl font-bold mb-2 text-foreground">🎯 Điểm danh hằng ngày</h2>
+      <p className="text-sm text-muted-foreground mb-4">
+        Mỗi ngày điểm danh bạn sẽ nhận được <strong>10 xu</strong>.  
+        Điểm danh đủ <strong>21 ngày liên tục</strong> để mở quà 21 ngày!
+      </p>
+      <Button
+        onClick={async () => {
+          try {
+            const { data: userData } = await supabase.auth.getUser();
+            const user = userData?.user;
+            if (!user) {
+              alert("Vui lòng đăng nhập để điểm danh nhé!");
+              return;
+            }
 
+            // Lấy ngày hiện tại
+            const today = new Date();
+            const dayNum = today.getDate();
+
+            // Lấy số ngày user đã điểm danh
+            const { data: existing, error: checkError } = await supabase
+              .from("user_checkins")
+              .select("*")
+              .eq("user_id", user.id);
+
+            if (checkError) throw checkError;
+
+            const currentDay = (existing?.length || 0) + 1;
+
+            if (existing?.some((r) => r.day_number === currentDay)) {
+              alert("Bạn đã điểm danh hôm nay rồi!");
+              return;
+            }
+
+            // Thêm check-in
+            await supabase.from("user_checkins").insert({
+              user_id: user.id,
+              day_number: currentDay,
+            });
+
+            // Cộng xu
+            await supabase.rpc("add_coins", {
+              p_user_id: user.id,
+              p_amount: 10,
+            });
+
+            // Nếu đủ 21 ngày → cập nhật quà khả dụng
+            if (currentDay === 21) {
+              await supabase
+                .from("user_rewards")
+                .update({ status: "available" })
+                .eq("user_id", user.id)
+                .eq("source", "popup");
+              alert("🎉 Bạn đã điểm danh đủ 21 ngày! Hãy mở hộp quà trong Hồ sơ nhé!");
+            } else {
+              alert("✅ Điểm danh thành công! +10 xu vào tài khoản.");
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Có lỗi xảy ra khi điểm danh.");
+          }
+        }}
+      >
+        Điểm danh hôm nay
+      </Button>
+    </div>
+  </div>
+</section>
+
+     
 {/* 🔹 TOP ĐỀ XUẤT — giao diện đồng đều như truyenfull */}
 <section className="py-8">
   <div className="container mx-auto px-4">
