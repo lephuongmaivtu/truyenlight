@@ -13,31 +13,43 @@ export function useRewardSync() {
 
       const reward = JSON.parse(pending);
       const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-      if (user) {
-        const { error } = await supabase.from("user_rewards").insert([
-          {
-            user_id: user.id,
-            status: "available",
-            claimed: false,
-            payload: reward,
-          },
-        ]);
+      // ✅ Convert payload về JSON thật, tránh lỗi type
+      const payloadData = {
+        item_name: reward.item_name,
+        image_url: reward.image_url,
+        selected_at: reward.selected_at,
+      };
 
-        if (!error) {
-          toast({
-            title: "🎉 Đã lưu phần thưởng thành công!",
-            description: `Phần thưởng: ${reward.item_name}`,
-          });
-          localStorage.removeItem("tl_reward_pending");
-          localStorage.setItem("tl_first_reward_shown", "1");
-        } else {
-          console.error("❌ Lỗi khi lưu phần thưởng:", error);
-        }
+      // ✅ Insert đúng schema (không có reward_id, payload dạng JSONB)
+      const { error } = await supabase.from("user_rewards").insert([
+        {
+          user_id: user.id,
+          status: "available",
+          claimed: false,
+          payload: payloadData,
+        },
+      ]);
+
+      if (error) {
+        console.error("❌ Lỗi khi lưu phần thưởng:", error);
+        toast({
+          title: "⚠️ Không thể lưu phần thưởng",
+          description: "Vui lòng thử lại sau hoặc liên hệ hỗ trợ.",
+        });
+        return;
       }
+
+      toast({
+        title: "🎉 Đã lưu phần thưởng thành công!",
+        description: `Phần thưởng: ${reward.item_name}`,
+      });
+
+      localStorage.removeItem("tl_reward_pending");
+      localStorage.setItem("tl_first_reward_shown", "1");
     };
 
-    // Lắng nghe sự kiện đăng nhập
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
@@ -46,7 +58,6 @@ export function useRewardSync() {
       }
     });
 
-    // Cleanup khi unmount
     return () => subscription.unsubscribe();
   }, [toast]);
 }
