@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { Button } from "../components/ui/button";
-import { syncPendingReward } from "../components/rewards/RewardFlow"; // ✅ thêm import này
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -22,10 +21,7 @@ export function LoginPage() {
     if (error) {
       setErrorMsg(error.message);
     } else {
-      // ✅ Gọi hàm đồng bộ phần thưởng nếu có
-      await syncPendingReward();
-
-      // Điều hướng về trang profile
+      // ❌ Không cần syncPendingReward nữa
       navigate("/profile");
     }
   };
