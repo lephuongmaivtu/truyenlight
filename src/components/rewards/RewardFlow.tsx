@@ -81,7 +81,25 @@ export default function RewardFlow() {
           .from("user_rewards")
           .select("id")
           .eq("user_id", user.id)
+          .eq("source", "popup")
           .limit(1);
+
+        if (!existed || existed.length === 0) {
+          await supabase.from("user_rewards").insert([
+            {
+              user_id: user.id,
+              reward_id: gift.id,          // nhớ map id của reward_catalog
+              source: "popup",
+              status: "pending",
+              claimed: false,
+              payload: {
+                item_name: gift.name,
+                image_url: gift.image_url,
+                selected_at: new Date().toISOString(),
+              },
+            },
+          ]);
+        }
 
         alreadyClaimed = rewards && rewards.length > 0;
       }
