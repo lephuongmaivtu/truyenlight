@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { supabase } from "../supabaseClient";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "../components/ui/use-toast";
 
 // 🪄 Đồng bộ phần thưởng chờ khi user đăng nhập
 export function useRewardSync() {
