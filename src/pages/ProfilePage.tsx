@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { Button } from "../components/ui/button";
 import { useToast } from "../components/ui/use-toast";
-import RewardClaimModal from "../components/RewardClaimModal";
+import RewardVoucherModal from "../components/RewardVoucherModal";
+
 
 
 // ---------------- API call ----------------
@@ -265,51 +266,91 @@ export function ProfilePage() {
         )}
       </section>
 
-      {/* 🎁 Phần thưởng */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">🎁 Phần thưởng của bạn</h2>
-        {rewards.length === 0 ? (
-          <p className="text-muted-foreground">
-            Chưa có phần thưởng nào. Hãy đọc chương đầu tiên để nhận quà nhé!
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rewards.map((r) => (
-              <div
-                key={r.id}
-                className="border rounded-lg p-4 shadow hover:shadow-md transition bg-card"
-              >
-                <img
-                  src={r.image_url || "https://placehold.co/200x200"}
-                  alt={r.item_name}
-                  className="w-full h-40 object-cover rounded-md mb-3"
+    {/* 🎁 Hộp quà 21 ngày */}
+<section>
+  <h2 className="text-xl font-semibold mb-4">🎁 Hộp quà 21 ngày</h2>
+
+  {rewards.length === 0 ? (
+    <p className="text-muted-foreground">
+      Chưa có phần thưởng nào. Hãy đọc chương đầu tiên để chọn quà nhé!
+    </p>
+  ) : (
+    rewards.slice(0, 1).map((r) => {
+      const claimed = !!r.claimed;
+      const name = r.payload?.item_name || r.item_name || "Phần thưởng";
+      const img = r.payload?.image_url || r.image_url || "https://placehold.co/200x200";
+
+      return (
+        <div key={r.id} className="border rounded-lg p-4 shadow bg-card max-w-md">
+          <img
+            src={img}
+            alt={name}
+            className="w-full h-40 object-cover rounded-md mb-3"
+          />
+          <h3 className="font-semibold text-base mb-1">{name}</h3>
+
+          {!claimed ? (
+            <>
+              <p className="text-sm text-muted-foreground mb-3">
+                {checkin.canClaim
+                  ? "🎉 Bạn đã đủ 21 ngày điểm danh, hãy nhận quà nhé!"
+                  : `⏳ Còn ${checkin.remaining} ngày nữa để nhận quà`}
+              </p>
+
+              {/* Thanh tiến trình */}
+              <div className="w-full bg-muted rounded-full h-2 mb-3 overflow-hidden">
+                <div
+                  className="bg-primary h-2"
+                  style={{ width: `${Math.min(100, (checkin.streak / 21) * 100)}%` }}
                 />
-                <h3 className="font-semibold text-base mb-1">{r.item_name}</h3>
-                <p className="text-sm text-gray-500 mb-3">
-                  {r.claimed ? "✅ Đã nhận" : "⏳ Chưa nhận"}
-                </p>
-
-                {!r.claimed && (
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    onClick={() => claimReward(r.id)}
-                  >
-                    Nhận quà
-                  </Button>            
-                )}
               </div>
-            ))}
-          </div>
-        )}
+              <p className="text-xs text-gray-500 mb-3">
+                Streak: {checkin.streak}/21 ngày
+              </p>
 
-                 {showModal && selectedReward && (
-                    <RewardClaimModal
-                      reward={selectedReward}
-                      onClose={() => setShowModal(false)}
-                    />
-                 )}
-      </section>
+              <Button
+                disabled={!checkin.canClaim}
+                onClick={() => claimReward(r.id)}
+                className="w-full"
+              >
+                Nhận quà
+              </Button>
+            </>
+          ) : (
+            <>
+              <p className="text-green-600 mb-3">✅ Bạn đã nhận phần thưởng!</p>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  setSelectedReward({
+                    name,
+                    image_url: img,
+                    voucher_code: r.voucher_code,
+                    product_url: r.voucher_url || r.payload?.product_url || null,
+                  });
+                  setShowModal(true);
+                }}
+              >
+                Xem mã voucher
+              </Button>
+            </>
+          )}
+        </div>
+      );
+    })
+  )}
+
+  {/* Modal xem mã voucher */}
+  {showModal && selectedReward && (
+    <RewardVoucherModal
+      open={showModal}
+      onClose={() => setShowModal(false)}
+      reward={selectedReward}
+    />
+  )}
+</section>
+
     </div>
   );
 }
