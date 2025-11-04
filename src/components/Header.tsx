@@ -145,7 +145,7 @@ export function Header() {
           </nav>
 
           {/* Desktop search */}
-          <div className="hidden md:block relative">
+          <div className="hidden">
             <form onSubmit={handleSearchSubmit} className="relative">
               <Input
                 type="text"
