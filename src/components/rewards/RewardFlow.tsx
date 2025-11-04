@@ -6,13 +6,19 @@ import { supabase } from "../../supabaseClient";
 import { useToast } from "../../components/ui/use-toast";
 
 // 🎁 Danh sách quà mẫu
-const GIFTS = [
-  { id: 1, name: "Tai nghe Bluetooth Pro4", image_url: "https://i.ibb.co/nNWtrB5W/t-i-xu-ng-63.jpg" },
-  { id: 2, name: "Áo thun cổ tròn", image_url: "https://i.ibb.co/nNWtrB5W/t-i-xu-ng-63.jpg" },
-  { id: 3, name: "Ốp lưng điện thoại", image_url: "https://i.ibb.co/nNWtrB5W/t-i-xu-ng-63.jpg" },
-  { id: 4, name: "Túi tote canvas", image_url: "https://i.ibb.co/nNWtrB5W/t-i-xu-ng-63.jpg" },
-  { id: 5, name: "Voucher 50% giảm giá", image_url: "https://i.ibb.co/nNWtrB5W/t-i-xu-ng-63.jpg" },
-];
+const [gifts, setGifts] = useState<any[]>([]);
+
+useEffect(() => {
+  async function fetchPopupGifts() {
+    const { data, error } = await supabase
+      .from("reward_catalog")
+      .select("id, name, image_url, type")
+      .eq("type", "popup");
+    if (!error && data) setGifts(data);
+  }
+  fetchPopupGifts();
+}, []);
+
 
 // 🧱 Custom Dialog
 function CustomDialog({
@@ -52,6 +58,11 @@ function shouldShowRewardPopup() {
 }
 
 // ✅ Component chính
+// ✅ Logic mới 2025-11-04:
+// - Phần này chỉ cho user chọn quà wishlist để test thị trường
+// - Không gắn voucher ở bước này
+// - Khi user đủ 21 ngày, hệ thống sẽ tự cấp voucher từ reward_vouchers
+
 export default function RewardFlow() {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -117,11 +128,12 @@ export default function RewardFlow() {
     }
 
     // Nếu đã đăng nhập: lưu vào Supabase
-    await supabase.from("user_rewards").insert([
+   await supabase.from("user_rewards").insert([
       {
         user_id: user.id,
-        status: "available",
+        status: "pending",
         claimed: false,
+        source: "popup",
         payload: {
           item_name: gift.name,
           image_url: gift.image_url,
@@ -129,6 +141,7 @@ export default function RewardFlow() {
         },
       },
     ]);
+
 
     localStorage.setItem("tl_first_reward_shown", "1");
     localStorage.removeItem("tl_reward_pending");
