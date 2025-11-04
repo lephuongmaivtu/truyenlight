@@ -59,8 +59,9 @@ export default function RewardFlow() {
     async function fetchPopupGifts() {
       const { data, error } = await supabase
         .from("reward_catalog")
-        .select("id, name, image_url, type")
-        .eq("type", "popup");
+        .select("id, name, image_url, reward_type")
+        .eq("reward_type", "popup");
+
 
       if (!error && data) setGifts(data);
     }
