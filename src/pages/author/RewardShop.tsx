@@ -1,125 +1,107 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
-import { Button } from "../components/ui/button";
-import { useToast } from "../components/ui/use-toast";
-
-type Reward = {
-  id: string;
-  name: string;
-  image_url: string | null;
-  cost: number;
-  reward_type: "shop" | "popup";
-  description: string | null;
-  is_active: boolean;
-};
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function RewardShop() {
-  const { toast } = useToast();
-  const [userId, setUserId] = useState<string | null>(null);
+  const [rewards, setRewards] = useState<any[]>([]);
   const [balance, setBalance] = useState<number>(0);
-  const [rewards, setRewards] = useState<Reward[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [doingId, setDoingId] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
-      const { data } = await supabase.auth.getUser();
-      const uid = data?.user?.id ?? null;
-      setUserId(uid);
-
-      // load rewards shop
-      const { data: r } = await supabase
-        .from("rewards")
-        .select("id,name,image_url,cost,reward_type,description,is_active")
-        .eq("reward_type", "shop")
-        .eq("is_active", true)
-        .order("created_at", { ascending: false });
-      setRewards((r as Reward[]) || []);
-
-      if (uid) {
-        const { data: bal } = await supabase
-          .from("user_balances")
-          .select("coins")
-          .eq("user_id", uid)
-          .single();
-        setBalance(bal?.coins ?? 0);
-      }
-
-      setLoading(false);
-    })();
+    fetchRewards();
+    fetchBalance();
   }, []);
 
-  const handleExchange = async (reward: Reward) => {
-    if (!userId) {
-      toast({ title: "⚠️ Vui lòng đăng nhập", description: "Bạn cần đăng nhập để đổi quà." });
+  const fetchRewards = async () => {
+    const { data, error } = await supabase
+      .from("reward_catalog")
+      .select("id, name, cost, image_url, description")
+      .order("cost", { ascending: true });
+    if (!error && data) setRewards(data);
+  };
+
+  const fetchBalance = async () => {
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData?.user;
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("user_balances")
+      .select("coins")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!error && data) setBalance(data.coins);
+  };
+
+  const handleRedeem = async (rewardId: string, cost: number) => {
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData?.user;
+    if (!user) {
+      alert("Vui lòng đăng nhập để đổi thưởng!");
       return;
     }
-    if (balance < reward.cost) {
-      toast({ title: "❌ Không đủ xu", description: "Bạn chưa đủ xu để đổi quà này." });
+
+    if (balance < cost) {
+      alert("Không đủ xu để đổi phần thưởng này.");
       return;
     }
 
-    try {
-      setDoingId(reward.id);
-      const { error } = await supabase.rpc("exchange_reward", {
-        p_user_id: userId,
-        p_reward_id: reward.id,
-      });
-      if (error) throw error;
+    const { error } = await supabase.from("user_rewards").insert([
+      {
+        user_id: user.id,
+        reward_id: rewardId,
+        source: "shop",
+        status: "available",
+      },
+    ]);
 
-      toast({ title: "🎉 Đổi quà thành công!", description: `Bạn vừa đổi: ${reward.name}` });
-
-      // reload balance
-      const { data: bal } = await supabase
+    if (error) {
+      console.error(error);
+      alert("Lỗi khi đổi thưởng!");
+    } else {
+      await supabase
         .from("user_balances")
-        .select("coins")
-        .eq("user_id", userId)
-        .single();
-      setBalance(bal?.coins ?? 0);
-    } catch (e: any) {
-      console.error("exchange error:", e);
-      toast({ title: "❌ Lỗi đổi quà", description: e?.message || "Thử lại sau." });
-    } finally {
-      setDoingId(null);
+        .update({ coins: balance - cost })
+        .eq("user_id", user.id);
+
+      setBalance((prev) => prev - cost);
+      alert("🎁 Đổi quà thành công!");
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Reward Shop</h1>
-        <div className="text-sm text-muted-foreground">
-          Xu hiện có: <span className="font-semibold">{balance}</span>
-        </div>
-      </div>
+    <div className="max-w-6xl mx-auto py-10 px-4">
+      <h1 className="text-3xl font-bold mb-6 text-center">🎁 Reward Shop</h1>
+      <p className="text-center text-muted-foreground mb-8">
+        Dùng xu để đổi quà yêu thích của bạn. Số xu hiện tại:{" "}
+        <strong>{balance} xu</strong>
+      </p>
 
-      {loading ? (
-        <p className="mt-6 text-sm text-muted-foreground">Đang tải phần thưởng…</p>
-      ) : rewards.length === 0 ? (
-        <p className="mt-6 text-sm text-muted-foreground">Chưa có phần thưởng nào.</p>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
-          {rewards.map((rw) => (
-            <div key={rw.id} className="border rounded-lg p-3 bg-card">
-              <img
-                src={rw.image_url || ""}
-                alt={rw.name}
-                className="w-full h-32 object-cover rounded"
-              />
-              <p className="mt-2 font-medium">{rw.name}</p>
-              {rw.description && <p className="text-xs text-muted-foreground mt-1">{rw.description}</p>}
-              <p className="text-sm mt-2">Giá: <b>{rw.cost}</b> xu</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {rewards.map((r) => (
+          <Card key={r.id} className="overflow-hidden border border-border hover:shadow-md">
+            <img
+              src={r.image_url || "https://placehold.co/300x200?text=Reward"}
+              alt={r.name}
+              className="w-full h-40 object-cover"
+            />
+            <CardHeader>
+              <CardTitle className="text-lg font-bold">{r.name}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <p className="text-sm text-muted-foreground">{r.description}</p>
+              <p className="font-semibold">💰 {r.cost} xu</p>
               <Button
-                className="mt-3 w-full"
-                disabled={doingId === rw.id}
-                onClick={() => handleExchange(rw)}
+                onClick={() => handleRedeem(r.id, r.cost)}
+                className="w-full"
               >
-                {doingId === rw.id ? "Đang đổi..." : "Đổi quà"}
+                Đổi quà
               </Button>
-            </div>
-          ))}
-        </div>
-      )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
