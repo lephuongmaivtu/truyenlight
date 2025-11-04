@@ -7,6 +7,7 @@ import RewardVoucherModal from "../components/RewardVoucherModal";
 
 
 
+
 // ---------------- API call ----------------
 async function getBookmarks(userId: string) {
   const { data, error } = await supabase
@@ -94,6 +95,13 @@ export function ProfilePage() {
   const [selectedReward, setSelectedReward] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
 
+  const [checkin, setCheckin] = useState({
+  streak: 0,
+  remaining: 21,
+  canClaim: false,
+});
+
+
     // ✅ Hàm nhận thưởng (di chuyển vào trong component)
   const claimReward = async (rewardId: string) => {
     // 1. Lấy voucher chưa được claim
@@ -174,7 +182,54 @@ export function ProfilePage() {
       setLoading(false);
     }
     loadData();
-  }, [userId]);
+    
+      }, [userId]);
+      useEffect(() => {
+      async function getCheckinSummary(userId: string) {
+        const since = new Date();
+        since.setDate(since.getDate() - 30);
+    
+        const { data: checkins, error } = await supabase
+          .from("user_checkins")
+          .select("created_at")
+          .gte("created_at", since.toISOString())
+          .eq("user_id", userId)
+          .order("created_at", { ascending: true });
+    
+        if (error) {
+          console.error("Lỗi fetch checkin:", error);
+          return { streak: 0, remaining: 21, canClaim: false };
+        }
+    
+        const days = new Set(
+          (checkins || []).map((c) =>
+            new Date(c.created_at).toISOString().split("T")[0]
+          )
+        );
+    
+        let streak = 0;
+        for (let i = 0; i < 999; i++) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const key = d.toISOString().split("T")[0];
+          if (days.has(key)) streak++;
+          else break;
+        }
+    
+        const remaining = Math.max(0, 21 - streak);
+        const canClaim = streak >= 21;
+    
+        return { streak, remaining, canClaim };
+      }
+    
+      async function loadCheckin() {
+        if (!userId) return;
+        const result = await getCheckinSummary(userId);
+        setCheckin(result);
+      }
+      loadCheckin();
+    }, [userId]);
+
 
   if (loading) {
     return (
