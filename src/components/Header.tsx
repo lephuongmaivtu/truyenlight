@@ -297,6 +297,7 @@ export function Header() {
 
 
               {/* Khu vực tác giả */}
+             
               {user && (
                 <Link
                   to="/author"
@@ -316,6 +317,12 @@ export function Header() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     👤 Hồ sơ
+                  </Link>
+                  <Link
+                    to="/shop"
+                    className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors"
+                  >
+                    🎁 Reward Shop
                   </Link>
                   <button
                     onClick={() => {
