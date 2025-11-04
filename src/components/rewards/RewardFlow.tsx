@@ -5,21 +5,6 @@ import confetti from "canvas-confetti";
 import { supabase } from "../../supabaseClient";
 import { useToast } from "../../components/ui/use-toast";
 
-// 🎁 Danh sách quà mẫu
-const [gifts, setGifts] = useState<any[]>([]);
-
-useEffect(() => {
-  async function fetchPopupGifts() {
-    const { data, error } = await supabase
-      .from("reward_catalog")
-      .select("id, name, image_url, type")
-      .eq("type", "popup");
-    if (!error && data) setGifts(data);
-  }
-  fetchPopupGifts();
-}, []);
-
-
 // 🧱 Custom Dialog
 function CustomDialog({
   open,
@@ -54,7 +39,7 @@ function shouldShowRewardPopup() {
   const hasPending = !!localStorage.getItem("tl_reward_pending");
   const firstRewardShown = !!localStorage.getItem("tl_first_reward_shown");
 
-  return ((!firstRewardShown || hasPending) && lastShown !== today);
+  return (!firstRewardShown || hasPending) && lastShown !== today;
 }
 
 // ✅ Component chính
@@ -67,6 +52,20 @@ export default function RewardFlow() {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [selectedGift, setSelectedGift] = useState<any>(null);
+  const [gifts, setGifts] = useState<any[]>([]); // ✅ di chuyển useState vào trong component
+
+  // 🧩 Fetch quà popup từ Supabase
+  useEffect(() => {
+    async function fetchPopupGifts() {
+      const { data, error } = await supabase
+        .from("reward_catalog")
+        .select("id, name, image_url, type")
+        .eq("type", "popup");
+
+      if (!error && data) setGifts(data);
+    }
+    fetchPopupGifts();
+  }, []);
 
   // 🎧 Lắng nghe event từ ChapterReader
   useEffect(() => {
@@ -128,7 +127,7 @@ export default function RewardFlow() {
     }
 
     // Nếu đã đăng nhập: lưu vào Supabase
-   await supabase.from("user_rewards").insert([
+    await supabase.from("user_rewards").insert([
       {
         user_id: user.id,
         status: "pending",
@@ -141,7 +140,6 @@ export default function RewardFlow() {
         },
       },
     ]);
-
 
     localStorage.setItem("tl_first_reward_shown", "1");
     localStorage.removeItem("tl_reward_pending");
@@ -165,7 +163,7 @@ export default function RewardFlow() {
         </p>
 
         <div className="grid grid-cols-2 gap-4 mt-4">
-          {GIFTS.map((gift) => (
+          {gifts.map((gift) => (
             <div
               key={gift.id}
               className={`border rounded-lg p-3 cursor-pointer transition transform hover:scale-105 hover:border-primary ${
