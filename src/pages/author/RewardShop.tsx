@@ -1,90 +1,121 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/supabaseClient";
-import { useBalance } from "@/hooks/useBalance";
+import React, { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
+import { Button } from "../components/ui/button";
+import { useToast } from "../components/ui/use-toast";
 
 type Reward = {
   id: string;
   name: string;
-  type: 'voucher'|'product';
-  description?: string;
-  cost_coin: number;
-  voucher_percent?: number | null;
-  product_url?: string | null;
-  stock?: number | null;
+  image_url: string | null;
+  cost: number;
+  reward_type: "shop" | "popup";
+  description: string | null;
+  is_active: boolean;
 };
 
 export default function RewardShop() {
+  const { toast } = useToast();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [balance, setBalance] = useState<number>(0);
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState<string | null>(null);
-  const { coin, refresh } = useBalance();
+  const [doingId, setDoingId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      setLoading(true);
-      const { data } = await supabase
-        .from("reward_shop")
-        .select("id,name,type,description,cost_coin,voucher_percent,product_url,stock")
-        .eq("active", true)
-        .order("cost_coin", { ascending: true });
-      setRewards(data as Reward[] || []);
+      const { data } = await supabase.auth.getUser();
+      const uid = data?.user?.id ?? null;
+      setUserId(uid);
+
+      // load rewards shop
+      const { data: r } = await supabase
+        .from("rewards")
+        .select("id,name,image_url,cost,reward_type,description,is_active")
+        .eq("reward_type", "shop")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
+      setRewards((r as Reward[]) || []);
+
+      if (uid) {
+        const { data: bal } = await supabase
+          .from("user_balances")
+          .select("coins")
+          .eq("user_id", uid)
+          .single();
+        setBalance(bal?.coins ?? 0);
+      }
+
       setLoading(false);
     })();
   }, []);
 
-  const redeem = async (rewardId: string) => {
-    setMessage(null);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+  const handleExchange = async (reward: Reward) => {
+    if (!userId) {
+      toast({ title: "⚠️ Vui lòng đăng nhập", description: "Bạn cần đăng nhập để đổi quà." });
+      return;
+    }
+    if (balance < reward.cost) {
+      toast({ title: "❌ Không đủ xu", description: "Bạn chưa đủ xu để đổi quà này." });
+      return;
+    }
 
-    // insert -> trigger BEFORE INSERT sẽ trừ xu + sinh voucher code
-    const { data, error } = await supabase
-      .from("user_rewards")
-      .insert({ user_id: user.id, reward_id: rewardId })
-      .select()
-      .single();
+    try {
+      setDoingId(reward.id);
+      const { error } = await supabase.rpc("exchange_reward", {
+        p_user_id: userId,
+        p_reward_id: reward.id,
+      });
+      if (error) throw error;
 
-    if (error) {
-      setMessage(error.message || "Đổi quà thất bại.");
-    } else {
-      await refresh();
-      const payload = (data as any).payload;
-      if (payload?.voucher_code) {
-        setMessage(`Đã đổi voucher: ${payload.voucher_code} (-${payload.percent}%).`);
-      } else {
-        setMessage(`Đã đổi quà thành công!`);
-      }
+      toast({ title: "🎉 Đổi quà thành công!", description: `Bạn vừa đổi: ${reward.name}` });
+
+      // reload balance
+      const { data: bal } = await supabase
+        .from("user_balances")
+        .select("coins")
+        .eq("user_id", userId)
+        .single();
+      setBalance(bal?.coins ?? 0);
+    } catch (e: any) {
+      console.error("exchange error:", e);
+      toast({ title: "❌ Lỗi đổi quà", description: e?.message || "Thử lại sau." });
+    } finally {
+      setDoingId(null);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">🎁 Cửa hàng đổi thưởng</h2>
-        <div className="text-sm">Ví: <b>{coin}</b> xu</div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Reward Shop</h1>
+        <div className="text-sm text-muted-foreground">
+          Xu hiện có: <span className="font-semibold">{balance}</span>
+        </div>
       </div>
 
-      {message && <div className="mb-3 p-3 rounded bg-emerald-50 border">{message}</div>}
-      {loading ? <div>Loading...</div> : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {rewards.map(r => (
-            <div key={r.id} className="border rounded-xl p-3 flex flex-col justify-between">
-              <div>
-                <div className="font-semibold">{r.name}</div>
-                {r.description && <div className="text-sm opacity-70">{r.description}</div>}
-                <div className="text-sm mt-1">Giá: <b>{r.cost_coin}</b> xu</div>
-                {r.type === 'voucher' && <div className="text-xs opacity-70">Voucher {r.voucher_percent}%</div>}
-                {r.type === 'product' && r.product_url && (
-                  <a className="text-xs underline opacity-80" href={r.product_url} target="_blank" rel="noreferrer">Xem sản phẩm</a>
-                )}
-              </div>
-              <button
-                className="mt-3 px-3 py-2 rounded bg-black text-white disabled:bg-gray-300"
-                onClick={() => redeem(r.id)}
-                disabled={coin < r.cost_coin}
+      {loading ? (
+        <p className="mt-6 text-sm text-muted-foreground">Đang tải phần thưởng…</p>
+      ) : rewards.length === 0 ? (
+        <p className="mt-6 text-sm text-muted-foreground">Chưa có phần thưởng nào.</p>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
+          {rewards.map((rw) => (
+            <div key={rw.id} className="border rounded-lg p-3 bg-card">
+              <img
+                src={rw.image_url || ""}
+                alt={rw.name}
+                className="w-full h-32 object-cover rounded"
+              />
+              <p className="mt-2 font-medium">{rw.name}</p>
+              {rw.description && <p className="text-xs text-muted-foreground mt-1">{rw.description}</p>}
+              <p className="text-sm mt-2">Giá: <b>{rw.cost}</b> xu</p>
+              <Button
+                className="mt-3 w-full"
+                disabled={doingId === rw.id}
+                onClick={() => handleExchange(rw)}
               >
-                Đổi ngay
-              </button>
+                {doingId === rw.id ? "Đang đổi..." : "Đổi quà"}
+              </Button>
             </div>
           ))}
         </div>
