@@ -1,4 +1,5 @@
 // ✅ React & Router
+import { useRewardSync } from "./hooks/useRewardSync";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -49,6 +50,7 @@ function App() {
 
 function AppContent() {
   usePageTracking();
+   useRewardSync();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
