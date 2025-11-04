@@ -14,9 +14,11 @@ export default function RewardShop() {
 
   const fetchRewards = async () => {
     const { data, error } = await supabase
-      .from("reward_catalog")
-      .select("id, name, cost, image_url, description")
-      .order("cost", { ascending: true });
+    .from("reward_shop")
+    .select("id, name, cost_coin, description, product_url, stock, active")
+    .eq("active", true)
+    .gt("stock", 0)
+    .order("cost_coin", { ascending: true });
     if (!error && data) setRewards(data);
   };
 
@@ -91,13 +93,9 @@ export default function RewardShop() {
             </CardHeader>
             <CardContent className="space-y-2">
               <p className="text-sm text-muted-foreground">{r.description}</p>
-              <p className="font-semibold">💰 {r.cost} xu</p>
-              <Button
-                onClick={() => handleRedeem(r.id, r.cost)}
-                className="w-full"
-              >
-                Đổi quà
-              </Button>
+              <p className="font-semibold">💰 {r.cost_coin} xu</p>
+              <Button onClick={() => handleRedeem(r.id, r.cost_coin)}>Đổi quà</Button>
+
             </CardContent>
           </Card>
         ))}
