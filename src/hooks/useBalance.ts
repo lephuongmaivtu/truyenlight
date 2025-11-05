@@ -24,14 +24,21 @@ export function useBalance() {
     return () => { ignore = true; };
   }, []);
 
-  return { coin, loading, refresh: async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const { data } = await supabase
-      .from("user_balance")
-      .select("total_coin")
-      .eq("user_id", user.id)
-      .single();
-    if (data) setCoin(data.total_coin);
-  }};
+    return { 
+    coin, 
+    loading, 
+    setCoin, // thêm dòng này
+    refresh: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("user_balance")
+        .select("total_coin")
+        .eq("user_id", user.id)
+        .single();
+      if (data) setCoin(data.total_coin);
+    }
+  };
+
+  
 }
