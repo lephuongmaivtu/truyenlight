@@ -310,6 +310,53 @@ export function Homepage() {
           }
         }, []);
   
+// ✅ Đặt trước return
+async function handleDailyCheckin() {
+  try {
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData?.user;
+    if (!user) {
+      alert("Vui lòng đăng nhập để điểm danh nhé!");
+      return;
+    }
+
+    // Lấy danh sách checkin
+    const { data: existing, error: checkError } = await supabase
+      .from("user_checkins")
+      .select("*")
+      .eq("user_id", user.id);
+
+    if (checkError) throw checkError;
+
+    // Kiểm tra đã điểm danh hôm nay chưa
+    const today = new Date().toISOString().split("T")[0];
+    const already = existing?.some(
+      (r) => r.created_at.split("T")[0] === today
+    );
+
+    if (already) {
+      alert("Bạn đã điểm danh hôm nay rồi!");
+      return;
+    }
+
+    // ✅ Ghi checkin mới
+    await supabase.from("user_checkins").insert({
+      user_id: user.id,
+      reward_amount: 10,
+    });
+
+    // ✅ Cộng xu
+    await supabase.rpc("increment_user_coins", {
+      p_user_id: user.id,
+      p_amount: 10,
+    });
+
+    alert("✅ Điểm danh thành công! +10 xu vào tài khoản.");
+  } catch (err) {
+    console.error(err);
+    alert("❌ Có lỗi xảy ra khi điểm danh.");
+  }
+}
 
 
 return (
