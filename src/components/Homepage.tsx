@@ -385,23 +385,31 @@ async function handleDailyCheckin() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // lấy record checkin mới nhất của user
+    // 🔹 Lấy lần checkin mới nhất
     const { data, error } = await supabase
       .from("user_checkins")
-      .select("streak_after_checkin, day_date, checked_at")
+      .select("streak_after_checkin")
       .eq("user_id", user.id)
-      .order("day_date", { ascending: false })  // ưu tiên theo day_date
+      .order("day_date", { ascending: false })
       .limit(1)
       .maybeSingle();
 
-    if (!error && data) {
-      setStreakCount(data.streak_after_checkin ?? 0);
+    if (error) {
+      console.error("❌ Lỗi fetch streak:", error);
+      setStreakCount(0);
+      return;
+    }
+
+    if (data && data.streak_after_checkin !== null) {
+      setStreakCount(data.streak_after_checkin);
     } else {
       setStreakCount(0);
     }
   }
+
   fetchStreak();
 }, []);
+
 
 
  useEffect(() => {
