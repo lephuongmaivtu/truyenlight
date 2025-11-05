@@ -112,7 +112,8 @@ async function handleDailyCheckin() {
     }
 
     // 3️⃣ Lấy lần điểm danh gần nhất (để tính streak)
-    const { data: lastCheckin } = await supabase
+   // 3️⃣ Lấy lần điểm danh gần nhất (để tính streak)
+    const { data: lastCheckin, error } = await supabase
       .from("user_checkins")
       .select("day_date, streak_after_checkin")
       .eq("user_id", user.id)
@@ -124,6 +125,7 @@ async function handleDailyCheckin() {
       console.error("⚠️ Lỗi fetch last checkin:", error);
     }
     console.log("📘 FetchStreak result:", lastCheckin);
+
 
     
     // 4️⃣ Tính streak mới
