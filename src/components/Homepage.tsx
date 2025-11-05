@@ -385,24 +385,24 @@ async function handleDailyCheckin() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-   const { data, error } = await supabase
-  .from("user_checkins")
-  .select("streak_after_checkin")
-  .eq("user_id", user.id)
-  .order("day_date", { ascending: false })
-  .limit(1);
+    // lấy record checkin mới nhất của user
+    const { data, error } = await supabase
+      .from("user_checkins")
+      .select("streak_after_checkin, day_date, checked_at")
+      .eq("user_id", user.id)
+      .order("day_date", { ascending: false })  // ưu tiên theo day_date
+      .limit(1)
+      .maybeSingle();
 
-if (!error && data?.length) {
-  setStreakCount(data[0].streak_after_checkin);
-}
-
-
-    if (!error && data?.length) {
-      setStreakCount(data[0].day_number);
+    if (!error && data) {
+      setStreakCount(data.streak_after_checkin ?? 0);
+    } else {
+      setStreakCount(0);
     }
   }
   fetchStreak();
 }, []);
+
 
  useEffect(() => {
           // Đảm bảo Facebook SDK parse lại sau khi component render
