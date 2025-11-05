@@ -119,7 +119,8 @@ async function handleDailyCheckin() {
       .order("day_date", { ascending: false })
       .limit(1)
       .maybeSingle();
-
+    
+console.log("📘 FetchStreak result:", { data, error });
     // 4️⃣ Tính streak mới
     let newStreak = 1;
     let isReset = false;
