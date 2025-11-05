@@ -16,6 +16,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { StoryCard } from "./StoryCard";
 import { supabase } from "../supabaseClient";
+import { useToast } from "../components/ui/use-toast";
+
+
 
 export function Homepage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,6 +44,79 @@ export function Homepage() {
     setVisibleStories((prev) => [...prev, ...newStories]);
     setPage(nextPage);
   }
+
+    const { toast } = useToast();
+  const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
+  const [loadingCheckin, setLoadingCheckin] = useState(false);
+
+  // Kiểm tra xem hôm nay user đã điểm danh chưa
+  useEffect(() => {
+    async function checkToday() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const today = new Date().toISOString().split("T")[0];
+      const { data: existing } = await supabase
+        .from("user_checkins")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("day_date", today)
+        .maybeSingle();
+
+      if (existing) setHasCheckedInToday(true);
+    }
+    checkToday();
+  }, []);
+
+  // Hàm xử lý điểm danh
+  async function handleDailyCheckin() {
+    setLoadingCheckin(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({ title: "⚠️ Vui lòng đăng nhập để điểm danh" });
+      setLoadingCheckin(false);
+      return;
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+    const { data: existing } = await supabase
+      .from("user_checkins")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("day_date", today)
+      .maybeSingle();
+
+    if (existing) {
+      toast({ title: "✅ Bạn đã điểm danh hôm nay rồi!" });
+      setHasCheckedInToday(true);
+      setLoadingCheckin(false);
+      return;
+    }
+
+    // Ghi lại hành động điểm danh
+    const { error: insertError } = await supabase
+      .from("user_checkins")
+      .insert([{ user_id: user.id, day_date: today, reward_amount: 10 }]);
+
+    if (insertError) {
+      console.error("Lỗi insert checkin:", insertError);
+      toast({ title: "❌ Lỗi khi điểm danh, thử lại sau nhé" });
+      setLoadingCheckin(false);
+      return;
+    }
+
+    // Cộng xu
+    const { error: coinError } = await supabase.rpc("increment_user_coins", {
+      p_user_id: user.id,
+      p_amount: 10,
+    });
+    if (coinError) console.error("Lỗi cộng xu:", coinError);
+
+    toast({ title: "🎉 Điểm danh thành công!", description: "+10 xu đã được cộng" });
+    setHasCheckedInToday(true);
+    setLoadingCheckin(false);
+  }
+  
 };
 
   
@@ -304,60 +380,15 @@ return (
         Điểm danh đủ <strong>21 ngày liên tục</strong> để mở quà 21 ngày!
       </p>
       <Button
-        onClick={async () => {
-          try {
-            const { data: userData } = await supabase.auth.getUser();
-            const user = userData?.user;
-            if (!user) {
-              alert("Vui lòng đăng nhập để điểm danh nhé!");
-              return;
-            }
-
-            // Lấy ngày hiện tại
-            const today = new Date();
-            const dayNum = today.getDate();
-
-            // Lấy số ngày user đã điểm danh
-            const { data: existing, error: checkError } = await supabase
-              .from("user_checkins")
-              .select("*")
-              .eq("user_id", user.id);
-
-            if (checkError) throw checkError;
-
-            const currentDay = (existing?.length || 0) + 1;
-
-            if (existing?.some((r) => r.day_number === currentDay)) {
-              alert("Bạn đã điểm danh hôm nay rồi!");
-              return;
-            }
-
-            // Thêm check-in
-            await supabase.from("user_checkins").insert({
-              user_id: user.id,
-              day_number: currentDay,
-            });
-
-            // Cộng xu
-            await supabase.rpc("add_coins", {
-              p_user_id: user.id,
-              p_amount: 10,
-            });
-
-            // Nếu đủ 21 ngày → cập nhật quà khả dụng
-           if (currentDay === 21) {
-              alert("🎉 Bạn đã điểm danh đủ 21 ngày! Hãy vào Hồ sơ để xem phần thưởng!");
-            } else {
-              alert("✅ Điểm danh thành công! +10 xu vào tài khoản.");
-            }
-
-          } catch (err) {
-            console.error(err);
-            alert("Có lỗi xảy ra khi điểm danh.");
-          }
-        }}
+        onClick={handleDailyCheckin}
+        disabled={hasCheckedInToday || loadingCheckin}
+        className="px-6 py-2"
       >
-        Điểm danh hôm nay
+        {loadingCheckin
+          ? "⏳ Đang điểm danh..."
+          : hasCheckedInToday
+          ? "✅ Đã điểm danh hôm nay"
+          : "🔥 Điểm danh hôm nay (+10 xu)"}
       </Button>
     </div>
   </div>
