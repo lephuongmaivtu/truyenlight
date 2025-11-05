@@ -65,14 +65,28 @@ export function Homepage() {
         .eq("day_date", today)
         .maybeSingle();
 
-      if (existing) setHasCheckedInToday(true);
+      if (existing) {
+      setHasCheckedInToday(true);
+      const { data: streakData } = await supabase
+        .from("user_checkins")
+        .select("streak_after_checkin")
+        .eq("user_id", user.id)
+        .order("day_date", { ascending: false })
+        .limit(1);
+      if (streakData?.length) setStreakCount(streakData[0].streak_after_checkin);
+    }
+
     }
     checkToday();
   }, []);
 
-  // Hàm xử lý điểm danh
-  async function handleDailyCheckin() {
-    setLoadingCheckin(true);
+  
+  // ✅ Hàm xử lý điểm danh (phiên bản hoàn chỉnh)
+async function handleDailyCheckin() {
+  setLoadingCheckin(true);
+
+  try {
+    // 1️⃣ Kiểm tra user đăng nhập
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       toast({ title: "⚠️ Vui lòng đăng nhập để điểm danh" });
@@ -81,6 +95,8 @@ export function Homepage() {
     }
 
     const today = new Date().toISOString().split("T")[0];
+
+    // 2️⃣ Kiểm tra đã điểm danh hôm nay chưa
     const { data: existing } = await supabase
       .from("user_checkins")
       .select("id")
@@ -95,30 +111,89 @@ export function Homepage() {
       return;
     }
 
-    // Ghi lại hành động điểm danh
-    const { error: insertError } = await supabase
+    // 3️⃣ Lấy lần điểm danh gần nhất (để tính streak)
+    const { data: lastCheckin } = await supabase
       .from("user_checkins")
-      .insert([{ user_id: user.id, day_date: today, reward_amount: 10 }]);
+      .select("day_date, streak_after_checkin")
+      .eq("user_id", user.id)
+      .order("day_date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    // 4️⃣ Tính streak mới
+    let newStreak = 1;
+    let isReset = false;
+
+    if (lastCheckin) {
+      const diffDays =
+        (new Date(today).getTime() - new Date(lastCheckin.day_date).getTime()) /
+        (1000 * 60 * 60 * 24);
+
+      if (diffDays === 1) {
+        // Liền ngày → cộng streak
+        newStreak = lastCheckin.streak_after_checkin + 1;
+      } else {
+        // Mất streak
+        newStreak = 1;
+        isReset = true;
+      }
+    }
+
+    // 5️⃣ Ghi lại record mới trong user_checkins
+    const { error: insertError } = await supabase.from("user_checkins").insert([
+      {
+        user_id: user.id,
+        day_date: today,
+        reward_amount: 10,
+        streak_after_checkin: newStreak,
+        is_streak_reset: isReset,
+      },
+    ]);
 
     if (insertError) {
-      console.error("Lỗi insert checkin:", insertError);
-      toast({ title: "❌ Lỗi khi điểm danh, thử lại sau nhé" });
+      console.error("❌ Lỗi insert checkin:", insertError);
+      toast({ title: "❌ Lỗi khi lưu dữ liệu điểm danh" });
       setLoadingCheckin(false);
       return;
     }
 
-    // Cộng xu
+    // 6️⃣ Cộng xu cho user
     const { error: coinError } = await supabase.rpc("increment_user_coins", {
       p_user_id: user.id,
       p_amount: 10,
     });
-    if (coinError) console.error("Lỗi cộng xu:", coinError);
+    if (coinError) console.error("⚠️ Lỗi cộng xu:", coinError);
 
-    toast({ title: "🎉 Điểm danh thành công!", description: "+10 xu đã được cộng" });
+    // 7️⃣ Cập nhật UI + hiệu ứng
+    confetti({
+      particleCount: 120,
+      spread: 80,
+      origin: { y: 0.6 },
+    });
+
+    setStreakCount(newStreak);
     setHasCheckedInToday(true);
-    setLoadingCheckin(false);
+
+    toast({
+      title: "🎉 Điểm danh thành công!",
+      description: `+10 xu vào tài khoản. Chuỗi ngày hiện tại: ${newStreak}`,
+    });
+
+    // 8️⃣ Nếu đạt 21 ngày streak → mở quà
+    if (newStreak === 21) {
+      toast({
+        title: "🎁 Chúc mừng!",
+        description: "Bạn đã đạt 21 ngày liên tục, hãy vào hồ sơ để nhận thưởng nhé!",
+      });
+    }
+  } catch (err) {
+    console.error("Lỗi khi điểm danh:", err);
+    toast({ title: "❌ Có lỗi xảy ra, vui lòng thử lại" });
   }
-  
+
+  setLoadingCheckin(false);
+}
+
 
   
   // Fetch tất cả stories
@@ -310,12 +385,17 @@ export function Homepage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data, error } = await supabase
-      .from("user_checkins")
-      .select("day_number")
-      .eq("user_id", user.id)
-      .order("checked_at", { ascending: false })
-      .limit(1);
+   const { data, error } = await supabase
+  .from("user_checkins")
+  .select("streak_after_checkin")
+  .eq("user_id", user.id)
+  .order("day_date", { ascending: false })
+  .limit(1);
+
+if (!error && data?.length) {
+  setStreakCount(data[0].streak_after_checkin);
+}
+
 
     if (!error && data?.length) {
       setStreakCount(data[0].day_number);
@@ -331,63 +411,7 @@ export function Homepage() {
           }
         }, []);
   
-// ✅ Đặt trước return
-async function handleDailyCheckin() {
-  try {
-    const { data: userData } = await supabase.auth.getUser();
-    const user = userData?.user;
-    if (!user) {
-      alert("Vui lòng đăng nhập để điểm danh nhé!");
-      return;
-    }
 
-    // Lấy danh sách checkin
-    const { data: existing, error: checkError } = await supabase
-      .from("user_checkins")
-      .select("*")
-      .eq("user_id", user.id);
-
-    if (checkError) throw checkError;
-
-    // Kiểm tra đã điểm danh hôm nay chưa
-    const today = new Date().toISOString().split("T")[0];
-    const already = existing?.some(
-      (r) => r.created_at.split("T")[0] === today
-    );
-
-    if (already) {
-      alert("Bạn đã điểm danh hôm nay rồi!");
-      return;
-    }
-
-    // ✅ Ghi checkin mới
-    await supabase.from("user_checkins").insert({
-      user_id: user.id,
-      day_date: new Date().toISOString().split("T")[0],
-      reward_amount: 10,
-    });
-      // ✅ Hiệu ứng chúc mừng
-      confetti({
-        particleCount: 120,
-        spread: 80,
-        origin: { y: 0.6 },
-      });
-      
-      // ✅ Cập nhật UI
-      setStreakCount((prev) => prev + 1);
-
-    // ✅ Cộng xu
-    await supabase.rpc("increment_user_coins", {
-      p_user_id: user.id,
-      p_amount: 10,
-    });
-
-    alert("✅ Điểm danh thành công! +10 xu vào tài khoản.");
-  } catch (err) {
-    console.error(err);
-    alert("❌ Có lỗi xảy ra khi điểm danh.");
-  }
-}
 
 
 return (
