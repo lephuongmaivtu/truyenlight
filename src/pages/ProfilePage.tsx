@@ -8,8 +8,7 @@ import RewardVoucherModal from "../components/RewardVoucherModal";
 import ReaderTasks from "../components/ReaderTasks";
 import { useBalance } from "../hooks/useBalance"; // nếu chưa có thì thêm
 
-// thêm state tab
-const [activeTab, setActiveTab] = useState("reading");
+
 
 
 
@@ -99,7 +98,8 @@ export function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [selectedReward, setSelectedReward] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
-
+// thêm state tab
+  const [activeTab, setActiveTab] = useState("reading");
   const [checkin, setCheckin] = useState({
   streak: 0,
   remaining: 21,
