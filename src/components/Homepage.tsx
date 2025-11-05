@@ -44,7 +44,8 @@ export function Homepage() {
     setVisibleStories((prev) => [...prev, ...newStories]);
     setPage(nextPage);
   }
-
+}; // ✅ kết thúc function tại đây
+  
     const { toast } = useToast();
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
   const [loadingCheckin, setLoadingCheckin] = useState(false);
@@ -117,7 +118,6 @@ export function Homepage() {
     setLoadingCheckin(false);
   }
   
-};
 
   
   // Fetch tất cả stories
