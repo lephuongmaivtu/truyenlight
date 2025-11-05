@@ -431,7 +431,11 @@ return (
       <Button
         onClick={handleDailyCheckin}
         disabled={hasCheckedInToday || loadingCheckin}
-        className="px-6 py-2"
+        className={`px-6 py-2 transition-all ${
+          hasCheckedInToday
+            ? "opacity-60 cursor-not-allowed bg-gray-400 dark:bg-gray-700"
+            : "hover:scale-[1.02] hover:brightness-110"
+        }`}
       >
         {loadingCheckin
           ? "⏳ Đang điểm danh..."
@@ -439,6 +443,7 @@ return (
           ? "✅ Đã điểm danh hôm nay"
           : "🔥 Điểm danh hôm nay (+10 xu)"}
       </Button>
+
     </div>
   </div>
 </section>
