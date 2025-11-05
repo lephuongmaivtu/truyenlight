@@ -342,8 +342,10 @@ async function handleDailyCheckin() {
     // ✅ Ghi checkin mới
     await supabase.from("user_checkins").insert({
       user_id: user.id,
+      day_date: new Date().toISOString().split("T")[0],
       reward_amount: 10,
     });
+
 
     // ✅ Cộng xu
     await supabase.rpc("increment_user_coins", {
