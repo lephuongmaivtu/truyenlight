@@ -3,6 +3,7 @@ declare global {
     FB: any;
   }
 }
+import confetti from "canvas-confetti";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
@@ -45,8 +46,8 @@ export function Homepage() {
     setPage(nextPage);
   }
 }; // ✅ kết thúc function tại đây
-  
-    const { toast } = useToast();
+  const [streakCount, setStreakCount] = useState<number>(0);
+  const { toast } = useToast();
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
   const [loadingCheckin, setLoadingCheckin] = useState(false);
 
@@ -303,6 +304,26 @@ export function Homepage() {
       setShowSearchResults(true);
     }
   };
+
+  useEffect(() => {
+  async function fetchStreak() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("user_checkins")
+      .select("day_number")
+      .eq("user_id", user.id)
+      .order("checked_at", { ascending: false })
+      .limit(1);
+
+    if (!error && data?.length) {
+      setStreakCount(data[0].day_number);
+    }
+  }
+  fetchStreak();
+}, []);
+
  useEffect(() => {
           // Đảm bảo Facebook SDK parse lại sau khi component render
           if (window.FB) {
@@ -345,7 +366,15 @@ async function handleDailyCheckin() {
       day_date: new Date().toISOString().split("T")[0],
       reward_amount: 10,
     });
-
+      // ✅ Hiệu ứng chúc mừng
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 },
+      });
+      
+      // ✅ Cập nhật UI
+      setStreakCount((prev) => prev + 1);
 
     // ✅ Cộng xu
     await supabase.rpc("increment_user_coins", {
@@ -443,6 +472,10 @@ return (
           ? "✅ Đã điểm danh hôm nay"
           : "🔥 Điểm danh hôm nay (+10 xu)"}
       </Button>
+      <p className="mt-3 text-sm text-muted-foreground">
+        🔥 Chuỗi ngày hiện tại: <span className="font-semibold text-primary">{streakCount}</span> ngày
+      </p>
+
 
     </div>
   </div>
