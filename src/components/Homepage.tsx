@@ -120,7 +120,16 @@ async function handleDailyCheckin() {
       .limit(1)
       .maybeSingle();
     
-console.log("📘 FetchStreak result:", { data, error });
+    if (lastError) {
+      console.error("⚠️ Lỗi fetch last checkin:", lastError);
+    }
+    console.log("📘 FetchStreak result:", lastCheckin);
+
+    if (!lastCheckin && !lastError) {
+  console.log("🟡 Chưa có record điểm danh nào trước đó");
+}
+
+    
     // 4️⃣ Tính streak mới
     let newStreak = 1;
     let isReset = false;
