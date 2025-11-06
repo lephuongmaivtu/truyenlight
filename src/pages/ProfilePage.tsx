@@ -108,58 +108,33 @@ export function ProfilePage() {
 
 
     // ✅ Hàm nhận thưởng (di chuyển vào trong component)
-  const claimReward = async (rewardId: string) => {
-    // 1. Lấy voucher chưa được claim
-    const { data: availableVoucher } = await supabase
-      .from("reward_vouchers")
-      .select("id, voucher_code, product_url")
-      .eq("is_claimed", false)
-      .limit(1)
-      .single();
+ const claimReward = async () => {
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData?.user;
+  if (!user) {
+    alert("Vui lòng đăng nhập để nhận quà!");
+    return;
+  }
 
-    if (!availableVoucher) {
-      alert("😢 Hiện tại đã hết voucher, vui lòng quay lại sau!");
-      return;
-    }
+  // Gọi function RPC
+  const { data, error } = await supabase.rpc("claim_reward", { p_user_id: user.id });
 
-    // 2. Lấy user hiện tại
-    const { data: userData } = await supabase.auth.getUser();
-    const user = userData?.user;
+  if (error) {
+    alert("❌ " + (error.message || "Lỗi khi nhận quà!"));
+    return;
+  }
 
-    // 3. Update voucher thành đã claim
-    await supabase
-      .from("reward_vouchers")
-      .update({
-        is_claimed: true,
-        claimed_by: user.id,
-        claimed_at: new Date().toISOString(),
-      })
-      .eq("id", availableVoucher.id);
-
-    // 4. Gán voucher_code vào user_rewards
-    const { error } = await supabase
-      .from("user_rewards")
-      .update({
-        claimed: true,
-        status: "claimed",
-        voucher_code: availableVoucher.voucher_code,
-        voucher_url: availableVoucher.product_url,
-      })
-      .eq("id", rewardId);
-
-    if (error) {
-      alert("❌ Lỗi khi nhận quà!");
-      return;
-    }
-
-    // 5. Hiển thị modal voucher
-    const fullReward = {
-      voucher_code: availableVoucher.voucher_code,
-      product_url: availableVoucher.product_url,
-    };
-    setSelectedReward(fullReward);
-    setShowModal(true);
+  // Hiển thị modal voucher
+  const fullReward = {
+    name: "Phần thưởng 21 ngày",
+    image_url: data.image_url,
+    voucher_code: data.voucher_code,
+    product_url: data.product_url,
   };
+  setSelectedReward(fullReward);
+  setShowModal(true);
+};
+
 
 
   useEffect(() => {
@@ -460,11 +435,12 @@ export function ProfilePage() {
 
                           <Button
                             disabled={!checkin.canClaim}
-                            onClick={() => claimReward(r.id)}
+                            onClick={claimReward}
                             className="w-full"
                           >
                             Nhận quà
                           </Button>
+
                         </>
                       ) : (
                         <>
