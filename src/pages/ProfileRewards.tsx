@@ -16,9 +16,10 @@ export default function ProfileRewards() {
 
       const { data, error } = await supabase
         .from("user_rewards")
-        .select("id, payload, status, claimed, created_at, claimed_at")
+        .select("id, voucher_code, status, created_at, claimed_at, source")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
+
 
       if (!error && data) setRewards(data);
       setLoading(false);
