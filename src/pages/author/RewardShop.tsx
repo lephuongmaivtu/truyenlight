@@ -152,12 +152,11 @@ export default function RewardShop() {
               />
             </div>
 
-            <CardHeader className="p-2 pb-0">
-              <CardTitle className="text-sm font-semibold leading-tight !mb-0 !pb-0">
-                {r.name}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-2 pt-1 space-y-2 flex flex-col justify-between">
+            <div className="px-2 pt-1">
+  <h3 className="text-sm font-semibold leading-tight mb-0">{r.name}</h3>
+</div>
+
+<CardContent className="px-2 pt-0 -mt-1 space-y-1 flex flex-col justify-between">
 
                   <p className="text-xs text-muted-foreground line-clamp-2">
                     {r.description}
