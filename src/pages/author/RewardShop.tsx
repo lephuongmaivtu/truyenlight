@@ -157,7 +157,7 @@ export default function RewardShop() {
                 {r.name}
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-2 pt-1 space-y-1">
+            <CardContent className="p-2 pt-1 space-y-2 flex flex-col justify-between">
 
                   <p className="text-xs text-muted-foreground line-clamp-2">
                     {r.description}
@@ -172,13 +172,14 @@ export default function RewardShop() {
                   <p className="text-sm font-semibold text-orange-600">💰 {r.cost_coin} xu</p>
                   <p className="text-xs text-gray-500">🏷️ Còn lại: {r.stock ?? 0} cái</p>
                   
-                  <Button
-                    size="sm"
-                    className="w-full mt-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md text-sm"
-                    onClick={() => handleRedeem(r.id, r.cost_coin)}
-                  >
-                    Đổi quà
-                  </Button>
+                 <Button
+                  size="sm"
+                  className="w-full mt-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md text-sm"
+                  onClick={() => handleRedeem(r.id, r.cost_coin)}
+                >
+                  Đổi quà
+                </Button>
+
               </CardContent>
 
           </Card>
