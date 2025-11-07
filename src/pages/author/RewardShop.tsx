@@ -175,15 +175,17 @@ export default function RewardShop() {
                   size="sm"
                   className="
                     w-full mt-2
-                    bg-orange-500 hover:bg-orange-600
-                    !text-white font-semibold
-                    rounded-md text-sm
-                    shadow-md transition-all
+                    bg-black text-white font-semibold
+                    hover:bg-neutral-800
+                    dark:bg-white dark:text-black dark:hover:bg-neutral-100
+                    rounded-md text-sm py-2
+                    transition-all duration-200
                   "
                   onClick={() => handleRedeem(r.id, r.cost_coin)}
                 >
                   🎁 Đổi quà
                 </Button>
+
 
 
 
