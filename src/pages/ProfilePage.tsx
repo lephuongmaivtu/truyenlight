@@ -561,49 +561,41 @@ async function getPurchasedRewards(userId: string) {
   <section>
     <h2 className="text-xl font-semibold mb-4">🎟️ Quà bạn đã mua</h2>
 
-    {purchases.length === 0 ? (
-      <p className="text-muted-foreground">
-        Bạn chưa mua phần thưởng nào trong shop.
-      </p>
-    ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {purchases.map((p, idx) => (
-          <div
-            key={idx}
-            className="border rounded-lg p-4 shadow hover:shadow-lg transition bg-card"
+    {!purchases || purchases.length === 0 ? (
+  <p className="text-muted-foreground">
+    Bạn chưa mua phần thưởng nào trong shop.
+  </p>
+) : (
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {purchases.map((p, idx) => (
+      <div key={idx} className="border rounded-lg p-4 shadow bg-card">
+        <img
+          src={p.reward_shop?.image_url || "https://placehold.co/300x200?text=Voucher"}
+          alt={p.reward_shop?.name || "Voucher"}
+          className="w-full h-40 object-cover rounded mb-3"
+        />
+        <h3 className="font-semibold mb-1">{p.reward_shop?.name}</h3>
+        <p className="text-sm text-muted-foreground mb-2">
+          Ngày mua: {new Date(p.purchased_at).toLocaleDateString("vi-VN")}
+        </p>
+        <p className="text-blue-600 font-medium mb-3">
+          Mã voucher: {p.voucher_code}
+        </p>
+        {p.reward_shop?.product_url && (
+          <a
+            href={p.reward_shop.product_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           >
-            <img
-              src={
-                p.reward_shop?.image_url ||
-                "https://placehold.co/300x200?text=Voucher"
-              }
-              alt={p.reward_shop?.name}
-              className="w-full h-40 object-cover rounded mb-3"
-            />
-            <h3 className="font-semibold text-base mb-1">
-              {p.reward_shop?.name}
-            </h3>
-            <p className="text-sm text-muted-foreground mb-2">
-              Ngày mua:{" "}
-              {new Date(p.purchased_at).toLocaleDateString("vi-VN")}
-            </p>
-            <p className="text-blue-600 font-medium mb-3">
-              Mã voucher: {p.voucher_code}
-            </p>
-            {p.reward_shop?.product_url && (
-              <a
-                href={p.reward_shop.product_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-              >
-                🔗 Xem sản phẩm
-              </a>
-            )}
-          </div>
-        ))}
+            🔗 Xem sản phẩm
+          </a>
+        )}
       </div>
-    )}
+    ))}
+  </div>
+)}
+
   </section>
 )}
 
