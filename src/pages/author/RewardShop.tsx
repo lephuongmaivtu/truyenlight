@@ -138,41 +138,45 @@ export default function RewardShop() {
         <strong>Xu hiện tại: {balance} xu</strong>
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {rewards.map((r) => (
           <Card
             key={r.id}
             className="overflow-hidden border border-border hover:shadow-md transition-all"
           >
-            <img
-              src={r.image_url || "https://placehold.co/300x200?text=Reward"}
-              alt={r.name}
-              className="w-full h-40 object-cover"
-            />
-            <CardHeader>
-              <CardTitle className="text-lg font-bold">{r.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-                <p className="text-sm text-muted-foreground">{r.description}</p>
-              
-                {r.type === "voucher" && r.voucher_percent ? (
-                  <p className="text-green-600 font-medium">🎟️ Giảm {r.voucher_percent}%</p>
-                ) : (
-                  <p className="text-blue-600 font-medium">🛍️ Sản phẩm đổi thưởng</p>
-                )}
-              
-                <p className="font-semibold">💰 {r.cost_coin} xu</p>
-                <p className="text-sm text-muted-foreground">
-                  🏷️ Còn lại: {r.stock ?? 0} cái
-                </p>
+            <div className="w-full aspect-square overflow-hidden">
+              <img
+                src={r.image_url || "https://placehold.co/300x300?text=Reward"}
+                alt={r.name}
+                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+              />
+            </div>
 
-              
-                <Button
-                  className="w-full mt-2"
-                  onClick={() => handleRedeem(r.id, r.cost_coin)}
-                >
-                  Đổi quà
-                </Button>
+            <CardHeader className="p-2 pb-0">
+              <CardTitle className="text-sm font-semibold leading-tight">{r.name}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-2 pt-1 space-y-1">
+
+                  <p className="text-xs text-muted-foreground line-clamp-2">
+                    {r.description}
+                  </p>
+                  
+                  {r.type === "voucher" && r.voucher_percent ? (
+                    <p className="text-red-500 text-sm font-medium">🔥 Giảm {r.voucher_percent}%</p>
+                  ) : (
+                    <p className="text-blue-500 text-sm font-medium">🛍️ Sản phẩm đổi thưởng</p>
+                  )}
+                  
+                  <p className="text-sm font-semibold text-orange-600">💰 {r.cost_coin} xu</p>
+                  <p className="text-xs text-gray-500">🏷️ Còn lại: {r.stock ?? 0} cái</p>
+                  
+                  <Button
+                    size="sm"
+                    className="w-full mt-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md text-sm"
+                    onClick={() => handleRedeem(r.id, r.cost_coin)}
+                  >
+                    Đổi quà
+                  </Button>
               </CardContent>
 
           </Card>
