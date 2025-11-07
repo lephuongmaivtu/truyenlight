@@ -11,6 +11,28 @@ export default function RewardShop() {
   useEffect(() => {
     init();
   }, []);
+  
+  useEffect(() => {
+  fetchRewards();
+
+  // Subcribe realtime
+  const channel = supabase
+    .channel("reward_shop_changes")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "reward_shop" },
+      (payload) => {
+        console.log("🔄 Reward shop changed:", payload);
+        fetchRewards(); // reload danh sách
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, []);
+
 
   const init = async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -113,6 +135,10 @@ export default function RewardShop() {
                 )}
               
                 <p className="font-semibold">💰 {r.cost_coin} xu</p>
+                <p className="text-sm text-muted-foreground">
+                  🏷️ Còn lại: {r.stock ?? 0} cái
+                </p>
+
               
                 <Button
                   className="w-full mt-2"
