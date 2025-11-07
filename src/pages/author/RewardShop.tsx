@@ -11,6 +11,7 @@ export default function RewardShop() {
   useEffect(() => {
     init();
   }, []);
+
   
   useEffect(() => {
   fetchRewards();
@@ -102,6 +103,32 @@ export default function RewardShop() {
       alert(err.message);
     }
   };
+
+  const handleRedeem = async (rewardId: string, cost: number) => {
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData?.user;
+  if (!user) {
+    alert("Vui lòng đăng nhập để đổi thưởng!");
+    return;
+  }
+
+  const { data, error } = await supabase.rpc("redeem_reward", {
+    p_user_id: user.id,
+    p_reward_id: rewardId,
+  });
+
+  if (error) {
+    alert("❌ " + (error.message || "Lỗi khi đổi quà!"));
+    console.error(error);
+    return;
+  }
+
+  alert(`🎁 ${data.message}\nMã voucher: ${data.voucher_code}`);
+
+  // Reload lại số xu + danh sách quà
+  fetchBalance();
+  fetchRewards();
+};
 
   return (
     <div className="max-w-6xl mx-auto py-10 px-4">
