@@ -62,7 +62,7 @@ export default function RewardShop() {
       type,
       description,
       cost_coin,
-      voucher_perc,
+      voucher_percent,
       voucher_code,
       product_url,
       stock,
