@@ -30,16 +30,35 @@ export default function RewardShop() {
     if (!error && data) setBalance(data.balance);
   };
 
-  const fetchRewards = async () => {
-    const { data, error } = await supabase
-      .from("reward_shop")
-      .select("id, name, description, cost_coin, voucher_perc, image_url, stock")
-      .eq("active", true)
-      .gt("stock", 0)
-      .order("cost_coin", { ascending: true });
+ const fetchRewards = async () => {
+  const { data, error } = await supabase
+    .from("reward_shop")
+    .select(`
+      id,
+      name,
+      type,
+      description,
+      cost_coin,
+      voucher_perc,
+      voucher_code,
+      product_url,
+      stock,
+      active,
+      image_url
+    `)
+    .eq("active", true)
+    .gt("stock", 0)
+    .order("cost_coin", { ascending: true });
 
-    if (!error && data) setRewards(data);
-  };
+  if (error) {
+    console.error("❌ Lỗi fetch reward_shop:", error.message);
+  } else {
+    console.log("✅ Rewards:", data);
+    setRewards(data);
+  }
+};
+
+
 
   const handleBuy = async (rewardId: string, cost: number) => {
     if (!user) {
@@ -85,13 +104,24 @@ export default function RewardShop() {
               <CardTitle className="text-lg font-bold">{r.name}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <p className="text-sm text-muted-foreground">{r.description}</p>
-              <p className="text-sm text-blue-600">
-                🎫 Voucher giảm {r.voucher_perc || 0}%
-              </p>
-              <p className="font-semibold">💰 {r.cost_coin} xu</p>
-              <Button onClick={() => handleBuy(r.id, r.cost_coin)}>Mua ngay</Button>
-            </CardContent>
+                <p className="text-sm text-muted-foreground">{r.description}</p>
+              
+                {r.type === "voucher" && r.voucher_perc ? (
+                  <p className="text-green-600 font-medium">🎟️ Giảm {r.voucher_perc}%</p>
+                ) : (
+                  <p className="text-blue-600 font-medium">🛍️ Sản phẩm đổi thưởng</p>
+                )}
+              
+                <p className="font-semibold">💰 {r.cost_coin} xu</p>
+              
+                <Button
+                  className="w-full mt-2"
+                  onClick={() => handleRedeem(r.id, r.cost_coin)}
+                >
+                  Đổi quà
+                </Button>
+              </CardContent>
+
           </Card>
         ))}
       </div>
