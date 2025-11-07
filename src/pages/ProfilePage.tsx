@@ -99,6 +99,8 @@ export function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [selectedReward, setSelectedReward] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
+  const [purchases, setPurchases] = useState<any[]>([]);
+
 // thêm state tab
   const [activeTab, setActiveTab] = useState("reading");
   const [checkin, setCheckin] = useState({
@@ -160,7 +162,7 @@ const claimReward = async (rewardId: string) => {
       if (!userId) return;
       setLoading(true);
 
-      const [p, b, r] = await Promise.all([
+      const [p, b, r, pr] = await Promise.all([
         getReadingProgress(userId),
         getBookmarks(userId),
         getUserRewards(userId),
@@ -169,6 +171,7 @@ const claimReward = async (rewardId: string) => {
       setProgress(p);
       setBookmarks(b);
       setRewards(r);
+      setPurchases(pr);
       setLoading(false);
     }
     loadData();
@@ -239,7 +242,30 @@ const claimReward = async (rewardId: string) => {
       </div>
     );
   }
+// 🛒 Lấy danh sách quà đã mua từ reward_shop
+async function getPurchasedRewards(userId: string) {
+  const { data, error } = await supabase
+    .from("user_purchases")
+    .select(`
+      voucher_code,
+      purchased_at,
+      reward_shop (
+        name,
+        image_url,
+        product_url
+      )
+    `)
+    .eq("user_id", userId)
+    .order("purchased_at", { ascending: false });
 
+  if (error) {
+    console.error("Error getPurchasedRewards:", error);
+    return [];
+  }
+  return data;
+}
+
+  
   return (
   <div className="container mx-auto px-4 py-8">
     <h1 className="text-3xl font-bold mb-6">Trang cá nhân</h1>
@@ -255,6 +281,7 @@ const claimReward = async (rewardId: string) => {
         <option value="bookmark">🔖 Đánh dấu</option>
         <option value="reward">🎁 Hộp quà 21 ngày</option>
         <option value="tasks">🎯 Nhiệm vụ độc giả</option>
+        <option value="purchased">🎟️ Đã mua</option>
       </select>
     </div>
 
@@ -302,6 +329,17 @@ const claimReward = async (rewardId: string) => {
           >
             🎯 Nhiệm vụ độc giả
           </button>
+          <button
+            onClick={() => setActiveTab("purchased")}
+            className={`block w-full text-left p-2 rounded ${
+              activeTab === "purchased"
+                ? "bg-primary text-white"
+                : "hover:bg-muted"
+            }`}
+          >
+            🎟️ Đã mua
+          </button>
+
         </div>
       </aside>
 
@@ -519,6 +557,56 @@ const claimReward = async (rewardId: string) => {
             <ReaderTasks />
           </section>
         )}
+        {activeTab === "purchased" && (
+  <section>
+    <h2 className="text-xl font-semibold mb-4">🎟️ Quà bạn đã mua</h2>
+
+    {purchases.length === 0 ? (
+      <p className="text-muted-foreground">
+        Bạn chưa mua phần thưởng nào trong shop.
+      </p>
+    ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {purchases.map((p, idx) => (
+          <div
+            key={idx}
+            className="border rounded-lg p-4 shadow hover:shadow-lg transition bg-card"
+          >
+            <img
+              src={
+                p.reward_shop?.image_url ||
+                "https://placehold.co/300x200?text=Voucher"
+              }
+              alt={p.reward_shop?.name}
+              className="w-full h-40 object-cover rounded mb-3"
+            />
+            <h3 className="font-semibold text-base mb-1">
+              {p.reward_shop?.name}
+            </h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              Ngày mua:{" "}
+              {new Date(p.purchased_at).toLocaleDateString("vi-VN")}
+            </p>
+            <p className="text-blue-600 font-medium mb-3">
+              Mã voucher: {p.voucher_code}
+            </p>
+            {p.reward_shop?.product_url && (
+              <a
+                href={p.reward_shop.product_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+              >
+                🔗 Xem sản phẩm
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+)}
+
       </main>
     </div>
   </div>
