@@ -74,7 +74,7 @@ async function getReadingProgress(userId: string) {
 async function getUserRewards(userId: string) {
   const { data, error } = await supabase
     .from("user_rewards")
-    .select("*")
+    .select("id, user_id, claimed, voucher_code, payload, selected_at")
     .eq("user_id", userId)
     .order("selected_at", { ascending: false });
 
@@ -84,6 +84,7 @@ async function getUserRewards(userId: string) {
   }
   return data;
 }
+
 
 // ✅ Cập nhật trạng thái đã nhận
 
@@ -108,7 +109,8 @@ export function ProfilePage() {
 
 
     // ✅ Hàm nhận thưởng (di chuyển vào trong component)
- const claimReward = async () => {
+ // ✅ Hàm nhận thưởng
+const claimReward = async (rewardId: string) => {
   const { data: userData } = await supabase.auth.getUser();
   const user = userData?.user;
   if (!user) {
@@ -116,7 +118,7 @@ export function ProfilePage() {
     return;
   }
 
-  // Gọi function RPC
+  // Gọi RPC claim_reward
   const { data, error } = await supabase.rpc("claim_reward", { p_user_id: user.id });
 
   if (error) {
@@ -124,7 +126,14 @@ export function ProfilePage() {
     return;
   }
 
-  // Hiển thị modal voucher
+  // ✅ Cập nhật lại state rewards (đánh dấu đã nhận)
+  setRewards((prev) =>
+    prev.map((r) =>
+      r.id === rewardId ? { ...r, claimed: true, voucher_code: data.voucher_code } : r
+    )
+  );
+
+  // ✅ Hiển thị modal voucher
   const fullReward = {
     name: "Phần thưởng 21 ngày",
     image_url: data.image_url,
@@ -134,6 +143,7 @@ export function ProfilePage() {
   setSelectedReward(fullReward);
   setShowModal(true);
 };
+
 
 
 
@@ -434,12 +444,32 @@ export function ProfilePage() {
                           </p>
 
                           <Button
-                            disabled={!checkin.canClaim}
-                            onClick={claimReward}
+                            disabled={claimed || !checkin.canClaim}
+                            onClick={() => claimReward(r.id)}
                             className="w-full"
                           >
-                            Nhận quà
+                            {claimed ? "Bạn đã nhận quà" : "Nhận quà"}
                           </Button>
+                          
+                          {claimed && (
+                            <Button
+                              variant="outline"
+                              className="w-full mt-2"
+                              onClick={() => {
+                                setSelectedReward({
+                                  name,
+                                  image_url: img,
+                                  voucher_code: r.voucher_code,
+                                  product_url:
+                                    r.voucher_url || r.payload?.product_url || null,
+                                });
+                                setShowModal(true);
+                              }}
+                            >
+                              Xem lại quà
+                            </Button>
+                          )}
+
 
                         </>
                       ) : (
