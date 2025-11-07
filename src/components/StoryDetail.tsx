@@ -101,12 +101,24 @@ export function StoryDetail() {
       const userAgent = navigator.userAgent;
 
       // Gọi RPC ghi log + cộng view
-      const { error } = await supabase.rpc("log_story_view", {
-        story_id: story.id,
-        user_id: userId,
-        ip_address: ip,
-        user_agent: userAgent,
-      });
+      try {
+        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/log-story-view`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({ story_id: story.id }),
+        });
+        const json = await res.json();
+        if (json.ok) {
+          console.log("✅ View recorded:", json.views);
+        } else {
+          console.error("❌ Lỗi log view:", json.error);
+        }
+      } catch (err) {
+        console.error("Error:", err);
+      };
       if (error) console.error("❌ Lỗi log view:", error);
     } catch (err) {
       console.error("Error:", err);
