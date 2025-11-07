@@ -172,19 +172,21 @@ export default function RewardShop() {
                   <p className="text-xs text-gray-500">🏷️ Còn lại: {r.stock ?? 0} cái</p>
                   
                  <Button
-                  size="sm"
-                  className="
-                    w-full mt-2
-                    bg-black text-white font-semibold
-                    hover:bg-neutral-800
-                    dark:bg-white dark:text-black dark:hover:bg-neutral-100
-                    rounded-md text-sm py-2
-                    transition-all duration-200
-                  "
-                  onClick={() => handleRedeem(r.id, r.cost_coin)}
-                >
-                  🎁 Đổi quà
-                </Button>
+                    size="sm"
+                    className="
+                      w-full mt-2
+                      bg-black text-white
+                      hover:bg-neutral-800
+                      dark:bg-white dark:text-black dark:hover:bg-gray-100
+                      font-semibold rounded-md text-sm py-2
+                      transition-all duration-200
+                      shadow-sm
+                    "
+                    onClick={() => handleRedeem(r.id, r.cost_coin)}
+                  >
+                    🎁 Đổi quà
+                  </Button>
+
 
 
 
