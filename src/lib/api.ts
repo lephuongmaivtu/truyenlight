@@ -123,7 +123,7 @@ export async function fetchTopStories(
   let query = supabase
     .from("stories")
     .select(`
-      id, slug, title, author, description, coverimage, views, status, genres, lastupdated,
+      id, slug, title, author, description, coverImage, views, status, genres, lastupdated,
       story_rating_stats(avg_rating, rating_count)
     `)
     .order("views", { ascending: false })
@@ -148,7 +148,7 @@ export async function fetchTopRatedStories(limit = 5): Promise<StoryRow[]> {
   const { data, error } = await supabase
     .from("stories")
     .select(`
-      id, slug, title, author, description, coverimage, views, status, genres, lastupdated,
+      id, slug, title, author, description, coverImage, views, status, genres, lastupdated,
       story_rating_stats(avg_rating, rating_count)
     `)
     .order("story_rating_stats.avg_rating", { ascending: false })
@@ -273,7 +273,7 @@ export async function getReadingProgress(
 ): Promise<
   Array<
     ReadingProgress & {
-      story: Pick<StoryRow, "id" | "slug" | "title" | "author" | "coverimage">;
+      story: Pick<StoryRow, "id" | "slug" | "title" | "author" | "coverImage">;
     }
   >
 > {
@@ -289,7 +289,7 @@ export async function getReadingProgress(
       scroll_position,
       updated_at,
       story:story_id (
-        id, slug, title, author, coverimage
+        id, slug, title, author, coverImage
       )
     `
     )
@@ -339,7 +339,7 @@ export async function fetchBookmarks(userId: string): Promise<StoryRow[]> {
     .select(
       `
       story:story_id (
-        id, slug, title, author, description, coverimage, rating, views, status, genres, lastupdated
+        id, slug, title, author, description, coverImage, rating, views, status, genres, lastupdated
       )
     `
     )
