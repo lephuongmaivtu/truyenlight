@@ -155,8 +155,8 @@ export default function RewardShop() {
             <CardContent className="space-y-2">
                 <p className="text-sm text-muted-foreground">{r.description}</p>
               
-                {r.type === "voucher" && r.voucher_perc ? (
-                  <p className="text-green-600 font-medium">🎟️ Giảm {r.voucher_perc}%</p>
+                {r.type === "voucher" && r.voucher_percent ? (
+                  <p className="text-green-600 font-medium">🎟️ Giảm {r.voucher_percent}%</p>
                 ) : (
                   <p className="text-blue-600 font-medium">🛍️ Sản phẩm đổi thưởng</p>
                 )}
