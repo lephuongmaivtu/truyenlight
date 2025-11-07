@@ -92,41 +92,41 @@ export function StoryDetail() {
 
   const recordView = async () => {
     try {
-      // Lấy user info
-      const { data: userData } = await supabase.auth.getUser();
-      const userId = userData?.user?.id || null;
+      // Gửi log view lên Edge Function
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/log-story-view`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ story_id: story.id }),
+      });
 
-      // Lấy IP public (nếu có backend có thể lấy từ req.headers, tạm hardcode)
-      const ip = localStorage.getItem("ip_cache") || null;
-      const userAgent = navigator.userAgent;
+      const json = await res.json();
+      if (json.ok) {
+        console.log("✅ View recorded:", json.views);
 
-      // Gọi RPC ghi log + cộng view
-      try {
-        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/log-story-view`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({ story_id: story.id }),
-        });
-        const json = await res.json();
-        if (json.ok) {
-          console.log("✅ View recorded:", json.views);
-        } else {
-          console.error("❌ Lỗi log view:", json.error);
+        // 🔹 Sau khi ghi log xong, fetch lại số view mới nhất từ bảng stories
+        const { data: updatedStory, error } = await supabase
+          .from("stories")
+          .select("views")
+          .eq("id", story.id)
+          .maybeSingle();
+
+        if (!error && updatedStory) {
+          setStory((prev) => prev ? { ...prev, views: updatedStory.views } : prev);
         }
-      } catch (err) {
-        console.error("Error:", err);
-      };
-      if (error) console.error("❌ Lỗi log view:", error);
+      } else {
+        console.error("❌ Lỗi log view:", json.error);
+      }
     } catch (err) {
-      console.error("Error:", err);
+      console.error("❌ Error khi ghi view:", err);
     }
   };
 
   recordView();
 }, [story?.id]);
+
 
 
   // 🔹 Load rating stats
