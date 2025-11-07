@@ -1,3 +1,4 @@
+import { useBalance } from "../hooks/useBalance";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -18,6 +19,7 @@ import { searchStories } from "./mockData";
 import { supabase } from "../supabaseClient";
 
 export function Header() {
+  const { balance } = useBalance();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isGenreOpen, setIsGenreOpen] = useState(false);
   const [isMobileGenreOpen, setIsMobileGenreOpen] = useState(false);
@@ -185,6 +187,10 @@ export function Header() {
                     <PenSquare className="h-4 w-4 mr-2" /> Khu vực tác giả
                   </Button>
                 </Link>
+                <div className="flex items-center gap-1 text-sm font-medium text-yellow-600">
+                  💰 {balance ?? 0} xu
+                </div>
+
                 <Link to="/profile">
                   <Button variant="ghost" size="sm">
                     <User className="h-4 w-4 mr-2" /> Hồ sơ
@@ -229,6 +235,9 @@ export function Header() {
                   <Link to="/profile" className="block py-2 px-2 text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                     👤 Hồ sơ
                   </Link>
+                  <div className="flex items-center gap-2 px-3 py-2 text-yellow-600 font-medium">
+                    💰 {balance ?? 0} xu
+                  </div>
                   <Link to="/author" className="block py-2 px-2 text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                     ✍️ Khu vực tác giả
                   </Link>
