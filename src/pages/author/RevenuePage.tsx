@@ -30,7 +30,7 @@ export default function RevenuePage() {
   const [revenues, setRevenues] = useState<any[]>([]);
   const [filter, setFilter] = useState("month");
   const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState(0);
+  const [total, setTotal] = useState<{ all: number; month: number }>({ all: 0, month: 0 });
   const [chartData, setChartData] = useState<any[]>([]);
 
   // 🧠 Lấy user ID
@@ -45,51 +45,57 @@ export default function RevenuePage() {
   }, []);
 
   // 🧩 Fetch doanh thu theo truyện
-  useEffect(() => {
-    if (!userId) return;
-    (async () => {
-      setLoading(true);
+  // 🧩 Fetch doanh thu theo tháng và tổng
+useEffect(() => {
+  if (!userId) return;
+  (async () => {
+    setLoading(true);
 
-      const { data, error } = await supabase
-        .from("author_revenue_by_story")
-        .select("*")
-        .eq("author_id", userId)
-        .order("revenue", { ascending: false });
+    // 1️⃣ Lấy doanh thu từng truyện trong tháng hiện tại
+    const { data: monthlyData, error: monthlyError } = await supabase
+      .from("story_views_per_month")
+      .select(`
+        story_id,
+        monthly_views,
+        monthly_revenue,
+        view_month,
+        stories ( title )
+      `)
+      .eq("author_id", userId)
+      .gte("view_month", new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()) // đầu tháng
+      .lte("view_month", new Date().toISOString()) // đến nay
+      .order("monthly_revenue", { ascending: false });
 
-      if (error) {
-        console.error("Lỗi khi fetch revenue:", error);
-        setLoading(false);
-        return;
-      }
-
-      // lọc theo ngày / tuần / tháng
-      const now = new Date();
-      const filtered = (data ?? []).filter((r: any) => {
-        const t = new Date(r.last_updated || r.updated_at || Date.now());
-        if (filter === "day")
-          return t.toDateString() === now.toDateString();
-        if (filter === "week") {
-          const diff = (now.getTime() - t.getTime()) / (1000 * 60 * 60 * 24);
-          return diff <= 7;
-        }
-        if (filter === "month")
-          return (
-            t.getMonth() === now.getMonth() &&
-            t.getFullYear() === now.getFullYear()
-          );
-        return true;
-      });
-
-      const totalRevenue = filtered.reduce(
-        (sum: number, r: any) => sum + (r.revenue ?? 0),
-        0
-      );
-
-      setRevenues(filtered);
-      setTotal(totalRevenue);
+    if (monthlyError) {
+      console.error("Lỗi fetch doanh thu:", monthlyError);
       setLoading(false);
-    })();
-  }, [userId, filter]);
+      return;
+    }
+
+    // 2️⃣ Tính tổng doanh thu tháng & tổng toàn thời gian
+    const { data: allData } = await supabase
+      .from("story_views_per_month")
+      .select("monthly_revenue")
+      .eq("author_id", userId);
+
+    const totalRevenue = (allData ?? []).reduce(
+      (sum, r) => sum + (r.monthly_revenue ?? 0),
+      0
+    );
+    const currentMonthRevenue = (monthlyData ?? []).reduce(
+      (sum, r) => sum + (r.monthly_revenue ?? 0),
+      0
+    );
+
+    setTotal({
+      all: totalRevenue,
+      month: currentMonthRevenue,
+    });
+    setRevenues(monthlyData ?? []);
+    setLoading(false);
+  })();
+}, [userId]);
+
 
   // 📊 Fetch dữ liệu cho biểu đồ doanh thu theo tháng
   useEffect(() => {
@@ -131,20 +137,26 @@ export default function RevenuePage() {
         </div>
 
         {/* Tổng doanh thu */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Tổng doanh thu</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <p className="text-muted-foreground">Đang tải...</p>
-            ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Card>
+            <CardHeader><CardTitle>Tổng doanh thu (từ trước đến nay)</CardTitle></CardHeader>
+            <CardContent>
               <div className="text-3xl font-bold text-primary">
-                {total.toLocaleString("vi-VN")} ₫
+                {total.all.toLocaleString("vi-VN")} ₫
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        
+          <Card>
+            <CardHeader><CardTitle>Doanh thu tháng này</CardTitle></CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">
+                {total.month.toLocaleString("vi-VN")} ₫
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
 
         {/* Biểu đồ doanh thu theo tháng */}
         <Card>
@@ -179,12 +191,12 @@ export default function RevenuePage() {
         {/* Danh sách doanh thu từng truyện */}
         <Card>
           <CardHeader>
-            <CardTitle>📚 Doanh thu từng truyện</CardTitle>
+            <CardTitle>📚 Doanh thu từng truyện (tháng này)</CardTitle>
           </CardHeader>
           <CardContent>
             {revenues.length === 0 ? (
               <div className="text-muted-foreground text-center py-8">
-                Chưa có dữ liệu doanh thu cho khoảng thời gian này.
+                Chưa có dữ liệu doanh thu tháng này.
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -192,25 +204,20 @@ export default function RevenuePage() {
                   <Card key={r.story_id}>
                     <CardHeader>
                       <CardTitle className="text-lg line-clamp-1">
-                        {r.title || "Không rõ tên truyện"}
+                        {r.stories?.title || "Không rõ tên truyện"}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between text-sm text-muted-foreground">
                         <span>Lượt xem:</span>
-                        <span>{(r.total_views ?? 0).toLocaleString("vi-VN")}</span>
+                        <span>{(r.monthly_views ?? 0).toLocaleString("vi-VN")}</span>
                       </div>
                       <div className="flex justify-between text-sm text-muted-foreground">
                         <span>Doanh thu:</span>
-                        <span>
-                          {Math.round(r.revenue ?? 0).toLocaleString("vi-VN")} ₫
-                        </span>
+                        <span>{(r.monthly_revenue ?? 0).toLocaleString("vi-VN")} ₫</span>
                       </div>
                       <Badge variant="secondary" className="text-xs">
-                        Cập nhật:{" "}
-                        {new Date(
-                          r.last_updated || r.updated_at || Date.now()
-                        ).toLocaleDateString("vi-VN")}
+                        {new Date(r.view_month).toLocaleDateString("vi-VN")}
                       </Badge>
                     </CardContent>
                   </Card>
