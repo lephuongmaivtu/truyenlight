@@ -62,10 +62,11 @@ export function AuthorDashboard() {
           .eq("user_id", userId)
           .order("created_at", { ascending: false }),
         supabase
-          .from("story_views_per_month")
-          .select("author_id, sum(monthly_revenue) as total_revenue, sum(monthly_views) as total_views")
+          .from("author_total_revenue")
+          .select("*")
           .eq("author_id", userId)
           .maybeSingle(),
+
 
       ]);
 
