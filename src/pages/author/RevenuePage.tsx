@@ -54,12 +54,15 @@ useEffect(() => {
 
     // Lấy doanh thu tháng hiện tại
     const { data, error } = await supabase
-      .from("author_monthly_revenue_view")
+      .from("author_revenue_by_story") // 👈 view này mới có story_title, first_day, last_day
       .select("*")
       .eq("author_id", userId)
-      .gte("month", new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
-      .lte("month", new Date().toISOString())
-      .order("monthly_revenue", { ascending: false });
+      .order("revenue", { ascending: false });
+    const monthlyTotal = (data ?? []).reduce((sum, r) => sum + (r.revenue ?? 0), 0);
+      setRevenues(data ?? []);
+      setTotal({ all: total.all, month: monthlyTotal });
+
+
 
     if (error) {
       console.error("Lỗi fetch:", error);
@@ -83,20 +86,30 @@ useEffect(() => {
     if (!userId) return;
     (async () => {
       const { data, error } = await supabase
-        .from("story_views_per_month")
-        .select("month, total_views")
+        .from("author_monthly_revenue_view")
+        .select("month_start, total_revenue")
         .eq("author_id", userId)
-        .order("month", { ascending: true });
-
+        .order("month_start", { ascending: true });
+      
       if (!error && data) {
-        const transformed = data.map((d: any) => ({
-          month: d.month,
-          revenue: Math.round((d.total_views / 1000) * 5000), // ví dụ tính doanh thu 5k/1000 view
+        const transformed = data.map((d) => ({
+          month: new Date(d.month_start).toLocaleDateString("vi-VN", { month: "short", year: "numeric" }),
+          revenue: d.total_revenue,
         }));
         setChartData(transformed);
       }
     })();
   }, [userId]);
+
+  const { data: totalData, error: totalError } = await supabase
+    .from("author_total_revenue")
+    .select("total_revenue")
+    .eq("author_id", userId)
+    .single();
+  
+  if (!totalError && totalData) {
+    setTotal((prev) => ({ ...prev, all: totalData.total_revenue }));
+  }
 
   return (
     <AuthorLayout>
