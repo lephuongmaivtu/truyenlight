@@ -71,8 +71,7 @@ useEffect(() => {
     }
 
     // Tính tổng doanh thu tháng này & all-time (nếu cần)
-    const monthlyTotal = (data ?? []).reduce((sum, r) => sum + (r.monthly_revenue ?? 0), 0);
-
+    
     setRevenues(data ?? []);
     setTotal({ all: total.all, month: monthlyTotal }); // total.all sẽ được cập nhật riêng từ view tổng
     setLoading(false);
@@ -101,15 +100,22 @@ useEffect(() => {
     })();
   }, [userId]);
 
-  const { data: totalData, error: totalError } = await supabase
-    .from("author_total_revenue")
-    .select("total_revenue")
-    .eq("author_id", userId)
-    .single();
+ // 🧾 Lấy tổng doanh thu all-time
+  useEffect(() => {
+    if (!userId) return;
+    (async () => {
+      const { data: totalData, error: totalError } = await supabase
+        .from("author_total_revenue")
+        .select("total_revenue")
+        .eq("author_id", userId)
+        .single();
   
-  if (!totalError && totalData) {
-    setTotal((prev) => ({ ...prev, all: totalData.total_revenue }));
-  }
+      if (!totalError && totalData) {
+        setTotal((prev) => ({ ...prev, all: totalData.total_revenue }));
+      }
+    })();
+  }, [userId]);
+
 
   return (
     <AuthorLayout>
