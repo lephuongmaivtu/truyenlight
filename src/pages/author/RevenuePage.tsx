@@ -185,8 +185,9 @@ useEffect(() => {
                   <Card key={r.story_id}>
                     <CardHeader>
                       <CardTitle className="text-lg line-clamp-1">
-                        {r.stories?.title || "Không rõ tên truyện"}
+                        {r.story_title || r.title || "Không rõ tên truyện"}
                       </CardTitle>
+
                     </CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between text-sm text-muted-foreground">
@@ -197,9 +198,11 @@ useEffect(() => {
                         <span>Doanh thu:</span>
                         <span>{(r.monthly_revenue ?? 0).toLocaleString("vi-VN")} ₫</span>
                       </div>
-                      <Badge variant="secondary" className="text-xs">
-                        {new Date(r.view_month).toLocaleDateString("vi-VN")}
-                      </Badge>
+                        <Badge variant="secondary" className="text-xs">
+                          📅 Từ {new Date(r.first_day).toLocaleDateString("vi-VN")}  
+                          đến {new Date(r.last_day).toLocaleDateString("vi-VN")}
+                        </Badge>
+
                     </CardContent>
                   </Card>
                 ))}
