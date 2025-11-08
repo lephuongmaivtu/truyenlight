@@ -46,55 +46,36 @@ export default function RevenuePage() {
 
   // 🧩 Fetch doanh thu theo truyện
   // 🧩 Fetch doanh thu theo tháng và tổng
+// 🧩 Fetch dữ liệu doanh thu từ view
 useEffect(() => {
   if (!userId) return;
   (async () => {
     setLoading(true);
 
-    // 1️⃣ Lấy doanh thu từng truyện trong tháng hiện tại
-    const { data: monthlyData, error: monthlyError } = await supabase
-      .from("story_views_per_month")
-      .select(`
-        story_id,
-        monthly_views,
-        monthly_revenue,
-        view_month,
-        stories ( title )
-      `)
+    // Lấy doanh thu tháng hiện tại
+    const { data, error } = await supabase
+      .from("author_monthly_revenue_view")
+      .select("*")
       .eq("author_id", userId)
-      .gte("view_month", new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()) // đầu tháng
-      .lte("view_month", new Date().toISOString()) // đến nay
+      .gte("month", new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
+      .lte("month", new Date().toISOString())
       .order("monthly_revenue", { ascending: false });
 
-    if (monthlyError) {
-      console.error("Lỗi fetch doanh thu:", monthlyError);
+    if (error) {
+      console.error("Lỗi fetch:", error);
       setLoading(false);
       return;
     }
 
-    // 2️⃣ Tính tổng doanh thu tháng & tổng toàn thời gian
-    const { data: allData } = await supabase
-      .from("story_views_per_month")
-      .select("monthly_revenue")
-      .eq("author_id", userId);
+    // Tính tổng doanh thu tháng này & all-time (nếu cần)
+    const monthlyTotal = (data ?? []).reduce((sum, r) => sum + (r.monthly_revenue ?? 0), 0);
 
-    const totalRevenue = (allData ?? []).reduce(
-      (sum, r) => sum + (r.monthly_revenue ?? 0),
-      0
-    );
-    const currentMonthRevenue = (monthlyData ?? []).reduce(
-      (sum, r) => sum + (r.monthly_revenue ?? 0),
-      0
-    );
-
-    setTotal({
-      all: totalRevenue,
-      month: currentMonthRevenue,
-    });
-    setRevenues(monthlyData ?? []);
+    setRevenues(data ?? []);
+    setTotal({ all: total.all, month: monthlyTotal }); // total.all sẽ được cập nhật riêng từ view tổng
     setLoading(false);
   })();
 }, [userId]);
+
 
 
   // 📊 Fetch dữ liệu cho biểu đồ doanh thu theo tháng
