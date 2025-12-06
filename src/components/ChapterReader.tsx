@@ -190,7 +190,7 @@ export function ChapterReader() {
         </div>
       </div>
 
-            </div>
+        
 
       {/* Footer nav: Trước / Chọn chương / Sau ở ngay trên comment */}
       <div className="bg-muted/30 border-t border-border mt-8">
