@@ -243,7 +243,4 @@ export function ChapterReader() {
   );
 }
 
-      <CommentSection chapterId={chapter.id} />
-    </div>
-  );
-}
+    
