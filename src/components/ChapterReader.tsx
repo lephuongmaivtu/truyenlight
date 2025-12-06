@@ -1,6 +1,6 @@
 // components/ChapterReader.tsx
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { CommentSection } from "./CommentSection";
@@ -16,6 +16,8 @@ import { supabase } from "../supabaseClient";
 export function ChapterReader() {
   const { slug, chapterSlug } = useParams<{ slug: string; chapterSlug: string }>();
   const { addBookmark, getBookmark } = useReading();
+  const navigate = useNavigate();
+
 
   const [story, setStory] = useState<StoryWithChapters | null>(null);
   const [chapter, setChapter] = useState<ChapterRow | null>(null);
@@ -98,6 +100,16 @@ export function ChapterReader() {
   const currentIndex = useMemo(() => chapters.findIndex((c) => c.id === chapter?.id), [chapters, chapter]);
   const previousChapter = currentIndex > 0 ? chapters[currentIndex - 1] : null;
   const nextChapter = currentIndex >= 0 && currentIndex < chapters.length - 1 ? chapters[currentIndex + 1] : null;
+  // đổi chapter khi chọn trong dropdown
+  const handleChangeChapter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = e.target.value;
+    if (!id || !slug) return;
+
+    const ch = chapters.find((c) => c.id === id);
+    if (!ch) return;
+
+    navigate(`/story/${slug}/${ch.slug || ch.id}`);
+  };
 
   if (loading) return <div className="container mx-auto px-4 py-8"><p>Loading chapter…</p></div>;
   if (!story || !chapter)
@@ -121,7 +133,7 @@ export function ChapterReader() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="bg-muted/30 border-b border-border">
+       <div className="bg-muted/30 border-b border-border">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           {previousChapter ? (
             <Link to={`/story/${slug}/${previousChapter.slug || previousChapter.id}`}>
@@ -135,11 +147,23 @@ export function ChapterReader() {
             </Button>
           )}
 
-          <Link to={`/story/${slug}`}>
-            <Button variant="ghost" size="sm" className="mx-2">
-              Về trang truyện
-            </Button>
-          </Link>
+          {/* Chọn chapter – THAY cho "Về trang truyện" */}
+          <div className="flex items-center gap-2 mx-2">
+            <span className="text-xs md:text-sm text-muted-foreground hidden sm:inline">
+              Chọn chương:
+            </span>
+            <select
+              className="border border-input bg-background rounded px-2 py-1 text-xs md:text-sm"
+              value={chapter.id}
+              onChange={handleChangeChapter}
+            >
+              {chapters.map((ch, idx) => (
+                <option key={ch.id} value={ch.id}>
+                  {idx + 1}. {ch.title}
+                </option>
+              ))}
+            </select>
+          </div>
 
           {nextChapter ? (
             <Link to={`/story/${slug}/${nextChapter.slug || nextChapter.id}`}>
@@ -155,6 +179,7 @@ export function ChapterReader() {
         </div>
       </div>
 
+
       <div className="container max-w-[900px] py-10 leading-relaxed">
         <h1 className="text-2xl font-bold mb-4">{chapter.title}</h1>
         <p className="text-sm text-muted-foreground mb-6">{wordCount} words</p>
@@ -164,6 +189,59 @@ export function ChapterReader() {
           )}
         </div>
       </div>
+
+            </div>
+
+      {/* Footer nav: Trước / Chọn chương / Sau ở ngay trên comment */}
+      <div className="bg-muted/30 border-t border-border mt-8">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          {previousChapter ? (
+            <Link to={`/story/${slug}/${previousChapter.slug || previousChapter.id}`}>
+              <Button variant="outline" size="sm">
+                <ChevronLeft className="h-4 w-4" /> Trước
+              </Button>
+            </Link>
+          ) : (
+            <Button variant="outline" size="sm" disabled>
+              <ChevronLeft className="h-4 w-4" /> Trước
+            </Button>
+          )}
+
+          <div className="flex items-center gap-2 mx-2">
+            <span className="text-xs md:text-sm text-muted-foreground hidden sm:inline">
+              Chọn chương:
+            </span>
+            <select
+              className="border border-input bg-background rounded px-2 py-1 text-xs md:text-sm"
+              value={chapter.id}
+              onChange={handleChangeChapter}
+            >
+              {chapters.map((ch, idx) => (
+                <option key={ch.id} value={ch.id}>
+                  {idx + 1}. {ch.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {nextChapter ? (
+            <Link to={`/story/${slug}/${nextChapter.slug || nextChapter.id}`}>
+              <Button variant="outline" size="sm" onClick={handleFinishChapter}>
+                Sau <ChevronRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          ) : (
+            <Button variant="outline" size="sm" disabled>
+              Sau <ChevronRight className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <CommentSection chapterId={chapter.id} />
+    </div>
+  );
+}
 
       <CommentSection chapterId={chapter.id} />
     </div>
