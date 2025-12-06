@@ -40,23 +40,39 @@ export function CommentSection({ chapterId }: { chapterId: string }) {
     if (chapterId) load();
   }, [chapterId]);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!userId || !newComment.trim()) return;
+ async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault();
+  if (!userId || !newComment.trim()) return;
 
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("comments")
-      .insert([{ chapter_id: chapterId, user_id: userId, content: newComment.trim() }])
-      .select()
-      .single();
+  setLoading(true);
+  const { data, error } = await supabase
+    .from("comments")
+    .insert([
+      {
+        chapter_id: chapterId,
+        user_id: userId,
+        content: newComment.trim(),
+      },
+    ])
+    .select()
+    .single();
 
-    setLoading(false);
-    if (!error && data) {
-      setComments((prev) => [...prev, data as CommentRow]);
-      setNewComment("");
-    }
+  setLoading(false);
+
+  console.log("Insert comment result:", { data, error });
+
+  if (error) {
+    console.error("Insert comment error:", error);
+    alert("Không gửi được bình luận: " + error.message);
+    return;
   }
+
+  if (data) {
+    setComments((prev) => [...prev, data as CommentRow]);
+    setNewComment("");
+  }
+}
+
 
    return (
     <div className="max-w-3xl mx-auto px-6 py-8 border-t mt-8">
