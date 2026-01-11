@@ -25,6 +25,7 @@ export function UploadChapterPage() {
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [chapterNumber, setChapterNumber] = useState<number | "">("");
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -44,10 +45,10 @@ export function UploadChapterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userId || !storyId || !title.trim() || !content.trim()) {
-      setMsg("Vui lòng nhập đầy đủ thông tin.");
+    if (!userId || !storyId || !title.trim() || !content.trim() || !chapterNumber) {
+      setMsg("Vui lòng nhập đầy đủ thông tin (bao gồm chương số mấy).");
       return;
-    }
+    }  
     setSubmitting(true);
     setMsg(null);
 
@@ -101,6 +102,20 @@ export function UploadChapterPage() {
                   <option key={s.id} value={s.id}>{s.title}</option>
                 ))}
               </select>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Số chương</label>
+              <Input
+                type="number"
+                min={1}
+                value={chapterNumber}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setChapterNumber(v === "" ? "" : Number(v));
+                }}
+                placeholder="Ví dụ: 1"
+              />
             </div>
 
             <div>
