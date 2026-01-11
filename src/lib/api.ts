@@ -102,19 +102,33 @@ export async function addComment(chapterId: string, userId: string, content: str
 export async function fetchStoryWithChapters(
   slug: string
 ): Promise<StoryWithChapters | null> {
-  const { data, error } = await supabase
+  // 1) Fetch story
+  const { data: story, error: storyError } = await supabase
     .from("stories")
-    .select(`*, chapters(*)`)
+    .select("*")
     .eq("slug", slug)
     .single();
 
-  if (error || !data) {
-    console.error("❌ fetchStoryWithChapters.error:", error);
+  if (storyError || !story) {
+    console.error("❌ fetchStoryWithChapters.storyError:", storyError);
     return null;
   }
-  // đảm bảo có mảng chapters
-  return { ...(data as any), chapters: (data as any).chapters ?? [] };
+
+  // 2) Fetch chapters (order by number asc)
+  const { data: chapters, error: chaptersError } = await supabase
+    .from("chapters")
+    .select("*")
+    .eq("story_id", (story as any).id)
+    .order("number", { ascending: true })
+    .order("created_at", { ascending: true }); // phụ: nếu number trùng/NULL
+
+  if (chaptersError) {
+    console.error("❌ fetchStoryWithChapters.chaptersError:", chaptersError);
+  }
+
+  return { ...(story as any), chapters: (chapters as any[]) ?? [] };
 }
+
 
 export async function fetchTopStories(
   limit = 5,
