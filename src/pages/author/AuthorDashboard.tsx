@@ -191,7 +191,18 @@ export function AuthorDashboard() {
                     </div>
                   </div>
                 </Link>
+              {/* 2 nút nằm ở đây, ngoài link */}
+                  <div className="p-3 pt-0 flex gap-2">
+                    <Link to={`/author/edit-story/${s.id}`} className="flex-1">
+                      <Button variant="outline" size="sm" className="w-full">Sửa truyện</Button>
+                    </Link>
+                    <Link to={`/author/story/${s.id}/chapters`} className="flex-1">
+                      <Button variant="secondary" size="sm" className="w-full">Quản lý chapters</Button>
+                    </Link>
+                  </div>
+                </div>
               ))}
+              
             </div>
           )}
         </CardContent>
