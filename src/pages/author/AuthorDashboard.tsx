@@ -200,7 +200,6 @@ export function AuthorDashboard() {
                       <Button variant="secondary" size="sm" className="w-full">Quản lý chapters</Button>
                     </Link>
                   </div>
-                </div>
               ))}
               
             </div>
