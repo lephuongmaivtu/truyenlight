@@ -31,6 +31,8 @@ import { UploadChapterPage } from "./pages/author/UploadChapterPage";
 import RevenuePage from "./pages/author/RevenuePage";
 import DailyTasks from "./pages/author/DailyTasks";
 import RewardShop from "./pages/author/RewardShop";
+import { AuthorStoryChaptersPage } from "./pages/author/AuthorStoryChaptersPage";
+
 
 // ✅ Reward System
 import RewardFlow from "./components/rewards/RewardFlow";
@@ -74,6 +76,8 @@ function AppContent() {
           <Route path="/author/upload-chapter" element={<UploadChapterPage />} />
           <Route path="/author/revenue" element={<RevenuePage />} />
           <Route path="/author/tasks" element={<DailyTasks />} />
+          <Route path="/author/story/:storyId/chapters" element={<AuthorStoryChaptersPage />} />
+
 
           {/* ✅ Reward System */}
           <Route path="/shop" element={<RewardShop />} />
