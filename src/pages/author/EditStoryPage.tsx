@@ -78,7 +78,10 @@ export function EditStoryPage() {
       setCoverImage(s.coverImage ?? "");
       setStatus(s.status ?? "Ongoing");
       setStoryType(s.story_type ?? "original");
-      setGenresText(s.genres ?? "");
+      
+      const g: any = (s as any).genres;
+      setGenresText(Array.isArray(g) ? g.join(", ") : (g ?? ""));
+
 
       setLoading(false);
     })();
