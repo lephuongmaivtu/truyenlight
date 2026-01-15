@@ -142,65 +142,71 @@ export function AuthorDashboard() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              
               {myStories.map((s) => (
-                <Link
-                  to={`/story/${s.slug}`}
+                <div
                   key={s.id}
                   className="block border rounded-lg overflow-hidden hover:shadow-md transition-all bg-card"
                 >
-                  <div className="aspect-[3/4] bg-muted relative">
-                    {s.coverImage ? (
-                      <img
-                        src={s.coverImage}
-                        alt={s.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                        Không có ảnh bìa
+                  {/* Link mở trang đọc truyện */}
+                  <Link to={`/story/${s.slug}`} className="block">
+                    <div className="aspect-[3/4] bg-muted relative">
+                      {s.coverImage ? (
+                        <img
+                          src={s.coverImage}
+                          alt={s.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                          Không có ảnh bìa
+                        </div>
+                      )}
+                      <div className="absolute bottom-0 left-0 bg-black/50 text-white text-xs px-2 py-1 rounded-tr-md">
+                        {s.story_type === "translated" ? "Truyện dịch" : "Sáng tác"}
                       </div>
-                    )}
-                    <div className="absolute bottom-0 left-0 bg-black/50 text-white text-xs px-2 py-1 rounded-tr-md">
-                      {s.story_type === "translated" ? "Truyện dịch" : "Sáng tác"}
                     </div>
-                  </div>
-
-                  <div className="p-3 space-y-1">
-                    <div className="font-semibold line-clamp-1">{s.title}</div>
-
-                    <div className="flex flex-wrap gap-1">
-                      {s.genres?.slice(0, 3).map((g) => (
-                        <Badge key={g} variant="secondary" className="text-xs">
-                          {g}
+              
+                    <div className="p-3 space-y-1">
+                      <div className="font-semibold line-clamp-1">{s.title}</div>
+              
+                      <div className="flex flex-wrap gap-1">
+                        {s.genres?.slice(0, 3).map((g) => (
+                          <Badge key={g} variant="secondary" className="text-xs">
+                            {g}
+                          </Badge>
+                        ))}
+                      </div>
+              
+                      <div className="flex items-center justify-between text-sm text-muted-foreground mt-1">
+                        <span>👁 {(s.views ?? 0).toLocaleString("vi-VN")}</span>
+                        <Badge variant={s.status === "Completed" ? "default" : "secondary"}>
+                          {s.status}
                         </Badge>
-                      ))}
+                      </div>
+              
+                      <div className="text-sm text-muted-foreground">
+                        💰 {Math.round(((s.views ?? 0) / 1000) * 5000).toLocaleString("vi-VN")} ₫
+                      </div>
                     </div>
-
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mt-1">
-                      <span>👁 {(s.views ?? 0).toLocaleString("vi-VN")}</span>
-                      <Badge
-                        variant={s.status === "Completed" ? "default" : "secondary"}
-                      >
-                        {s.status}
-                      </Badge>
-                    </div>
-
-                    <div className="text-sm text-muted-foreground">
-                      💰{" "}
-                      {Math.round(((s.views ?? 0) / 1000) * 5000).toLocaleString("vi-VN")} ₫
-                    </div>
-                  </div>
-                </Link>
-              {/* 2 nút nằm ở đây, ngoài link */}
+                  </Link>
+              
+                  {/* 2 nút nằm ngoài link */}
                   <div className="p-3 pt-0 flex gap-2">
                     <Link to={`/author/edit-story/${s.id}`} className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">Sửa truyện</Button>
+                      <Button variant="outline" size="sm" className="w-full">
+                        Sửa truyện
+                      </Button>
                     </Link>
                     <Link to={`/author/story/${s.id}/chapters`} className="flex-1">
-                      <Button variant="secondary" size="sm" className="w-full">Quản lý chapters</Button>
+                      <Button variant="secondary" size="sm" className="w-full">
+                        Quản lý chapters
+                      </Button>
                     </Link>
                   </div>
+                </div>
               ))}
+
               
             </div>
           )}
