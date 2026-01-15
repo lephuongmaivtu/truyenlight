@@ -32,6 +32,8 @@ import RevenuePage from "./pages/author/RevenuePage";
 import DailyTasks from "./pages/author/DailyTasks";
 import RewardShop from "./pages/author/RewardShop";
 import { AuthorStoryChaptersPage } from "./pages/author/AuthorStoryChaptersPage";
+import { EditStoryPage } from "./pages/author/EditStoryPage";
+
 
 
 // ✅ Reward System
@@ -72,11 +74,13 @@ function AppContent() {
 
           {/* ✅ Author Zone */}
           <Route path="/author" element={<AuthorDashboard />} />
+          <Route path="/author/edit-story/:storyId" element={<EditStoryPage />} />
           <Route path="/author/upload-story" element={<UploadStoryPage />} />
           <Route path="/author/upload-chapter" element={<UploadChapterPage />} />
           <Route path="/author/revenue" element={<RevenuePage />} />
           <Route path="/author/tasks" element={<DailyTasks />} />
           <Route path="/author/story/:storyId/chapters" element={<AuthorStoryChaptersPage />} />
+          
 
 
           {/* ✅ Reward System */}
