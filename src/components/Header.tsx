@@ -147,7 +147,8 @@ export function Header() {
                 Reward Shop
               </Link>
             )}
-
+          </nav>
+          
           {/* Desktop search */}
           <div className="hidden">
             <form onSubmit={handleSearchSubmit} className="relative">
