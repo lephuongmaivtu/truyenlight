@@ -489,6 +489,7 @@ return (
       </section>
     )}
 {/* ✅ DAILY CHECK-IN PANEL */}
+{FEATURES.DAILY_CHECKIN && (
 <section className="py-6">
   <div className="container mx-auto px-4">
     <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-md p-6 flex flex-col items-center text-center">
@@ -520,7 +521,7 @@ return (
     </div>
   </div>
 </section>
-
+)}
      
 {/* 🔹 TOP ĐỀ XUẤT — giao diện đồng đều như truyenfull */}
 <section className="py-8">
