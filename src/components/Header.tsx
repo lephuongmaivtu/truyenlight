@@ -17,6 +17,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { searchStories } from "./mockData";
 import { supabase } from "../supabaseClient";
+import { FEATURES } from "../config/features";
 
 export function Header() {
   const { balance } = useBalance();
@@ -137,14 +138,15 @@ export function Header() {
             </div>
 
             {/* Reward Shop */}
-            <Link
-              to="/shop"
-              className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors"
-            >
-              <Gift className="h-4 w-4 mr-1" />
-              Reward Shop
-            </Link>
-          </nav>
+           {FEATURES.REWARD_SHOP && (
+              <Link
+                to="/shop"
+                className="cursor-pointer flex items-center text-foreground hover:text-primary transition-colors"
+              >
+                <Gift className="h-4 w-4 mr-1" />
+                Reward Shop
+              </Link>
+            )}
 
           {/* Desktop search */}
           <div className="hidden">
