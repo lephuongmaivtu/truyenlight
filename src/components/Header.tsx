@@ -189,9 +189,12 @@ export function Header() {
                     <PenSquare className="h-4 w-4 mr-2" /> Khu vực tác giả
                   </Button>
                 </Link>
-                <div className="flex items-center gap-1 text-sm font-medium text-yellow-600">
-                  💰 {balance ?? 0} xu
-                </div>
+                
+                {FEATURES.COINS && (
+                  <div className="flex items-center gap-1 text-sm font-medium text-yellow-600">
+                    💰 {balance ?? 0} xu
+                  </div>
+                )}
 
                 <Link to="/profile">
                   <Button variant="ghost" size="sm">
@@ -229,17 +232,27 @@ export function Header() {
               <Link to="/" className="block py-2 px-2 text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                 Trang chủ
               </Link>
-              <Link to="/shop" className="block py-2 px-2 text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
-                🎁 Reward Shop
-              </Link>
+             {FEATURES.REWARD_SHOP && (
+                  <Link
+                    to="/shop"
+                    className="block py-2 px-2 text-foreground hover:text-primary"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    🎁 Reward Shop
+                  </Link>
+                )}
+               
               {user ? (
                 <>
                   <Link to="/profile" className="block py-2 px-2 text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                     👤 Hồ sơ
                   </Link>
-                  <div className="flex items-center gap-2 px-3 py-2 text-yellow-600 font-medium">
-                    💰 {balance ?? 0} xu
-                  </div>
+                  
+                  {FEATURES.COINS && (
+                     <div className="flex items-center gap-2 px-3 py-2 text-yellow-600 font-medium">
+                      💰 {balance ?? 0} xu
+                     </div>
+                   )}
                   <Link to="/author" className="block py-2 px-2 text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                     ✍️ Khu vực tác giả
                   </Link>
