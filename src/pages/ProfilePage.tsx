@@ -7,7 +7,7 @@ import RewardVoucherModal from "../components/RewardVoucherModal";
 
 import ReaderTasks from "../components/ReaderTasks";
 import { useBalance } from "../hooks/useBalance"; // nếu chưa có thì thêm
-
+import { FEATURES } from "../config/features";
 
 
 
@@ -279,9 +279,15 @@ async function getPurchasedRewards(userId: string) {
       >
         <option value="reading">📖 Đang đọc</option>
         <option value="bookmark">🔖 Đánh dấu</option>
-        <option value="reward">🎁 Hộp quà 21 ngày</option>
-        <option value="tasks">🎯 Nhiệm vụ độc giả</option>
-        <option value="purchased">🎟️ Đã mua</option>
+       {FEATURES.PROFILE_21DAY_GIFT && (
+          <option value="reward">🎁 Hộp quà 21 ngày</option>
+        )}
+        {FEATURES.PROFILE_READER_TASKS && (
+          <option value="tasks">🎯 Nhiệm vụ độc giả</option>
+        )}
+        {FEATURES.PROFILE_PURCHASED && (
+          <option value="purchased">🎟️ Đã mua</option>
+        )}
       </select>
     </div>
 
@@ -309,26 +315,28 @@ async function getPurchasedRewards(userId: string) {
           >
             🔖 Đánh dấu
           </button>
-          <button
-            onClick={() => setActiveTab("reward")}
-            className={`block w-full text-left p-2 rounded ${
-              activeTab === "reward"
-                ? "bg-primary text-white"
-                : "hover:bg-muted"
-            }`}
-          >
-            🎁 Hộp quà 21 ngày
-          </button>
-          <button
-            onClick={() => setActiveTab("tasks")}
-            className={`block w-full text-left p-2 rounded ${
-              activeTab === "tasks"
-                ? "bg-primary text-white"
-                : "hover:bg-muted"
-            }`}
-          >
-            🎯 Nhiệm vụ độc giả
-          </button>
+          {FEATURES.PROFILE_21DAY_GIFT && (
+            <button
+              onClick={() => setActiveTab("reward")}
+              className={`block w-full text-left p-2 rounded ${
+                activeTab === "reward" ? "bg-primary text-white" : "hover:bg-muted"
+              }`}
+            >
+              🎁 Hộp quà 21 ngày
+            </button>
+          )}
+          
+          {FEATURES.PROFILE_PURCHASED && (
+            <button
+              onClick={() => setActiveTab("purchased")}
+              className={`block w-full text-left p-2 rounded ${
+                activeTab === "purchased" ? "bg-primary text-white" : "hover:bg-muted"
+              }`}
+            >
+              🎟️ Đã mua
+            </button>
+          )}
+          
           <button
             onClick={() => setActiveTab("purchased")}
             className={`block w-full text-left p-2 rounded ${
@@ -424,7 +432,7 @@ async function getPurchasedRewards(userId: string) {
           </>
         )}
 
-        {activeTab === "reward" && (
+       {FEATURES.PROFILE_21DAY_GIFT && activeTab === "reward" && (
           <>
             {/* ----- Hộp quà 21 ngày ----- */}
             <section>
@@ -551,13 +559,13 @@ async function getPurchasedRewards(userId: string) {
           </>
         )}
 
-        {activeTab === "tasks" && (
+       {FEATURES.PROFILE_READER_TASKS && activeTab === "tasks" && (
           <section>
             <h2 className="text-xl font-semibold mb-4">🎯 Nhiệm vụ độc giả</h2>
             <ReaderTasks />
           </section>
         )}
-        {activeTab === "purchased" && (
+        {FEATURES.PROFILE_PURCHASED && activeTab === "purchased" && (
   <section>
     <h2 className="text-xl font-semibold mb-4">🎟️ Quà bạn đã mua</h2>
 
