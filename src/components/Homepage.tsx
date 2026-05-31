@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { StoryCard } from "./StoryCard";
 import { supabase } from "../supabaseClient";
 import { useToast } from "../components/ui/use-toast";
+import { FEATURES } from "../config/features";
 
 
 
