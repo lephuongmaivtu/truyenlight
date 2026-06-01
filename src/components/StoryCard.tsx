@@ -139,7 +139,7 @@ export function StoryCard({ story, variant = 'default', onRated }: StoryCardProp
               {story.description ?? ''}
             </p>
 
-            <div className="flex flex-wrap gap-1 mb-3">
+            <div className="hidden md:flex flex-wrap gap-1 mb-3">
               {(story.genres ?? []).slice(0, 3).map((genre, idx) => (
                 <Badge key={idx} variant="outline" className="text-xs truncate">
                   {genre}
@@ -161,17 +161,14 @@ export function StoryCard({ story, variant = 'default', onRated }: StoryCardProp
                     {formatViews(story.views)}
                   </span>
                 </div>
-                <div className="flex items-center space-x-1">
+                <div className="hidden md:flex items-center space-x-1">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
                     {formatDate(story.lastUpdated)}
                   </span>
                 </div>
               </div>
-              <Badge
-                variant={story.status === 'Completed' ? 'default' : 'secondary'}
-                className="flex items-center space-x-1 max-w-full truncate"
-              >
+              className="hidden md:flex items-center space-x-1 max-w-full truncate"
                 {story.status === 'Completed' && <CheckCircle className="h-3 w-3" />}
                 <span>{story.status ?? 'Ongoing'}</span>
               </Badge>
