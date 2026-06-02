@@ -22,6 +22,7 @@ export function EditChapterPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [storyId, setStoryId] = useState<string>("");
   const [chapterNumber, setChapterNumber] = useState<number | "">("");
+  const [existingNumbers, setExistingNumbers] = useState<number[]>([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -70,7 +71,34 @@ export function EditChapterPage() {
     return () => {
       alive = false;
     };
-  }, [chapterId]);
+  }, [chapterId]);useEffect(() => {
+  async function fetchExistingNumbers() {
+    if (!storyId || !chapterId) return;
+
+    const { data, error } = await supabase
+      .from("chapters")
+      .select("id, number")
+      .eq("story_id", storyId)
+      .not("number", "is", null);
+
+    if (error) {
+      console.error("Lỗi lấy số chương:", error);
+      setExistingNumbers([]);
+      return;
+    }
+
+    setExistingNumbers(
+      (data ?? [])
+        .filter((item) => item.id !== chapterId)
+        .map((item) => Number(item.number))
+        .filter((n) => !Number.isNaN(n))
+    );
+  }
+
+  fetchExistingNumbers();
+}, [storyId, chapterId]);
+
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
