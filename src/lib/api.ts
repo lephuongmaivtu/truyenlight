@@ -76,7 +76,7 @@ export async function fetchComments(chapterId: string) {
       profiles (username, avatar_url)
     `)
     .eq("chapter_id", chapterId)
-    .order("created_at", { ascending: true });
+    .order("number", { ascending: true });
 
   if (error) {
     console.error("Error fetching comments:", error);
@@ -120,7 +120,7 @@ export async function fetchStoryWithChapters(
     .select("*")
     .eq("story_id", (story as any).id)
     .order("number", { ascending: true })
-    .order("created_at", { ascending: true }); // phụ: nếu number trùng/NULL
+   
 
   if (chaptersError) {
     console.error("❌ fetchStoryWithChapters.chaptersError:", chaptersError);
@@ -203,7 +203,7 @@ export async function fetchChaptersOfStory(
     .from("chapters")
     .select("*")
     .eq("story_id", storyId)
-    .order("created_at", { ascending: true });
+    .order("number", { ascending: true });
 
   if (error) {
     console.error("❌ fetchChaptersOfStory.error:", error);
