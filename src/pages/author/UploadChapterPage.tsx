@@ -26,6 +26,7 @@ export function UploadChapterPage() {
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [chapterNumber, setChapterNumber] = useState<number | "">("");
+  const [existingNumbers, setExistingNumbers] = useState<number[]>([]);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -41,7 +42,35 @@ export function UploadChapterPage() {
         .order("title", { ascending: true });
       setStories(myStories ?? []);
     });
-  }, []);
+      }, []);
+      useEffect(() => {
+      async function fetchExistingNumbers() {
+        if (!storyId) {
+          setExistingNumbers([]);
+          return;
+        }
+    
+        const { data, error } = await supabase
+          .from("chapters")
+          .select("number")
+          .eq("story_id", storyId)
+          .not("number", "is", null);
+    
+        if (error) {
+          console.error("Lỗi lấy số chương:", error);
+          setExistingNumbers([]);
+          return;
+        }
+    
+        setExistingNumbers(
+          (data ?? [])
+            .map((item) => Number(item.number))
+            .filter((n) => !Number.isNaN(n))
+        );
+      }
+    
+      fetchExistingNumbers();
+    }, [storyId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +78,11 @@ export function UploadChapterPage() {
       setMsg("Vui lòng nhập đầy đủ thông tin (bao gồm chương số mấy).");
       return;
     }  
+    
+    if (existingNumbers.includes(Number(chapterNumber))) {
+      setMsg(`Chương số ${chapterNumber} đã tồn tại trong truyện này rồi.`);
+      return;
+    }
     setSubmitting(true);
     setMsg(null);
 
@@ -61,6 +95,7 @@ export function UploadChapterPage() {
         slug,
         content,
         user_id: userId,
+        number: Number(chapterNumber),
       },
     ]).select("id, slug").single();
 
@@ -116,6 +151,17 @@ export function UploadChapterPage() {
                 }}
                 placeholder="Ví dụ: 1"
               />
+              {storyId && existingNumbers.length > 0 && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  Chương đã có: {existingNumbers.sort((a, b) => a - b).join(", ")}
+                </div>
+              )}
+              
+              {chapterNumber !== "" && existingNumbers.includes(Number(chapterNumber)) && (
+                <div className="text-xs text-red-500 mt-1">
+                  Chương số {chapterNumber} đã tồn tại, vui lòng chọn số khác.
+                </div>
+              )}
             </div>
 
             <div>
