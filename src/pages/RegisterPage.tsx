@@ -23,7 +23,7 @@ export function RegisterPage() {
     if (error) {
       setErrorMsg(error.message);
     } else {
-      setSuccessMsg("Đăng ký thành công! Hãy kiểm tra email để xác nhận.");
+      setSuccessMsg("Đã gửi liên kết xác thực đến email của bạn! Hãy kiểm tra email để xác nhận tài khoản.");
       setTimeout(() => navigate("/login"), 2000);
     }
   };
